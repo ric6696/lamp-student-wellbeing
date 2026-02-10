@@ -10,12 +10,12 @@ CREATE TABLE devices (
     last_sync TIMESTAMPTZ
 );
 
--- 2. HIGH-FREQUENCY NUMERIC DATA (Heart Rate, Noise, HRV, etc.)
+-- 2. HIGH-FREQUENCY NUMERIC DATA (Heart Rate, HRV, Ambient Noise)
 -- Using a code-based approach for performance
 CREATE TABLE sensor_vitals (
     time TIMESTAMPTZ NOT NULL,
     device_id UUID NOT NULL REFERENCES devices(device_id),
-    metric_type SMALLINT NOT NULL, -- 1:HR, 2:SDNN, 10:dB_Ambient
+    metric_type SMALLINT NOT NULL, -- 1:HR, 2:HRV, 10:dB_Ambient
     val REAL NOT NULL
 );
 SELECT create_hypertable('sensor_vitals', 'time');
@@ -26,7 +26,7 @@ CREATE TABLE sensor_location (
     device_id UUID NOT NULL REFERENCES devices(device_id),
     coords GEOGRAPHY(POINT, 4326) NOT NULL,
     accuracy REAL,
-    motion_context TEXT -- 'walking', 'stationary', 'automotive'
+    motion_context TEXT -- 'e.g. walking', 'stationary', 'automotive'
 );
 SELECT create_hypertable('sensor_location', 'time');
 
