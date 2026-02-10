@@ -1,12 +1,13 @@
 services:
   db:
+    # This image includes PostGIS
     image: timescale/timescaledb-ha:pg16-oss
     container_name: sensing_app_db
     restart: always
     environment:
       - POSTGRES_DB=sensing_db
-      - POSTGRES_PASSWORD=dev_password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./database/init:/docker-entrypoint-initdb.d # This auto-runs your schema on startup
