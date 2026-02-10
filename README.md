@@ -26,6 +26,7 @@ We are building a batch-processing system. iOS collects locally $\rightarrow$ fl
 ## The Schema
 
 We use TimescaleDB hypertables for high-frequency vitals and PostGIS for location data.
+Daily aggregates (e.g., steps, sleep) live in `daily_summaries`; see [metrics.md](metrics.md) for the metric code list.
 
 ## Data Contract (Batch JSON)
 

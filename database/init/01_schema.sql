@@ -15,7 +15,7 @@ CREATE TABLE devices (
 CREATE TABLE sensor_vitals (
     time TIMESTAMPTZ NOT NULL,
     device_id UUID NOT NULL REFERENCES devices(device_id),
-    metric_type SMALLINT NOT NULL, -- 1:HR, 2:SDNN, 3:RMSSD, 4:dB_Ambient, 5:dB_Exposure
+    metric_type SMALLINT NOT NULL, -- 1:HR, 2:SDNN, 10:dB_Ambient
     val REAL NOT NULL
 );
 SELECT create_hypertable('sensor_vitals', 'time');
