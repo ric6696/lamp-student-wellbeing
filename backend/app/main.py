@@ -5,8 +5,10 @@ from .config import get_cors_origins, settings
 from .db import close_pool, get_connection, init_pool, release_connection
 from .ingest import ingest_batch
 from .models import Batch
+from .routes.dashboard import router as dashboard_router
 
 app = FastAPI(title="LAMP Ingestion API")
+app.include_router(dashboard_router)
 
 
 @app.on_event("startup")
@@ -59,3 +61,5 @@ async def health():
             cursor.close()
         if connection:
             release_connection(connection)
+
+

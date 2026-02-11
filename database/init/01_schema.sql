@@ -15,7 +15,7 @@ CREATE TABLE devices (
 CREATE TABLE sensor_vitals (
     time TIMESTAMPTZ NOT NULL,
     device_id UUID NOT NULL REFERENCES devices(device_id),
-    metric_type SMALLINT NOT NULL, -- 1:HR, 2:HRV, 10:dB_Ambient
+    metric_type SMALLINT NOT NULL, -- 1:HR, 2:HRV, 10:dB_Ambient, 20:Steps
     val REAL NOT NULL
 );
 SELECT create_hypertable('sensor_vitals', 'time');
@@ -52,3 +52,13 @@ CREATE TABLE daily_summaries (
     sleep_end TIMESTAMPTZ,
     PRIMARY KEY (date, device_id)
 );
+
+-- 6. HOURLY AGGREGATES (Materialized View)
+CREATE MATERIALIZED VIEW sensor_hourly_summary AS
+SELECT
+    time_bucket('1 hour', time) AS hour,
+    device_id,
+    AVG(val) FILTER (WHERE metric_type = 1) AS avg_heart_rate,
+    SUM(val) FILTER (WHERE metric_type = 20) AS steps_total
+FROM sensor_vitals
+GROUP BY hour, device_id;
