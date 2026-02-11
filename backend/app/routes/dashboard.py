@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Header, HTTPException, Query
 from fastapi.responses import HTMLResponse
 
@@ -10,7 +11,7 @@ router = APIRouter()
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(
     x_api_key: str = Header(None),
-    token: str | None = Query(None, description="Dashboard access token"),
+    token: Optional[str] = Query(None, description="Dashboard access token"),
 ):
     expected = settings.ingest_api_key
     if not expected:

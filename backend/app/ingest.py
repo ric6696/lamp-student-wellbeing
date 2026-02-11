@@ -35,8 +35,8 @@ def ingest_batch(batch: Batch) -> None:
         connection = get_connection()
         cursor = connection.cursor()
 
-        device_id = batch.metadata.device_id
-        user_id = batch.metadata.user_id or device_id
+        device_id = batch.metadata.device_id.lower()
+        user_id = (batch.metadata.user_id or device_id).lower()
         model_name = batch.metadata.model_name
 
         cursor.execute(

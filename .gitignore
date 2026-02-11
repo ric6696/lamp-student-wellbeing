@@ -2,3 +2,12 @@
 __pycache__/
 *.pyc
 logs/
+.venv/
+.vscode/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+*.xcuserstate
+.DS_Store

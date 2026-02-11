@@ -1,9 +1,10 @@
 import psycopg2
+from typing import Optional
 from psycopg2.pool import ThreadedConnectionPool
 
 from .config import settings
 
-_pool: ThreadedConnectionPool | None = None
+_pool: Optional[ThreadedConnectionPool] = None
 
 def init_pool() -> None:
     global _pool

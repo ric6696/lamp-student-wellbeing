@@ -1,0 +1,25 @@
+name: WellbeingApp
+options:
+  bundleIdPrefix: com.lamp.wellbeing.kevin
+targets:
+  WellbeingApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Sources
+      - path: Resources
+    settings:
+      INFOPLIST_FILE: Resources/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    # Added explicit capability for HealthKit
+    capabilities:
+      HealthKit: {}
+    entitlements:
+      path: Resources/WellbeingApp.entitlements
+    dependencies:
+      - sdk: HealthKit.framework
+      - sdk: CoreLocation.framework
+      - sdk: CoreMotion.framework
+      - sdk: AVFoundation.framework
