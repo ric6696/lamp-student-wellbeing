@@ -83,6 +83,10 @@ Example cron (every 15 minutes):
 */15 * * * * docker exec -i sensing_app_db psql -U postgres -d sensing_db -c "REFRESH MATERIALIZED VIEW sensor_hourly_summary;"
 ```
 
+### Daily Step Summary (Materialized View)
+
+- `REFRESH MATERIALIZED VIEW daily_step_summary;`
+
 ## Ingestion Logic
 
 The routing logic is implemented in [scripts/ingest_logic.py](scripts/ingest_logic.py). It parses each reading and inserts into:

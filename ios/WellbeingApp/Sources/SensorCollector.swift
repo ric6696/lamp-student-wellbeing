@@ -20,7 +20,7 @@ final class SensorCollector {
         let item = BatchItem(
             type: .vital,
             t: Date(),
-            code: 20,
+            code: 10,
             val: Double(db)
         )
         try? LocalStore.shared.append(item)

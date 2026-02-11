@@ -62,3 +62,13 @@ SELECT
     SUM(val) FILTER (WHERE metric_type = 20) AS steps_total
 FROM sensor_vitals
 GROUP BY hour, device_id;
+
+-- 7. DAILY STEP SUMMARY (Materialized View)
+CREATE MATERIALIZED VIEW daily_step_summary AS
+SELECT
+    time_bucket('1 day', time) AS day,
+    device_id,
+    SUM(val) AS total_steps
+FROM sensor_vitals
+WHERE metric_type = 20
+GROUP BY day, device_id;

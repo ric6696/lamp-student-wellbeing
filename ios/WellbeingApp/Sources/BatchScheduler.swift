@@ -24,7 +24,7 @@ final class BatchScheduler: ObservableObject {
         await SensorCollector.shared.collect()
 
         do {
-            let items = try LocalStore.shared.drain(limit: 500)
+            let items = try LocalStore.shared.drain(limit: 100)
             guard await api.send(items: items) else {
                 try LocalStore.shared.append(items)
                 return false
