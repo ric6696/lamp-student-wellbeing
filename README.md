@@ -38,6 +38,35 @@ Clients send a batch with device metadata and a list of readings:
 
 See [scripts/mock_generator.py](scripts/mock_generator.py) for a concrete example payload.
 
+## Integration Manifest
+
+### JSON Schema (keys and types)
+
+- `metadata.device_id`: string (UUID)
+- `metadata.user_id`: string (UUID, optional)
+- `metadata.model_name`: string (optional)
+- `metadata.version`: string (optional)
+- `data[]`: array of readings
+  - `type`: `vital` | `gps` | `event`
+  - `t`: string (ISO 8601 timestamp)
+  - `vital`: `code` (int), `val` (number)
+  - `gps`: `lat` (number), `lon` (number), `acc` (number, optional)
+  - `event`: `label` (string), `val_text` (string, optional), `metadata` (object, optional)
+
+### Metric Codes (`sensor_vitals.metric_type`)
+
+| Metric             | Code |
+| ------------------ | ---- |
+| Heart Rate         | 1    |
+| HRV (SDNN)         | 2    |
+| Ambient Noise (dB) | 10   |
+
+Daily summaries (e.g., steps) are stored in `daily_summaries`, not `metric_type`.
+
+### Batch Limit
+
+- Send a batch every 5 minutes or every 100 records, whichever comes first.
+
 ## Ingestion Logic
 
 The routing logic is implemented in [scripts/ingest_logic.py](scripts/ingest_logic.py). It parses each reading and inserts into:
@@ -55,6 +84,46 @@ The `/ingest` endpoint validates payloads, checks an API key, and enqueues DB in
 2. Ensure `.env` contains `INGEST_API_KEY` and DB settings.
 3. Run the API:
    - `uvicorn backend.app.main:app --reload --port 8000`
+
+### /docs usage example (iOS)
+
+Open the interactive docs at `https://<your-ngrok-domain>.ngrok-free.app/docs` and use:
+
+- Header: `X-API-Key: <INGEST_API_KEY>`
+- Endpoint: `POST /ingest`
+
+Sample request body:
+
+```json
+{
+  "metadata": {
+    "device_id": "11111111-1111-1111-1111-111111111111",
+    "version": "1.0",
+    "model_name": "iPhone 15 Pro"
+  },
+  "data": [
+    {
+      "t": "2026-02-10T14:57:07Z",
+      "type": "gps",
+      "lat": 34.0522,
+      "lon": -118.2437,
+      "acc": 5.0
+    },
+    {
+      "t": "2026-02-10T14:57:02Z",
+      "type": "vital",
+      "code": 1,
+      "val": 72
+    },
+    {
+      "t": "2026-02-10T14:56:57Z",
+      "type": "event",
+      "label": "motion_state",
+      "val_text": "walking"
+    }
+  ]
+}
+```
 
 ## Expose API for teammates (ngrok)
 
