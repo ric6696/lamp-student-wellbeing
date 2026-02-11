@@ -46,6 +46,26 @@ The routing logic is implemented in [scripts/ingest_logic.py](scripts/ingest_log
 - `sensor_location` (PostGIS geography)
 - `user_events` (discrete events)
 
+## Ingestion API (FastAPI)
+
+The `/ingest` endpoint validates payloads, checks an API key, and enqueues DB insertion in the background.
+
+1. Install dependencies:
+   - `pip install -r requirements.txt`
+2. Ensure `.env` contains `INGEST_API_KEY` and DB settings.
+3. Run the API:
+   - `uvicorn backend.app.main:app --reload --port 8000`
+
+## Expose API for teammates (ngrok)
+
+1. Install ngrok (macOS):
+   - `brew install ngrok/ngrok/ngrok`
+2. Add your authtoken:
+   - `ngrok config add-authtoken <YOUR_TOKEN>`
+3. Start the tunnel:
+   - `ngrok http 8000`
+4. Share the HTTPS URL shown (e.g., `https://xxxxx.ngrok-free.app/docs`).
+
 ## How to run the test
 
 1. Install the Postgres driver:
