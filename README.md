@@ -38,6 +38,8 @@ Clients send a batch with device metadata and a list of readings:
 
 See [scripts/mock_generator.py](scripts/mock_generator.py) for a concrete example payload.
 
+For iOS specifics (Swift structs + curl), see [IOS_INTEGRATION.md](IOS_INTEGRATION.md).
+
 ## Integration Manifest
 
 ### JSON Schema (keys and types)
@@ -60,12 +62,26 @@ See [scripts/mock_generator.py](scripts/mock_generator.py) for a concrete exampl
 | Heart Rate         | 1    |
 | HRV (SDNN)         | 2    |
 | Ambient Noise (dB) | 10   |
+| Step Count         | 20   |
 
-Daily summaries (e.g., steps) are stored in `daily_summaries`, not `metric_type`.
+Daily summaries (e.g., steps) are stored in `daily_summaries`. Step Count can also be sent
+as `metric_type` 20 when hourly aggregates are needed.
 
 ### Batch Limit
 
 - Send a batch every 5 minutes or every 100 records, whichever comes first.
+
+### Hourly Summary (Materialized View)
+
+The hourly summary view powers fast charts in dev:
+
+- `REFRESH MATERIALIZED VIEW sensor_hourly_summary;`
+
+Example cron (every 15 minutes):
+
+```cron
+*/15 * * * * docker exec -i sensing_app_db psql -U postgres -d sensing_db -c "REFRESH MATERIALIZED VIEW sensor_hourly_summary;"
+```
 
 ## Ingestion Logic
 
@@ -84,6 +100,10 @@ The `/ingest` endpoint validates payloads, checks an API key, and enqueues DB in
 2. Ensure `.env` contains `INGEST_API_KEY` and DB settings.
 3. Run the API:
    - `uvicorn backend.app.main:app --reload --port 8000`
+
+One-liner (DB + API):
+
+`docker compose up -d && uvicorn backend.app.main:app --reload --port 8000`
 
 ### /docs usage example (iOS)
 
@@ -147,3 +167,9 @@ Sample request body:
 - `SELECT * FROM sensor_vitals;`
 - `SELECT time, ST_AsText(coords) FROM sensor_location;`
 - `SELECT * FROM user_events;`
+
+## Troubleshooting
+
+- Docker paused: unpause Docker Desktop and re-run `docker compose up -d`.
+- 401 Unauthorized: ensure `X-API-Key` matches `INGEST_API_KEY` in `.env`.
+- ngrok URL changes: use the current “Forwarding” URL from the ngrok terminal.
