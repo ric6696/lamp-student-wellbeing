@@ -1,4 +1,6 @@
 from typing import Optional
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Header, HTTPException, Query
 from fastapi.responses import HTMLResponse
 
@@ -43,9 +45,22 @@ async def dashboard(
         )
         events = cursor.fetchall()
 
+        hkt = ZoneInfo("Asia/Hong_Kong")
+
+        def fmt(col):
+            if isinstance(col, datetime):
+                try:
+                    # assume DB returns naive datetimes in UTC or timezone-aware
+                    if col.tzinfo is None:
+                        col = col.replace(tzinfo=ZoneInfo("UTC"))
+                    return col.astimezone(hkt).strftime("%Y-%m-%d %H:%M:%S %Z")
+                except Exception:
+                    return str(col)
+            return str(col)
+
         def render_rows(rows):
             return "".join(
-                f"<tr>{''.join(f'<td>{str(col)}</td>' for col in row)}</tr>" for row in rows
+                f"<tr>{''.join(f'<td>{fmt(col)}</td>' for col in row)}</tr>" for row in rows
             )
 
         html = """

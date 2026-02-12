@@ -3,6 +3,13 @@ import Foundation
 final class BatchScheduler: ObservableObject {
     enum Reason { case timer, appOpen, manual }
 
+    @Published var isEnabled: Bool = true {
+        didSet {
+            if isEnabled { resume() }
+            else { stop() }
+        }
+    }
+
     private let interval: TimeInterval
     private var timer: Timer?
     private let api: APIClient
@@ -14,13 +21,20 @@ final class BatchScheduler: ObservableObject {
 
     func resume() {
         timer?.invalidate()
+        guard isEnabled else { return }
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             Task { _ = await self?.flushIfNeeded(reason: .timer) }
         }
     }
 
+    func stop() {
+        timer?.invalidate()
+        timer = nil
+    }
+
     @discardableResult
     func flushIfNeeded(reason: Reason) async -> Bool {
+        guard isEnabled || reason == .manual else { return false }
         await SensorCollector.shared.collect()
 
         do {

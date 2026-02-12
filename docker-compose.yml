@@ -11,3 +11,14 @@ services:
       - "5433:5432"
     volumes:
       - ./database/init:/docker-entrypoint-initdb.d # This auto-runs your schema on startup
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: sensing_app_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    depends_on:
+      - db
+    restart: always
