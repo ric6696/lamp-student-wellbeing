@@ -28,7 +28,8 @@ final class HealthKitManager {
                 (.heartRate, 1),
                 (.heartRateVariabilitySDNN, 2),
                 (.restingHeartRate, 3),
-                (.environmentalAudioExposure, 10)
+                (.environmentalAudioExposure, 10),
+                (.stepCount, 20)
             ]
             for (id, metricCode) in metrics {
                 group.addTask { try await self.queryQuantitySamples(id: id, metricCode: metricCode, since: since) }
