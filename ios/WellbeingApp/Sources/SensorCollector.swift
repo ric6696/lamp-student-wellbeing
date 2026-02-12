@@ -17,6 +17,9 @@ final class SensorCollector {
 
     private func collectInstantNoise() async {
         let db = NoiseManager.shared.currentDb
+        if db < 0 {
+            return
+        }
         let item = BatchItem(
             type: .vital,
             t: Date(),

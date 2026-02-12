@@ -94,14 +94,18 @@ final class HealthKitManager {
             let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, samples, err in
                 if let err = err { cont.resume(throwing: err); return }
                 let items: [BatchItem] = (samples as? [HKQuantitySample] ?? []).map {
-                    BatchItem(
+                    let value = $0.quantity.doubleValue(for: self.unit(for: id))
+                    if value < 0 {
+                        return nil
+                    }
+                    return BatchItem(
                         type: .vital,
                         t: $0.endDate,
                         code: metricCode,
-                        val: $0.quantity.doubleValue(for: self.unit(for: id))
+                        val: value
                     )
                 }
-                cont.resume(returning: items)
+                cont.resume(returning: items.compactMap { $0 })
             }
             store.execute(q)
         }

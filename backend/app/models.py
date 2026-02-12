@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal
 
 
@@ -14,7 +14,7 @@ class VitalReading(BaseModel):
     type: Literal["vital"]
     t: str
     code: int
-    val: float
+    val: float = Field(ge=0)
 
 
 class GpsReading(BaseModel):
@@ -22,7 +22,7 @@ class GpsReading(BaseModel):
     t: str
     lat: float
     lon: float
-    acc: Optional[float] = None
+    acc: Optional[float] = Field(default=None, ge=0)
 
 
 class EventReading(BaseModel):
