@@ -44,6 +44,8 @@
 		<string>fetch</string>
 		<string>location</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

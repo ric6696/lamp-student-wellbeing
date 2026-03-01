@@ -60,6 +60,23 @@ final class LocalStore {
         }
     }
 
+    func snapshot(limit: Int? = nil) throws -> [BatchItem] {
+        try queue.sync {
+            let content = try String(contentsOf: fileURL, encoding: .utf8)
+            let lines = content.split(separator: "\n", omittingEmptySubsequences: true)
+            let selection: [Substring]
+            if let limit = limit {
+                selection = Array(lines.prefix(limit))
+            } else {
+                selection = Array(lines)
+            }
+            return selection.compactMap { line in
+                guard let data = line.data(using: .utf8) else { return nil }
+                return try? JSONCoding.decoder.decode(BatchItem.self, from: data)
+            }
+        }
+    }
+
     func count() throws -> Int {
         try queue.sync {
             let content = try String(contentsOf: fileURL, encoding: .utf8)

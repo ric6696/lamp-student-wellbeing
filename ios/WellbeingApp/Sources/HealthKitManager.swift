@@ -4,10 +4,21 @@ import HealthKit
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let store = HKHealthStore()
-    private init() {}
+    private let workoutCoordinator = WorkoutLifecycleCoordinator()
+    private let liveVitalsBuffer = LiveVitalsBuffer()
+    
+    private init() {
+        workoutCoordinator.onLiveVitals = { [weak self] items in
+            guard let self = self else { return }
+            Task { await self.liveVitalsBuffer.append(items) }
+        }
+    }
 
     func requestAuthorization() async {
         guard HKHealthStore.isHealthDataAvailable() else { return }
+        let shareTypes: Set = [
+            HKObjectType.workoutType()
+        ]
         let readTypes: Set = [
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
             HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
@@ -17,9 +28,31 @@ final class HealthKitManager {
             HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!,
             HKQuantityType.quantityType(forIdentifier: .appleStandTime)!,
+            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+            HKQuantityType.quantityType(forIdentifier: .respiratoryRate)!,
             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
         ]
-        try? await store.requestAuthorization(toShare: [], read: readTypes)
+        do {
+            try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
+        } catch {
+            print("HealthKit authorization failed: \(error)")
+        }
+
+        let hrStatus = store.authorizationStatus(for: HKQuantityType.quantityType(forIdentifier: .heartRate)!)
+        let workoutShareStatus = store.authorizationStatus(for: HKObjectType.workoutType())
+        print("HealthKit auth status - heartRate: \(hrStatus.rawValue), workoutShare: \(workoutShareStatus.rawValue)")
+    }
+
+    func startActiveSensingSession() async throws {
+        if #available(iOS 17.0, *) {
+            try await workoutCoordinator.startIfNeeded(on: store)
+        }
+    }
+
+    func stopActiveSensingSession() async throws {
+        if #available(iOS 17.0, *) {
+            try await workoutCoordinator.stopIfNeeded()
+        }
     }
 
     func fetchRecentVitals(since: Date) async throws -> [BatchItem] {
@@ -29,13 +62,30 @@ final class HealthKitManager {
                 (.heartRateVariabilitySDNN, 2),
                 (.restingHeartRate, 3),
                 (.environmentalAudioExposure, 10),
-                (.stepCount, 20)
+                (.stepCount, 20),
+                (.activeEnergyBurned, 5),
+                (.respiratoryRate, 30),
+                (.distanceWalkingRunning, 21)
             ]
+            let s = self
             for (id, metricCode) in metrics {
-                group.addTask { try await self.queryQuantitySamples(id: id, metricCode: metricCode, since: since) }
+                group.addTask { try await s.queryQuantitySamples(id: id, metricCode: metricCode, since: since) }
             }
-            return try await group.reduce(into: []) { $0 += $1 }
+            let items = try await group.reduce(into: []) { $0 += $1 }
+            let counts = Dictionary(grouping: items, by: { $0.code ?? -1 }).mapValues(\.count)
+            print("HealthKit vitals fetched: total=\(items.count), byCode=\(counts), since=\(since)")
+            return items
         }
+    }
+
+    func fetchRecentVitals(id: HKQuantityTypeIdentifier, metricCode: Int, since: Date) async throws -> [BatchItem] {
+        let items = try await queryQuantitySamples(id: id, metricCode: metricCode, since: since)
+        print("HealthKit metric fetched: code=\(metricCode), samples=\(items.count), since=\(since)")
+        return items
+    }
+
+    func consumeLiveVitals() async -> [BatchItem] {
+        await liveVitalsBuffer.drain()
     }
 
     func fetchSleepStages(since: Date) async throws -> [BatchItem] {
@@ -93,19 +143,19 @@ final class HealthKitManager {
             let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
             let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, samples, err in
                 if let err = err { cont.resume(throwing: err); return }
-                let items: [BatchItem] = (samples as? [HKQuantitySample] ?? []).map {
-                    let value = $0.quantity.doubleValue(for: self.unit(for: id))
+                let items: [BatchItem] = (samples as? [HKQuantitySample] ?? []).compactMap { sample in
+                    let value = sample.quantity.doubleValue(for: self.unit(for: id))
                     if value < 0 {
                         return nil
                     }
                     return BatchItem(
                         type: .vital,
-                        t: $0.endDate,
+                        t: sample.endDate,
                         code: metricCode,
                         val: value
                     )
                 }
-                cont.resume(returning: items.compactMap { $0 })
+                cont.resume(returning: items)
             }
             store.execute(q)
         }
@@ -117,6 +167,9 @@ final class HealthKitManager {
         case .heartRateVariabilitySDNN: return HKUnit.secondUnit(with: .milli)
         case .restingHeartRate: return HKUnit.count().unitDivided(by: .minute())
         case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
+        case .respiratoryRate: return HKUnit.count().unitDivided(by: .minute())
+        case .activeEnergyBurned: return .kilocalorie()
+        case .distanceWalkingRunning: return .meter()
         default: return .count()
         }
     }
@@ -150,6 +203,196 @@ final class HealthKitManager {
             }
             store.execute(q)
         }
+    }
+}
+
+final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+    private var session: HKWorkoutSession?
+    private var builder: HKLiveWorkoutBuilder?
+    private var isStarting = false
+    private var isStopping = false
+    private var isFinalizing = false
+    private var stopContinuation: CheckedContinuation<Void, Error>?
+    var onLiveVitals: (([BatchItem]) -> Void)?
+
+    func startIfNeeded(on healthStore: HKHealthStore) async throws {
+        guard session == nil, builder == nil, !isStarting else {
+            print("Workout start ignored: session already starting/running")
+            return
+        }
+
+        isStarting = true
+        defer { isStarting = false }
+
+        do {
+            let configuration = HKWorkoutConfiguration()
+            configuration.activityType = .other
+            configuration.locationType = .indoor
+
+            let session = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+            let builder = session.associatedWorkoutBuilder()
+            session.delegate = self
+            builder.delegate = self
+            builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
+
+            self.session = session
+            self.builder = builder
+
+            session.prepare()
+
+            let startDate = Date()
+            session.startActivity(with: startDate)
+            try await builder.beginCollection(at: startDate)
+            print("Workout live collection started")
+        } catch {
+            print("Workout start failed: \(error)")
+            cleanupAndReset()
+            throw error
+        }
+    }
+
+    func stopIfNeeded() async throws {
+        guard let session = session else {
+            return
+        }
+        guard !isStopping else {
+            print("Workout stop ignored: already stopping")
+            return
+        }
+
+        isStopping = true
+        isFinalizing = false
+        session.stopActivity(with: Date())
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            stopContinuation = continuation
+        }
+    }
+
+    func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
+        print("WorkoutSession failed: \(error)")
+        completeStop(error: error)
+        cleanupAndReset()
+    }
+
+    func workoutSession(_ workoutSession: HKWorkoutSession,
+                        didChangeTo toState: HKWorkoutSessionState,
+                        from fromState: HKWorkoutSessionState,
+                        date: Date) {
+        if toState == .stopped || toState == .ended {
+            finalizeStopFlow(endDate: date)
+        }
+    }
+
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        let liveMappings: [(HKQuantityTypeIdentifier, Int)] = [
+            (.heartRate, 1),
+            (.heartRateVariabilitySDNN, 2),
+            (.restingHeartRate, 3),
+            (.activeEnergyBurned, 5),
+            (.environmentalAudioExposure, 10),
+            (.stepCount, 20),
+            (.distanceWalkingRunning, 21),
+            (.respiratoryRate, 30)
+        ]
+
+        var items: [BatchItem] = []
+        for (identifier, code) in liveMappings {
+            guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else { continue }
+            guard collectedTypes.contains(quantityType) else { continue }
+            guard let stats = workoutBuilder.statistics(for: quantityType),
+                  let quantity = stats.mostRecentQuantity() else { continue }
+
+            let value = quantity.doubleValue(for: unit(for: identifier))
+            if value < 0 { continue }
+            items.append(BatchItem(type: .vital, t: Date(), code: code, val: value))
+        }
+
+        if !items.isEmpty {
+            onLiveVitals?(items)
+        }
+    }
+
+    private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
+        switch id {
+        case .heartRate: return HKUnit.count().unitDivided(by: .minute())
+        case .heartRateVariabilitySDNN: return HKUnit.secondUnit(with: .milli)
+        case .restingHeartRate: return HKUnit.count().unitDivided(by: .minute())
+        case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
+        case .respiratoryRate: return HKUnit.count().unitDivided(by: .minute())
+        case .activeEnergyBurned: return .kilocalorie()
+        case .distanceWalkingRunning: return .meter()
+        default: return .count()
+        }
+    }
+
+    private func finalizeStopFlow(endDate: Date) {
+        guard !isFinalizing else { return }
+        isFinalizing = true
+
+        guard let builder = builder, let session = session else {
+            completeStop(error: nil)
+            cleanupAndReset()
+            return
+        }
+
+        builder.endCollection(withEnd: endDate) { [weak self] _, endError in
+            guard let self = self else { return }
+            if let endError {
+                print("endCollection error: \(endError)")
+                self.completeStop(error: endError)
+                self.cleanupAndReset()
+                return
+            }
+
+            builder.finishWorkout { _, finishError in
+                if let finishError {
+                    print("finishWorkout error: \(finishError)")
+                }
+                session.end()
+                self.completeStop(error: finishError)
+                self.cleanupAndReset()
+            }
+        }
+    }
+
+    private func completeStop(error: Error?) {
+        guard let continuation = stopContinuation else {
+            isStopping = false
+            return
+        }
+        stopContinuation = nil
+        isStopping = false
+
+        if let error {
+            continuation.resume(throwing: error)
+        } else {
+            continuation.resume()
+        }
+    }
+
+    private func cleanupAndReset() {
+        session = nil
+        builder = nil
+        stopContinuation = nil
+        isStarting = false
+        isStopping = false
+        isFinalizing = false
+    }
+}
+
+actor LiveVitalsBuffer {
+    private var items: [BatchItem] = []
+
+    func append(_ newItems: [BatchItem]) {
+        items += newItems
+    }
+
+    func drain() -> [BatchItem] {
+        defer { items.removeAll() }
+        return items
     }
 }
 

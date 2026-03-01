@@ -2,7 +2,8 @@ import SwiftUI
 
 @main
 struct WellbeingApp: App {
-    @StateObject private var scheduler = BatchScheduler(intervalMinutes: 15)
+    // Set the flush interval to 10 seconds so the "Data Retrieved" counts refresh frequently during a study session.
+    @StateObject private var scheduler = BatchScheduler(intervalMinutes: 10.0 / 60.0)
 
     init() {
         Task { await HealthKitManager.shared.requestAuthorization() }
@@ -16,7 +17,6 @@ struct WellbeingApp: App {
             ContentView()
                 .environmentObject(scheduler)
                 .onAppear { scheduler.resume() }
-                .task { await scheduler.flushIfNeeded(reason: .appOpen) }
         }
     }
 }

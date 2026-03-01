@@ -1,99 +1,114 @@
 import Foundation
+import HealthKit
 
 final class SensorCollector {
     static let shared = SensorCollector()
     private init() {}
 
-    private let lastVitalsKey = "last_vitals_sync"
-    private let lastSleepKey = "last_sleep_sync"
-    private let lastDailyKey = "last_daily_sync"
+    private let vitalsLookbackOnColdStart: TimeInterval = 60 * 60
+    private let vitalsOverlapWindow: TimeInterval = 10 * 60
+    private let vitalMetrics: [(id: HKQuantityTypeIdentifier, code: Int)] = [
+        (.heartRate, 1),
+        (.heartRateVariabilitySDNN, 2),
+        (.restingHeartRate, 3),
+        (.environmentalAudioExposure, 10),
+        (.stepCount, 20),
+        (.activeEnergyBurned, 5),
+        (.respiratoryRate, 30),
+        (.distanceWalkingRunning, 21)
+    ]
 
-    func collect() async {
-        await collectVitals()
-        await collectSleepStages()
-        await collectDailyAggregatesIfNeeded()
-        await collectInstantNoise()
+    func collect() async -> [BatchItem] {
+        var collected: [BatchItem] = []
+        collected += await collectVitals()
+        collected += collectMotionContext()
+        collected += await collectInstantNoise()
+        return collected
     }
 
-    private func collectInstantNoise() async {
+    private func collectInstantNoise() async -> [BatchItem] {
         let db = NoiseManager.shared.currentDb
-        if db < 0 {
-            return
-        }
+        if db < 0 { return [] }
         let item = BatchItem(
             type: .vital,
             t: Date(),
             code: 10,
-            val: Double(db)
+            val: Double(db),
+            metadata: ["source": "ambient_noise_manager"]
         )
         try? LocalStore.shared.append(item)
+        return [item]
     }
 
-    private func collectVitals() async {
-        let since = UserDefaults.standard.object(forKey: lastVitalsKey) as? Date ?? Date().addingTimeInterval(-3600)
+    private func collectVitals() async -> [BatchItem] {
         do {
-            let items = try await HealthKitManager.shared.fetchRecentVitals(since: since)
-            try LocalStore.shared.append(items)
-            UserDefaults.standard.set(Date(), forKey: lastVitalsKey)
-        } catch {
-            print("Vitals collection failed: \(error)")
-        }
-    }
-
-    private func collectSleepStages() async {
-        let since = UserDefaults.standard.object(forKey: lastSleepKey) as? Date ?? Date().addingTimeInterval(-24 * 3600)
-        do {
-            let items = try await HealthKitManager.shared.fetchSleepStages(since: since)
-            try LocalStore.shared.append(items)
-            UserDefaults.standard.set(Date(), forKey: lastSleepKey)
-        } catch {
-            print("Sleep collection failed: \(error)")
-        }
-    }
-
-    private func collectDailyAggregatesIfNeeded() async {
-        let today = Calendar.current.startOfDay(for: Date())
-        let lastDate = UserDefaults.standard.object(forKey: lastDailyKey) as? Date
-        guard lastDate != today else { return }
-
-        do {
-            let aggregates = try await HealthKitManager.shared.fetchDailyAggregates(for: today)
-            let summary = aggregates.summary
-            let item = BatchItem(
-                type: .event,
-                t: summary.date,
-                label: "daily_summary",
-                val_text: nil,
-                metadata: [
-                    "steps": "\(summary.steps)",
-                    "active_energy_kcal": "\(summary.active_energy_kcal)",
-                    "exercise_min": "\(summary.exercise_min)",
-                    "sleep_start": summary.sleep_start?.iso8601String() ?? "",
-                    "sleep_end": summary.sleep_end?.iso8601String() ?? ""
-                ]
-            )
-            try LocalStore.shared.append(item)
-
-            if aggregates.standMinutes > 0 {
-                let standEvent = BatchItem(
-                    type: .event,
-                    t: summary.date,
-                    label: "stand_minutes",
-                    val_text: "\(aggregates.standMinutes)",
-                    metadata: nil
-                )
-                try LocalStore.shared.append(standEvent)
+            let queriedItems = try await withThrowingTaskGroup(of: [BatchItem].self) { group in
+                for metric in vitalMetrics {
+                    let key = syncKey(for: metric.code)
+                    let lastSync = UserDefaults.standard.object(forKey: key) as? Date
+                    let baseSince = lastSync ?? Date().addingTimeInterval(-vitalsLookbackOnColdStart)
+                    let since = baseSince.addingTimeInterval(-vitalsOverlapWindow)
+                    group.addTask {
+                        try await HealthKitManager.shared.fetchRecentVitals(id: metric.id, metricCode: metric.code, since: since)
+                    }
+                }
+                return try await group.reduce(into: []) { $0 += $1 }
             }
 
-            UserDefaults.standard.set(today, forKey: lastDailyKey)
+            let liveItems = await HealthKitManager.shared.consumeLiveVitals()
+            let items = dedupeVitals(queriedItems + liveItems)
+            try LocalStore.shared.append(items)
+
+            for metric in vitalMetrics {
+                if let latestForCode = items.filter({ $0.code == metric.code }).map(\.t).max() {
+                    UserDefaults.standard.set(latestForCode, forKey: syncKey(for: metric.code))
+                }
+            }
+
+            if items.isEmpty {
+                print("Vitals collection: 0 samples")
+            } else {
+                let counts = Dictionary(grouping: items, by: { $0.code ?? -1 }).mapValues(\.count)
+                print("Vitals collection: \(items.count) samples byCode=\(counts)")
+            }
+            return items
         } catch {
-            print("Daily aggregate collection failed: \(error)")
+            print("Vitals collection failed: \(error)")
+            return []
         }
+    }
+
+    private func syncKey(for code: Int) -> String {
+        "last_vitals_sync_code_\(code)"
+    }
+
+    private func dedupeVitals(_ items: [BatchItem]) -> [BatchItem] {
+        var seen = Set<String>()
+        var output: [BatchItem] = []
+        let iso = ISO8601DateFormatter()
+
+        for item in items {
+            guard let code = item.code, let value = item.val else { continue }
+            let rounded = (value * 100).rounded() / 100
+            let key = "\(code)|\(iso.string(from: item.t))|\(rounded)"
+            if seen.contains(key) { continue }
+            seen.insert(key)
+            output.append(item)
+        }
+        return output
+    }
+
+    private func collectMotionContext() -> [BatchItem] {
+        let context = MotionManager.shared.currentContext
+        let item = BatchItem(
+            type: .event,
+            t: Date(),
+            motion_context: context.rawValue,
+            label: "motion_context",
+            val_text: context.rawValue
+        )
+        try? LocalStore.shared.append(item)
+        return [item]
     }
 }
 
-private extension Date {
-    func iso8601String() -> String {
-        ISO8601DateFormatter().string(from: self)
-    }
-}
