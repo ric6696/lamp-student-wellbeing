@@ -63,16 +63,24 @@ final class BatchScheduler: ObservableObject {
     @Published var currentSessionEndTime: Date?
     @Published var previousSessionStartTime: Date?
     @Published var previousSessionEndTime: Date?
+    @Published var watchWorkoutState: String = "Idle"
     private let interval: TimeInterval
     private var timer: Timer?
     private let api: APIClient
     private var sessionBuffer: [BatchItem] = []
     @Published private(set) var sessionMetricsSnapshot = SessionMetricsSnapshot()
     private let sessionMetricsTracker = SessionMetricsTracker()
+    private let watchBridge = PhoneWatchBridge.shared
 
     init(intervalMinutes: Double) {
         self.interval = intervalMinutes * 60
         self.api = APIClient(baseURL: URL(string: "http://10.89.237.157:8000/ingest")!, deviceId: DeviceId.value)
+
+        watchBridge.onWorkoutStateUpdate = { [weak self] status in
+            Task { @MainActor in
+                self?.watchWorkoutState = status
+            }
+        }
     }
 
     func startStudySession() {
@@ -86,6 +94,8 @@ final class BatchScheduler: ObservableObject {
         currentSessionEndTime = nil
         runningSessionItems = []
         sessionBuffer.removeAll()
+        SensorCollector.shared.startSession(at: startTime)
+        LocationManager.shared.beginSession(at: startTime)
 
         // 3. Log start marker immediately
         let startEvent = BatchItem(type: .event, t: startTime, label: "session_marker", val_text: "START")
@@ -101,6 +111,14 @@ final class BatchScheduler: ObservableObject {
             _ = await collectSessionData(captureSession: true)
         }
 
+        Task { [weak self] in
+            guard let self else { return }
+            let ok = await self.watchBridge.requestStartWorkout()
+            if !ok {
+                print("Watch workout start request was not acknowledged")
+            }
+        }
+
         resume()
     }
 
@@ -114,6 +132,8 @@ final class BatchScheduler: ObservableObject {
 
         var completedItems = sessionBuffer
         completedItems.append(endEvent)
+        SensorCollector.shared.markSessionEnding(at: endTime)
+        LocationManager.shared.endSession(at: endTime)
 
         isSessionActive = false
         stop()
@@ -141,6 +161,15 @@ final class BatchScheduler: ObservableObject {
 
             await sessionMetricsTracker.reset()
             await MainActor.run { sessionMetricsSnapshot = SessionMetricsSnapshot() }
+            SensorCollector.shared.completeSession()
+        }
+
+        Task { [weak self] in
+            guard let self else { return }
+            let ok = await self.watchBridge.requestStopWorkout()
+            if !ok {
+                print("Watch workout stop request was not acknowledged")
+            }
         }
     }
 

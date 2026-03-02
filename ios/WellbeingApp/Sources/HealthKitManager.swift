@@ -6,7 +6,7 @@ final class HealthKitManager {
     private let store = HKHealthStore()
     private let liveVitalsBuffer = LiveVitalsBuffer()
     private lazy var workoutCoordinator: AnyObject? = {
-        if #available(iOS 17.0, *) {
+        if #available(iOS 26.0, *) {
             let coordinator = WorkoutLifecycleCoordinator()
             coordinator.onLiveVitals = { [weak self] items in
                 guard let self = self else { return }
@@ -49,14 +49,14 @@ final class HealthKitManager {
     }
 
     func startActiveSensingSession() async throws {
-        if #available(iOS 17.0, *),
+        if #available(iOS 26.0, *),
            let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
             try await coordinator.startIfNeeded(on: store)
         }
     }
 
     func stopActiveSensingSession() async throws {
-        if #available(iOS 17.0, *),
+        if #available(iOS 26.0, *),
            let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
             try await coordinator.stopIfNeeded()
         }
@@ -151,12 +151,13 @@ final class HealthKitManager {
     private func queryQuantitySamples(id: HKQuantityTypeIdentifier, metricCode: Int, since: Date) async throws -> [BatchItem] {
         let type = HKQuantityType.quantityType(forIdentifier: id)!
         let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
+        let unit = unit(for: id)
         return try await withCheckedThrowingContinuation { cont in
             let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
             let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, samples, err in
                 if let err = err { cont.resume(throwing: err); return }
                 let items: [BatchItem] = (samples as? [HKQuantitySample] ?? []).compactMap { sample in
-                    let value = sample.quantity.doubleValue(for: self.unit(for: id))
+                    let value = sample.quantity.doubleValue(for: unit)
                     if value < 0 {
                         return nil
                     }
@@ -218,7 +219,7 @@ final class HealthKitManager {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 26.0, *)
 final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?

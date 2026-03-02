@@ -8,22 +8,67 @@ struct ContentView: View {
         f.timeZone = TimeZone(identifier: "Asia/Hong_Kong") ?? TimeZone(secondsFromGMT: 8 * 3600)
         return f
     }()
-    static let metricNames: [Int: String] = [
-        1: "Heart Rate",
-        2: "HRV (SDNN)",
-        3: "Resting HR",
-        5: "Active Energy",
-        10: "Audio Exposure",
-        20: "Steps",
-        21: "Distance",
-        30: "Respiratory Rate"
+
+    fileprivate static let sensorDefinitions: [SensorDisplayType] = [
+        .init(id: "vital_1", title: "Heart Rate", description: "Beats per minute from the live workout", kind: .vital(1), source: .watch),
+        .init(id: "vital_2", title: "HRV (SDNN)", description: "Heart rate variability from the watch", kind: .vital(2), source: .watch),
+        .init(id: "vital_3", title: "Resting Heart Rate", description: "Baseline heart rate samples", kind: .vital(3), source: .watch),
+        .init(id: "vital_5", title: "Active Energy", description: "Active calories burned", kind: .vital(5), source: .watch),
+        .init(id: "vital_10", title: "Audio Exposure", description: "HealthKit audio exposure (dBA)", kind: .vital(10), source: .phone),
+        .init(id: "vital_20", title: "Steps", description: "Step counts from watch workout", kind: .vital(20), source: .watch),
+        .init(id: "vital_21", title: "Distance", description: "Distance walked or run", kind: .vital(21), source: .watch),
+        .init(id: "vital_30", title: "Resp. Rate", description: "Breaths per minute", kind: .vital(30), source: .watch),
+        .init(id: "vital_40", title: "Accel Mean", description: "Mean accel magnitude window", kind: .vital(40), source: .watch),
+        .init(id: "vital_41", title: "Accel StdDev", description: "Accel variability", kind: .vital(41), source: .watch),
+        .init(id: "vital_42", title: "Gyro X Mean", description: "Rotation rate X axis", kind: .vital(42), source: .watch),
+        .init(id: "vital_43", title: "Gyro Y Mean", description: "Rotation rate Y axis", kind: .vital(43), source: .watch),
+        .init(id: "vital_44", title: "Gyro Z Mean", description: "Rotation rate Z axis", kind: .vital(44), source: .watch),
+        .init(id: "vital_45", title: "Activity Code", description: "Motion classifier from watch", kind: .vital(45), source: .watch),
+        .init(id: "event_motion", title: "Motion Context", description: "Phone CoreMotion activity labels", kind: .event("motion_context"), source: .phone),
+        .init(id: "event_audio", title: "Audio Context", description: "SoundAnalysis AI scenes", kind: .event("audio_context"), source: .phone),
+        .init(id: "gps", title: "GPS", description: "Latitude / longitude traces", kind: .gps, source: .phone)
     ]
+
     @EnvironmentObject var scheduler: BatchScheduler
-    @State private var dataSummaries: [DataTypeSummary] = []
+    @StateObject private var watchBridge = PhoneWatchBridge.shared
+    @State private var sensorStats: [String: SensorStat] = [:]
+    @State private var totalSamples: Int = 0
+    @State private var sessionDurationMinutes: Double = 0
+    @State private var latestItems: [BatchItem] = []
 
     var body: some View {
         NavigationView {
             List {
+                Section(header: Text("Watch Connectivity")) {
+                    HStack {
+                        Text("Connection")
+                        Spacer()
+                        Text(watchBridge.connectivityText)
+                            .foregroundColor(color(for: watchBridge.connectivityColorName))
+                    }
+                    HStack {
+                        Text("Workout State")
+                        Spacer()
+                        Text(scheduler.watchWorkoutState)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Section(header: Text("Sensor Sources")) {
+                    SensorSourceCard(
+                        title: "iPhone Sensors",
+                        subtitle: scheduler.isSessionActive ? "Streaming ambient audio, GPS, motion" : "Idle until the next session",
+                        iconName: "iphone.gen3",
+                        isActive: scheduler.isSessionActive
+                    )
+                    SensorSourceCard(
+                        title: "Apple Watch",
+                        subtitle: watchBridge.connectivityText,
+                        iconName: "applewatch",
+                        isActive: watchBridge.isReachable
+                    )
+                }
+
                 Section(header: Text("Session Management")) {
                     if !scheduler.isSessionActive {
                         Button(action: { scheduler.startStudySession() }) {
@@ -51,7 +96,7 @@ struct ContentView: View {
                                     .font(.subheadline.bold())
                                     .foregroundColor(.red)
                             }
-                            
+
                             Button(action: { scheduler.endStudySession() }) {
                                 HStack {
                                     Image(systemName: "stop.circle.fill")
@@ -88,20 +133,39 @@ struct ContentView: View {
                         }
                     }
 
-                    Text(scheduler.isSessionActive ? "Current Session Data Retrieved" : "Previous Session Data Retrieved")
-                        .font(.subheadline.bold())
-
-                    if dataSummaries.isEmpty {
-                        Text("No samples yet.")
+                    HStack {
+                        Text("Total Samples")
+                        Spacer()
+                        Text("\(totalSamples)")
+                            .bold()
+                    }
+                    HStack {
+                        Text("Duration")
+                        Spacer()
+                        Text(String(format: "%.1f min", sessionDurationMinutes))
                             .foregroundColor(.secondary)
-                    } else {
-                        ForEach(dataSummaries) { summary in
-                            NavigationLink(destination: DataTypeDetailView(title: summary.title, items: summary.items)) {
-                                HStack {
-                                    Text(summary.title)
-                                    Spacer()
-                                    Text("\(summary.items.count)")
-                                        .foregroundColor(.secondary)
+                    }
+                    HStack {
+                        Text("Overall Frequency")
+                        Spacer()
+                        let freq = sessionDurationMinutes > 0 ? Double(totalSamples) / sessionDurationMinutes : 0
+                        Text(String(format: "%.2f/min", freq))
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                ForEach(SensorDisplayType.SourceCategory.allCases, id: \.self) { source in
+                    let definitions = definitions(for: source)
+                    if !definitions.isEmpty {
+                        Section(header: Text(source.displayTitle)) {
+                            ForEach(definitions) { definition in
+                                NavigationLink(destination: DataTypeDetailView(title: definition.title, items: items(for: definition))) {
+                                    SensorStatRow(
+                                        title: definition.title,
+                                        description: definition.description,
+                                        count: sensorStats[definition.id]?.count ?? 0,
+                                        frequency: sensorStats[definition.id]?.frequencyPerMinute ?? 0
+                                    )
                                 }
                             }
                         }
@@ -110,42 +174,179 @@ struct ContentView: View {
             }
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Live Sensing")
+            .onAppear { refreshInitialStats() }
             .onReceive(scheduler.$runningSessionItems) { items in
                 if scheduler.isSessionActive {
-                    updateSummaries(with: items)
+                    updateStats(with: items, start: scheduler.currentSessionStartTime, end: nil)
                 }
             }
             .onReceive(scheduler.$previousSessionItems) { items in
                 if !scheduler.isSessionActive {
-                    updateSummaries(with: items)
+                    updateStats(with: items, start: scheduler.previousSessionStartTime, end: scheduler.previousSessionEndTime)
                 }
             }
         }
     }
 
-    private func updateSummaries(with items: [BatchItem]) {
-        let grouped = Dictionary(grouping: items, by: dataTypeTitle(for:))
-        let summaries = grouped.map { DataTypeSummary(title: $0.key, items: $0.value.reversed()) }
-            .sorted { $0.items.count > $1.items.count }
-        dataSummaries = summaries
+    private func refreshInitialStats() {
+        if scheduler.isSessionActive {
+            updateStats(with: scheduler.runningSessionItems, start: scheduler.currentSessionStartTime, end: nil)
+        } else {
+            updateStats(with: scheduler.previousSessionItems, start: scheduler.previousSessionStartTime, end: scheduler.previousSessionEndTime)
+        }
     }
 
-    private func dataTypeTitle(for item: BatchItem) -> String {
-        switch item.type {
-        case .event:
-            return item.label ?? "Event"
-        case .vital:
-            return Self.metricNames[item.code ?? 0] ?? "Metric \(item.code ?? 0)"
+    private func updateStats(with items: [BatchItem], start: Date?, end: Date?) {
+        latestItems = items
+        let durationSeconds: TimeInterval
+        if let start {
+            let endDate = end ?? Date()
+            durationSeconds = max(endDate.timeIntervalSince(start), 1)
+        } else if let first = items.first?.t, let last = items.last?.t {
+            durationSeconds = max(last.timeIntervalSince(first), 1)
+        } else {
+            durationSeconds = 60
+        }
+        sessionDurationMinutes = durationSeconds / 60
+        totalSamples = items.count
+
+        var stats: [String: SensorStat] = [:]
+        for definition in Self.sensorDefinitions {
+            let count = countItems(for: definition, in: items)
+            let frequency = sessionDurationMinutes > 0 ? Double(count) / sessionDurationMinutes : 0
+            stats[definition.id] = SensorStat(count: count, frequencyPerMinute: frequency)
+        }
+        sensorStats = stats
+    }
+
+    private func countItems(for definition: SensorDisplayType, in items: [BatchItem]) -> Int {
+        switch definition.kind {
+        case .vital(let code):
+            return items.filter { $0.type == .vital && $0.code == code }.count
+        case .event(let label):
+            return items.filter { $0.type == .event && $0.label == label }.count
         case .gps:
-            return "GPS"
+            return items.filter { $0.type == .gps }.count
+        }
+    }
+
+    private func definitions(for source: SensorDisplayType.SourceCategory) -> [SensorDisplayType] {
+        Self.sensorDefinitions.filter { $0.source == source }
+    }
+
+    private func items(for definition: SensorDisplayType) -> [BatchItem] {
+        switch definition.kind {
+        case .vital(let code):
+            return latestItems.filter { $0.type == .vital && $0.code == code }
+        case .event(let label):
+            return latestItems.filter { $0.type == .event && $0.label == label }
+        case .gps:
+            return latestItems.filter { $0.type == .gps }
+        }
+    }
+
+    private func color(for name: String) -> Color {
+        switch name {
+        case "green":
+            return .green
+        case "orange":
+            return .orange
+        default:
+            return .red
         }
     }
 }
 
-struct DataTypeSummary: Identifiable {
-    let id = UUID()
+private struct SensorStatRow: View {
     let title: String
-    let items: [BatchItem]
+    let description: String
+    let count: Int
+    let frequency: Double
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(title)
+                    .font(.headline)
+                Spacer()
+                Text("\(count)")
+                    .bold()
+            }
+            HStack {
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(String(format: "%.2f/min", frequency))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct SensorSourceCard: View {
+    let title: String
+    let subtitle: String
+    let iconName: String
+    let isActive: Bool
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: iconName)
+                .font(.system(size: 28))
+                .foregroundColor(.white)
+                .padding(12)
+                .background(isActive ? Color.blue : Color.gray)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Circle()
+                .fill(isActive ? Color.green : Color.gray)
+                .frame(width: 12, height: 12)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct SensorStat {
+    let count: Int
+    let frequencyPerMinute: Double
+}
+
+private struct SensorDisplayType: Identifiable {
+    enum Kind {
+        case vital(Int)
+        case event(String)
+        case gps
+    }
+
+    enum SourceCategory: CaseIterable {
+        case phone
+        case watch
+        case combined
+
+        var displayTitle: String {
+            switch self {
+            case .phone: return "iPhone Data Types"
+            case .watch: return "Apple Watch Data Types"
+            case .combined: return "Shared Data Types"
+            }
+        }
+    }
+
+    let id: String
+    let title: String
+    let description: String
+    let kind: Kind
+    let source: SourceCategory
 }
 
 struct DataTypeDetailView: View {
@@ -154,21 +355,27 @@ struct DataTypeDetailView: View {
 
     var body: some View {
         List {
-            ForEach(items.indices, id: \.self) { idx in
-                let sample = items[idx]
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(sampleTitle(for: sample))
-                        .bold()
-                    if let detail = sampleDetail(for: sample) {
-                        Text(detail)
-                            .font(.caption)
+            if items.isEmpty {
+                Text("No samples captured for this data type during the selected session.")
+                    .foregroundColor(.secondary)
+                    .padding()
+            } else {
+                ForEach(items.indices, id: \.self) { idx in
+                    let sample = items[idx]
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(sampleTitle(for: sample))
+                            .bold()
+                        if let detail = sampleDetail(for: sample) {
+                            Text(detail)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Text(ContentView.hktFormatter.string(from: sample.t))
+                            .font(.caption2)
                             .foregroundColor(.secondary)
                     }
-                    Text(ContentView.hktFormatter.string(from: sample.t))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                    .padding(.vertical, 4)
                 }
-                .padding(.vertical, 4)
             }
         }
         .navigationTitle(title)
@@ -182,7 +389,11 @@ struct DataTypeDetailView: View {
             }
             return item.label ?? "Event"
         case .vital:
-            let name = ContentView.metricNames[item.code ?? 0] ?? "Metric \(item.code ?? 0)"
+            let code = item.code ?? 0
+            let name = ContentView.sensorDefinitions.first(where: { definition in
+                if case .vital(let defCode) = definition.kind { return defCode == code }
+                return false
+            })?.title ?? "Metric \(code)"
             if let value = item.val {
                 return "\(name): \(Int(value.rounded()))"
             }

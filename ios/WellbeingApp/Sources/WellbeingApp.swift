@@ -6,6 +6,7 @@ struct WellbeingApp: App {
     @StateObject private var scheduler = BatchScheduler(intervalMinutes: 10.0 / 60.0)
 
     init() {
+        PhoneWatchBridge.shared.start()
         Task { await HealthKitManager.shared.requestAuthorization() }
         LocationManager.shared.start()
         MotionManager.shared.start()

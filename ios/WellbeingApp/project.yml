@@ -22,18 +22,20 @@ targets:
       - sdk: CoreLocation.framework
       - sdk: CoreMotion.framework
       - sdk: AVFoundation.framework
+      - sdk: SoundAnalysis.framework
       - sdk: WatchConnectivity.framework
       - target: WellbeingWatchApp
 
   WellbeingWatchApp:
-    type: watchkit2-app
+    type: application.watchapp2
     platform: watchOS
     deploymentTarget: "10.0"
     sources:
       - path: WatchApp/Resources
     settings:
       INFOPLIST_FILE: WatchApp/Resources/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.watchapp
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp
+      WK_COMPANION_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app
     dependencies:
       - target: WellbeingWatchExtension
 
@@ -46,8 +48,8 @@ targets:
       - path: WatchExtension/Resources
     settings:
       INFOPLIST_FILE: WatchExtension/Resources/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.watchextension
-      WK_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.watchapp
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp.extension
+      WK_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp
     capabilities:
       HealthKit: {}
     entitlements:
