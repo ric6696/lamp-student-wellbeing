@@ -4,15 +4,20 @@ import HealthKit
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let store = HKHealthStore()
-    private let workoutCoordinator = WorkoutLifecycleCoordinator()
     private let liveVitalsBuffer = LiveVitalsBuffer()
-    
-    private init() {
-        workoutCoordinator.onLiveVitals = { [weak self] items in
-            guard let self = self else { return }
-            Task { await self.liveVitalsBuffer.append(items) }
+    private lazy var workoutCoordinator: AnyObject? = {
+        if #available(iOS 17.0, *) {
+            let coordinator = WorkoutLifecycleCoordinator()
+            coordinator.onLiveVitals = { [weak self] items in
+                guard let self = self else { return }
+                Task { await self.liveVitalsBuffer.append(items) }
+            }
+            return coordinator
         }
-    }
+        return nil
+    }()
+    
+    private init() {}
 
     func requestAuthorization() async {
         guard HKHealthStore.isHealthDataAvailable() else { return }
@@ -44,14 +49,16 @@ final class HealthKitManager {
     }
 
     func startActiveSensingSession() async throws {
-        if #available(iOS 17.0, *) {
-            try await workoutCoordinator.startIfNeeded(on: store)
+        if #available(iOS 17.0, *),
+           let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
+            try await coordinator.startIfNeeded(on: store)
         }
     }
 
     func stopActiveSensingSession() async throws {
-        if #available(iOS 17.0, *) {
-            try await workoutCoordinator.stopIfNeeded()
+        if #available(iOS 17.0, *),
+           let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
+            try await coordinator.stopIfNeeded()
         }
     }
 
@@ -86,6 +93,11 @@ final class HealthKitManager {
 
     func consumeLiveVitals() async -> [BatchItem] {
         await liveVitalsBuffer.drain()
+    }
+
+    func appendExternalVitals(_ items: [BatchItem]) async {
+        guard !items.isEmpty else { return }
+        await liveVitalsBuffer.append(items)
     }
 
     func fetchSleepStages(since: Date) async throws -> [BatchItem] {
@@ -206,6 +218,7 @@ final class HealthKitManager {
     }
 }
 
+@available(iOS 17.0, *)
 final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?

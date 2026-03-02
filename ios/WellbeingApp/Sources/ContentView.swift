@@ -18,10 +18,8 @@ struct ContentView: View {
         21: "Distance",
         30: "Respiratory Rate"
     ]
-    static let metricOrder: [Int] = [1, 2, 3, 5, 20, 21, 30]
     @EnvironmentObject var scheduler: BatchScheduler
     @State private var dataSummaries: [DataTypeSummary] = []
-    @State private var liveMetrics: [MetricSummary] = []
 
     var body: some View {
         NavigationView {
@@ -70,35 +68,31 @@ struct ContentView: View {
                     }
                 }
 
-                Section(header: Text("Live Session Metrics")) {
-                    if liveMetrics.isEmpty {
-                        Text("No-quality data yet. Start a session to prime all trackers.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                Section(header: Text(scheduler.isSessionActive ? "Current Session" : "Previous Session")) {
+                    if scheduler.isSessionActive {
+                        if let start = scheduler.currentSessionStartTime {
+                            Text("Started: \(Self.hktFormatter.string(from: start))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     } else {
-                        ForEach(liveMetrics) { summary in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(summary.title)
-                                        .font(.subheadline)
-                                    if let detail = summary.detail {
-                                        Text(detail)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                Spacer()
-                                Text("\(summary.counted)")
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.vertical, 2)
+                        if let start = scheduler.previousSessionStartTime {
+                            Text("Started: \(Self.hktFormatter.string(from: start))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        if let end = scheduler.previousSessionEndTime {
+                            Text("Ended: \(Self.hktFormatter.string(from: end))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
-                }
 
-                Section(header: Text(scheduler.isSessionActive ? "Current Session" : "Previous Session")) {
+                    Text(scheduler.isSessionActive ? "Current Session Data Retrieved" : "Previous Session Data Retrieved")
+                        .font(.subheadline.bold())
+
                     if dataSummaries.isEmpty {
-                        Text("No samples yet. Start a session to see live readings.")
+                        Text("No samples yet.")
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(dataSummaries) { summary in
@@ -126,9 +120,6 @@ struct ContentView: View {
                     updateSummaries(with: items)
                 }
             }
-            .onReceive(scheduler.$sessionMetricsSnapshot) { snapshot in
-                refreshLiveMetrics(with: snapshot)
-            }
         }
     }
 
@@ -137,34 +128,6 @@ struct ContentView: View {
         let summaries = grouped.map { DataTypeSummary(title: $0.key, items: $0.value.reversed()) }
             .sorted { $0.items.count > $1.items.count }
         dataSummaries = summaries
-    }
-
-    private func refreshLiveMetrics(with snapshot: SessionMetricsSnapshot) {
-        var summaries: [MetricSummary] = []
-        for code in Self.metricOrder {
-            guard let item = snapshot.vitals[code], let value = item.val else { continue }
-            let title = Self.metricNames[code] ?? "Metric \(code)"
-            let detail = "Latest: \(Int(value.rounded()))"
-            let count = snapshot.counts["vital_\(code)"] ?? 0
-            summaries.append(MetricSummary(title: title, detail: detail, counted: count))
-        }
-        if let audio = snapshot.latestEnvironmentalAudio, let value = audio.val {
-            let count = snapshot.counts["vital_environmental_audio"] ?? 0
-            summaries.append(MetricSummary(title: "Environmental Audio", detail: "Latest: \(Int(value.rounded()))", counted: count))
-        }
-        if let ambient = snapshot.latestAmbientNoise, let value = ambient.val {
-            let count = snapshot.counts["vital_ambient_noise"] ?? 0
-            summaries.append(MetricSummary(title: "Ambient Noise", detail: "Latest: \(Int(value.rounded()))", counted: count))
-        }
-        if let motionEvent = snapshot.events["motion_context"], let val = motionEvent.val_text {
-            let count = snapshot.counts["event_motion_context"] ?? 0
-            summaries.append(MetricSummary(title: "Motion Context", detail: val.capitalized, counted: count))
-        }
-        if let sessionEvent = snapshot.events["session_marker"], let val = sessionEvent.val_text {
-            let count = snapshot.counts["event_session_marker"] ?? 0
-            summaries.append(MetricSummary(title: "Session Marker", detail: val.capitalized, counted: count))
-        }
-        liveMetrics = summaries
     }
 
     private func dataTypeTitle(for item: BatchItem) -> String {
@@ -177,13 +140,6 @@ struct ContentView: View {
             return "GPS"
         }
     }
-}
-
-struct MetricSummary: Identifiable {
-    let id = UUID()
-    let title: String
-    let detail: String?
-    let counted: Int
 }
 
 struct DataTypeSummary: Identifiable {

@@ -59,7 +59,10 @@ final class BatchScheduler: ObservableObject {
     @Published var isSessionActive: Bool = false
     @Published var runningSessionItems: [BatchItem] = []
     @Published var previousSessionItems: [BatchItem] = []
-    private var sessionStartTime: Date?
+    @Published var currentSessionStartTime: Date?
+    @Published var currentSessionEndTime: Date?
+    @Published var previousSessionStartTime: Date?
+    @Published var previousSessionEndTime: Date?
     private let interval: TimeInterval
     private var timer: Timer?
     private let api: APIClient
@@ -73,54 +76,69 @@ final class BatchScheduler: ObservableObject {
     }
 
     func startStudySession() {
-        // 1. Clear "Ambient" Data
+        // 1. Clear ambient buffered data
         try? LocalStore.shared.clear()
-        
-        // 2. Set Session State
-        self.isSessionActive = true
-        self.sessionStartTime = Date()
-        
-        // 3. Start High-Freq HealthKit Workout Session
+
+        // 2. Set session state immediately
+        let startTime = Date()
+        isSessionActive = true
+        currentSessionStartTime = startTime
+        currentSessionEndTime = nil
+        runningSessionItems = []
+        sessionBuffer.removeAll()
+
+        // 3. Log start marker immediately
+        let startEvent = BatchItem(type: .event, t: startTime, label: "session_marker", val_text: "START")
+        try? LocalStore.shared.append(startEvent)
+        sessionBuffer.append(startEvent)
+        runningSessionItems = sessionBuffer
+
+        // 4. Start high-frequency HealthKit workout session
         Task {
             await sessionMetricsTracker.reset()
             await MainActor.run { sessionMetricsSnapshot = SessionMetricsSnapshot() }
             try? await HealthKitManager.shared.startActiveSensingSession()
-            // Log Session Start Event
-            let startEvent = BatchItem(type: .event, t: Date(), label: "session_marker", val_text: "START")
-            try? LocalStore.shared.append(startEvent)
-            await MainActor.run {
-                sessionBuffer.removeAll()
-                runningSessionItems = []
-            }
             _ = await collectSessionData(captureSession: true)
         }
-        
+
         resume()
     }
 
     func endStudySession() {
-        self.isSessionActive = false
+        guard isSessionActive else { return }
+
+        // 1. End visible session state immediately so UI switches right away.
+        let endTime = Date()
+        let endEvent = BatchItem(type: .event, t: endTime, label: "session_marker", val_text: "END")
+        try? LocalStore.shared.append(endEvent)
+
+        var completedItems = sessionBuffer
+        completedItems.append(endEvent)
+
+        isSessionActive = false
         stop()
+        currentSessionEndTime = endTime
+        previousSessionStartTime = currentSessionStartTime
+        previousSessionEndTime = endTime
+        previousSessionItems = completedItems
+        runningSessionItems = []
+        sessionBuffer = completedItems
+        currentSessionStartTime = nil
         
         Task {
-            // 1. Stop HealthKit Session
+            // 2. Stop HealthKit session
             try? await HealthKitManager.shared.stopActiveSensingSession()
-            
-            // 2. Log Session End Event
-            let endEvent = BatchItem(type: .event, t: Date(), label: "session_marker", val_text: "END")
-            try? LocalStore.shared.append(endEvent)
-            
+
             // 3. Final collection and upload
             _ = await collectSessionData(captureSession: true)
             _ = await uploadPendingItems()
-            
+
             await MainActor.run {
                 previousSessionItems = sessionBuffer
                 sessionBuffer.removeAll()
                 runningSessionItems = []
             }
-            
-            self.sessionStartTime = nil
+
             await sessionMetricsTracker.reset()
             await MainActor.run { sessionMetricsSnapshot = SessionMetricsSnapshot() }
         }
