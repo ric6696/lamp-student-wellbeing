@@ -18,8 +18,15 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>APIBaseURL</key>
+	<string>http://10.89.132.230:8000/ingest</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Used for wellbeing research and health monitoring.</string>
 	<key>NSHealthUpdateUsageDescription</key>

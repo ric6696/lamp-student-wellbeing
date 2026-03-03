@@ -72,9 +72,17 @@ final class BatchScheduler: ObservableObject {
     private let sessionMetricsTracker = SessionMetricsTracker()
     private let watchBridge = PhoneWatchBridge.shared
 
+    private static func resolveIngestURL() -> URL {
+        if let urlString = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
+           let url = URL(string: urlString) {
+            return url
+        }
+        return URL(string: "http://10.89.132.230:8000/ingest")!
+    }
+
     init(intervalMinutes: Double) {
         self.interval = intervalMinutes * 60
-        self.api = APIClient(baseURL: URL(string: "http://10.89.237.157:8000/ingest")!, deviceId: DeviceId.value)
+        self.api = APIClient(baseURL: Self.resolveIngestURL(), deviceId: DeviceId.value)
 
         watchBridge.onWorkoutStateUpdate = { [weak self] status in
             Task { @MainActor in
