@@ -1,74 +1,136 @@
--- EXTENSIONS
+-- Extensions
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
--- 1. DEVICE METADATA
+-- Drop old objects to allow idempotent rebuilds during early development
+DROP TABLE IF EXISTS audio_events CASCADE;
+DROP TABLE IF EXISTS motion_events CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS gps CASCADE;
+DROP TABLE IF EXISTS vitals CASCADE;
+DROP TABLE IF EXISTS sessions CASCADE;
+DROP TABLE IF EXISTS devices CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS metric_catalog CASCADE;
+
+-- 0. Metric catalog (authoritative codes)
+CREATE TABLE metric_catalog (
+    code SMALLINT PRIMARY KEY,
+    name TEXT NOT NULL,
+    unit TEXT NOT NULL,
+    description TEXT,
+    enabled BOOLEAN DEFAULT TRUE
+);
+
+INSERT INTO metric_catalog (code, name, unit, description) VALUES
+    (1, 'heart_rate_bpm', 'count/min', 'Heart rate in beats per minute'),
+    (10, 'environmental_noise_db', 'dBA', 'Ambient or environmental noise level'),
+    (20, 'steps', 'count', 'Step count increment'),
+    (21, 'distance_m', 'meter', 'Distance walked/running');
+
+-- 1. Core identities
+CREATE TABLE users (
+    id TEXT PRIMARY KEY,
+    external_ref TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE devices (
-    device_id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
-    model_name TEXT, 
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    platform TEXT,
+    model_name TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_sync TIMESTAMPTZ
 );
 
--- 2. HIGH-FREQUENCY NUMERIC DATA (Heart Rate, HRV, Ambient Noise)
--- Using a code-based approach for performance
-CREATE TABLE sensor_vitals (
+CREATE TABLE sessions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    started_at TIMESTAMPTZ NOT NULL,
+    ended_at TIMESTAMPTZ,
+    label TEXT
+);
+
+-- 2. Vitals (numeric time series)
+CREATE TABLE vitals (
     time TIMESTAMPTZ NOT NULL,
-    device_id UUID NOT NULL REFERENCES devices(device_id),
-    metric_type SMALLINT NOT NULL, -- 1:HR, 2:HRV, 10:dB_Ambient, 20:Steps
-    val REAL NOT NULL
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    metric_code SMALLINT NOT NULL REFERENCES metric_catalog(code),
+    value DOUBLE PRECISION NOT NULL,
+    metadata JSONB,
+    PRIMARY KEY (time, device_id, metric_code)
 );
-SELECT create_hypertable('sensor_vitals', 'time');
+SELECT create_hypertable('vitals', 'time');
+CREATE INDEX ON vitals (user_id, time DESC);
+CREATE INDEX ON vitals (user_id, metric_code, time DESC);
+CREATE INDEX ON vitals (session_id, time);
 
--- 3. SPATIAL DATA (GPS)
-CREATE TABLE sensor_location (
+-- 3. GPS (with optional coarse coords and place hints)
+CREATE TABLE gps (
     time TIMESTAMPTZ NOT NULL,
-    device_id UUID NOT NULL REFERENCES devices(device_id),
-    coords GEOGRAPHY(POINT, 4326) NOT NULL,
-    accuracy REAL,
-    motion_context TEXT -- 'e.g. walking', 'stationary', 'automotive'
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    lat DOUBLE PRECISION,
+    lon DOUBLE PRECISION,
+    acc DOUBLE PRECISION,
+    coarse_lat DOUBLE PRECISION,
+    coarse_lon DOUBLE PRECISION,
+    metadata JSONB,
+    PRIMARY KEY (time, device_id)
 );
-SELECT create_hypertable('sensor_location', 'time');
+SELECT create_hypertable('gps', 'time');
+CREATE INDEX ON gps (user_id, time DESC);
+CREATE INDEX ON gps (session_id, time);
 
--- 4. DISCRETE EVENTS & USAGE (App Usage, Screen Events, Notifications)
-CREATE TABLE user_events (
+-- 4. Motion context events
+CREATE TABLE motion_events (
     time TIMESTAMPTZ NOT NULL,
-    device_id UUID NOT NULL REFERENCES devices(device_id),
-    event_type TEXT NOT NULL, -- 'notification', 'screen_on', 'app_usage'
-    label TEXT,              -- 'Instagram', 'Pickup'
-    duration_sec INT,        -- For app usage/screen time
-    metadata JSONB           -- For extra context
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    context TEXT NOT NULL,
+    metadata JSONB,
+    PRIMARY KEY (time, device_id, context)
 );
-SELECT create_hypertable('user_events', 'time');
+SELECT create_hypertable('motion_events', 'time');
+CREATE INDEX ON motion_events (user_id, time DESC);
+CREATE INDEX ON motion_events (session_id, time);
 
--- 5. DAILY HEALTH SNAPSHOTS (Steps, Active Energy, Stand/Exercise)
-CREATE TABLE daily_summaries (
-    date DATE NOT NULL,
-    device_id UUID NOT NULL REFERENCES devices(device_id),
-    steps INT,
-    active_energy_kcal REAL,
-    exercise_min INT,
-    sleep_start TIMESTAMPTZ,
-    sleep_end TIMESTAMPTZ,
-    PRIMARY KEY (date, device_id)
+-- 5. Audio context events
+CREATE TABLE audio_events (
+    time TIMESTAMPTZ NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    label TEXT NOT NULL,
+    db DOUBLE PRECISION,
+    confidence DOUBLE PRECISION,
+    ai_label TEXT,
+    ai_confidence DOUBLE PRECISION,
+    metadata JSONB,
+    PRIMARY KEY (time, device_id, label)
 );
+SELECT create_hypertable('audio_events', 'time');
+CREATE INDEX ON audio_events (user_id, time DESC);
+CREATE INDEX ON audio_events (session_id, time);
 
--- 6. HOURLY AGGREGATES (Materialized View)
-CREATE MATERIALIZED VIEW sensor_hourly_summary AS
-SELECT
-    time_bucket('1 hour', time) AS hour,
-    device_id,
-    AVG(val) FILTER (WHERE metric_type = 1) AS avg_heart_rate,
-    SUM(val) FILTER (WHERE metric_type = 20) AS steps_total
-FROM sensor_vitals
-GROUP BY hour, device_id;
-
--- 7. DAILY STEP SUMMARY (Materialized View)
-CREATE MATERIALIZED VIEW daily_step_summary AS
-SELECT
-    time_bucket('1 day', time) AS day,
-    device_id,
-    SUM(val) AS total_steps
-FROM sensor_vitals
-WHERE metric_type = 20
-GROUP BY day, device_id;
+-- 6. Generic events (session markers, sleep stages, etc.)
+CREATE TABLE events (
+    time TIMESTAMPTZ NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    label TEXT NOT NULL,
+    val_text TEXT,
+    metadata JSONB,
+    PRIMARY KEY (time, device_id, label)
+);
+SELECT create_hypertable('events', 'time');
+CREATE INDEX ON events (user_id, time DESC);
+CREATE INDEX ON events (session_id, time);

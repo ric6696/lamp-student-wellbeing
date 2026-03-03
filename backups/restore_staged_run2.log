@@ -1,0 +1,226 @@
+[restore] host=18.166.106.91 port=5432 user=app_ingest
+[restore] dump=backups/sensing_db_timescale_exclude_internal_20260303_195042.dump
+[restore] target_db=sensing_db_restore_2
+[restore] dropping target db if exists
+NOTICE:  database "sensing_db_restore_2" does not exist, skipping
+[restore] creating target db
+[restore] restoring pre-data (schema + extensions)
+[restore] running pg_restore (container) section=--section=pre-data
+pg_restore: connecting to database for restore
+pg_restore: creating EXTENSION "timescaledb"
+pg_restore: creating COMMENT "EXTENSION timescaledb"
+pg_restore: creating EXTENSION "postgis"
+pg_restore: creating COMMENT "EXTENSION postgis"
+pg_restore: creating TABLE "public.vitals"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_1_1_chunk"
+pg_restore: creating TABLE "public.gps"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_2_2_chunk"
+pg_restore: creating TABLE "public.motion_events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_3_7_chunk"
+pg_restore: creating TABLE "public.audio_events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_4_8_chunk"
+pg_restore: creating TABLE "public.events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_5_3_chunk"
+pg_restore: creating TABLE "public.devices"
+pg_restore: creating TABLE "public.metric_catalog"
+pg_restore: creating TABLE "public.sessions"
+pg_restore: creating SEQUENCE "public.sessions_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.sessions_id_seq"
+pg_restore: creating TABLE "public.users"
+pg_restore: creating DEFAULT "public.sessions id"
+[restore] ensuring extensions and hypertables
+psql: error: connection to server at "18.166.106.91", port 5432 failed: FATAL:  database "sensing_db_restore_2" does not exist
+[restore] restoring data (with triggers disabled)
+[restore] (container) restoring data section
+pg_restore: connecting to database for restore
+pg_restore: implied data-only restore
+pg_restore: disabling triggers for hypertable
+pg_restore: processing data for table "_timescaledb_catalog.hypertable"
+pg_restore: enabling triggers for hypertable
+pg_restore: disabling triggers for chunk
+pg_restore: processing data for table "_timescaledb_catalog.chunk"
+pg_restore: enabling triggers for chunk
+pg_restore: disabling triggers for chunk_column_stats
+pg_restore: processing data for table "_timescaledb_catalog.chunk_column_stats"
+pg_restore: enabling triggers for chunk_column_stats
+pg_restore: disabling triggers for dimension
+pg_restore: processing data for table "_timescaledb_catalog.dimension"
+pg_restore: enabling triggers for dimension
+pg_restore: disabling triggers for dimension_slice
+pg_restore: processing data for table "_timescaledb_catalog.dimension_slice"
+pg_restore: enabling triggers for dimension_slice
+pg_restore: disabling triggers for chunk_constraint
+pg_restore: processing data for table "_timescaledb_catalog.chunk_constraint"
+pg_restore: enabling triggers for chunk_constraint
+pg_restore: disabling triggers for compression_chunk_size
+pg_restore: processing data for table "_timescaledb_catalog.compression_chunk_size"
+pg_restore: enabling triggers for compression_chunk_size
+pg_restore: disabling triggers for compression_settings
+pg_restore: processing data for table "_timescaledb_catalog.compression_settings"
+pg_restore: enabling triggers for compression_settings
+pg_restore: disabling triggers for continuous_agg
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg"
+pg_restore: enabling triggers for continuous_agg
+pg_restore: disabling triggers for continuous_agg_migrate_plan
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg_migrate_plan"
+pg_restore: enabling triggers for continuous_agg_migrate_plan
+pg_restore: disabling triggers for continuous_agg_migrate_plan_step
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg_migrate_plan_step"
+pg_restore: enabling triggers for continuous_agg_migrate_plan_step
+pg_restore: disabling triggers for continuous_aggs_bucket_function
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_bucket_function"
+pg_restore: enabling triggers for continuous_aggs_bucket_function
+pg_restore: disabling triggers for continuous_aggs_hypertable_invalidation_log
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_hypertable_invalidation_log"
+pg_restore: enabling triggers for continuous_aggs_hypertable_invalidation_log
+pg_restore: disabling triggers for continuous_aggs_invalidation_threshold
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_invalidation_threshold"
+pg_restore: enabling triggers for continuous_aggs_invalidation_threshold
+pg_restore: disabling triggers for continuous_aggs_materialization_invalidation_log
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_materialization_invalidation_log"
+pg_restore: enabling triggers for continuous_aggs_materialization_invalidation_log
+pg_restore: disabling triggers for continuous_aggs_materialization_ranges
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_materialization_ranges"
+pg_restore: enabling triggers for continuous_aggs_materialization_ranges
+pg_restore: disabling triggers for continuous_aggs_watermark
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_watermark"
+pg_restore: enabling triggers for continuous_aggs_watermark
+pg_restore: disabling triggers for metadata
+pg_restore: processing data for table "_timescaledb_catalog.metadata"
+pg_restore: while PROCESSING TOC:
+pg_restore: from TOC entry 4712; 0 17683 TABLE DATA metadata postgres
+pg_restore: error: COPY failed for table "metadata": ERROR:  duplicate key value violates unique constraint "metadata_pkey"
+DETAIL:  Key (key)=(install_timestamp) already exists.
+CONTEXT:  COPY metadata, line 1: "install_timestamp	2026-03-03 09:56:26.289503+00	t"
+pg_restore: enabling triggers for metadata
+pg_restore: disabling triggers for tablespace
+pg_restore: processing data for table "_timescaledb_catalog.tablespace"
+pg_restore: enabling triggers for tablespace
+pg_restore: disabling triggers for bgw_job
+pg_restore: processing data for table "_timescaledb_config.bgw_job"
+pg_restore: enabling triggers for bgw_job
+pg_restore: disabling triggers for _hyper_1_1_chunk
+pg_restore: from TOC entry 5113; 0 18442 TABLE DATA _hyper_1_1_chunk postgres
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_1_1_chunk DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "_timescaledb_internal._hyper_1_1_chunk"
+pg_restore: enabling triggers for _hyper_1_1_chunk
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_1_1_chunk ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for _hyper_2_2_chunk
+pg_restore: from TOC entry 5114; 0 18474 TABLE DATA _hyper_2_2_chunk postgres
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_2_2_chunk DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "_timescaledb_internal._hyper_2_2_chunk"
+pg_restore: enabling triggers for _hyper_2_2_chunk
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_2_2_chunk ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for _hyper_3_7_chunk
+pg_restore: from TOC entry 5116; 0 18604 TABLE DATA _hyper_3_7_chunk postgres
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_3_7_chunk DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "_timescaledb_internal._hyper_3_7_chunk"
+pg_restore: enabling triggers for _hyper_3_7_chunk
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_3_7_chunk ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for _hyper_4_8_chunk
+pg_restore: from TOC entry 5117; 0 18630 TABLE DATA _hyper_4_8_chunk postgres
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_4_8_chunk DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "_timescaledb_internal._hyper_4_8_chunk"
+pg_restore: enabling triggers for _hyper_4_8_chunk
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_4_8_chunk ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for _hyper_5_3_chunk
+pg_restore: from TOC entry 5115; 0 18500 TABLE DATA _hyper_5_3_chunk postgres
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_5_3_chunk DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "_timescaledb_internal._hyper_5_3_chunk"
+pg_restore: enabling triggers for _hyper_5_3_chunk
+pg_restore: error: could not execute query: ERROR:  operation not supported on chunk tables
+Command was: ALTER TABLE _timescaledb_internal._hyper_5_3_chunk ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for audio_events
+pg_restore: from TOC entry 5111; 0 18379 TABLE DATA audio_events postgres
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.audio_events DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "public.audio_events"
+pg_restore: enabling triggers for audio_events
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.audio_events ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for devices
+pg_restore: processing data for table "public.devices"
+pg_restore: enabling triggers for devices
+pg_restore: disabling triggers for events
+pg_restore: from TOC entry 5112; 0 18404 TABLE DATA events postgres
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.events DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "public.events"
+pg_restore: enabling triggers for events
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.events ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for gps
+pg_restore: from TOC entry 5109; 0 18329 TABLE DATA gps postgres
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.gps DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "public.gps"
+pg_restore: enabling triggers for gps
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.gps ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for metric_catalog
+pg_restore: processing data for table "public.metric_catalog"
+pg_restore: enabling triggers for metric_catalog
+pg_restore: disabling triggers for motion_events
+pg_restore: from TOC entry 5110; 0 18354 TABLE DATA motion_events postgres
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.motion_events DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "public.motion_events"
+pg_restore: enabling triggers for motion_events
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.motion_events ENABLE TRIGGER ALL;
+
+pg_restore: disabling triggers for sessions
+pg_restore: processing data for table "public.sessions"
+pg_restore: enabling triggers for sessions
+pg_restore: disabling triggers for spatial_ref_sys
+pg_restore: processing data for table "public.spatial_ref_sys"
+pg_restore: enabling triggers for spatial_ref_sys
+pg_restore: disabling triggers for users
+pg_restore: processing data for table "public.users"
+pg_restore: enabling triggers for users
+pg_restore: disabling triggers for vitals
+pg_restore: from TOC entry 5108; 0 18298 TABLE DATA vitals postgres
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.vitals DISABLE TRIGGER ALL;
+
+pg_restore: processing data for table "public.vitals"
+pg_restore: enabling triggers for vitals
+pg_restore: error: could not execute query: ERROR:  hypertables do not support  enabling or disabling triggers.
+Command was: ALTER TABLE public.vitals ENABLE TRIGGER ALL;
+
+pg_restore: executing SEQUENCE SET chunk_column_stats_id_seq
+pg_restore: executing SEQUENCE SET chunk_constraint_name
+pg_restore: executing SEQUENCE SET chunk_id_seq
+pg_restore: executing SEQUENCE SET continuous_agg_migrate_plan_step_step_id_seq
+pg_restore: executing SEQUENCE SET dimension_id_seq
+pg_restore: executing SEQUENCE SET dimension_slice_id_seq
+pg_restore: executing SEQUENCE SET hypertable_id_seq
+pg_restore: executing SEQUENCE SET bgw_job_id_seq
+pg_restore: executing SEQUENCE SET sessions_id_seq
+pg_restore: warning: errors ignored on restore: 21

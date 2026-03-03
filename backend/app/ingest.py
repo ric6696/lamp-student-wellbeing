@@ -39,58 +39,158 @@ def ingest_batch(batch: Batch) -> None:
         user_id = (batch.metadata.user_id or device_id).lower()
         model_name = batch.metadata.model_name
 
+        # Ensure user and device rows exist
         cursor.execute(
-            "INSERT INTO devices (device_id, user_id, model_name, last_sync) "
+            "INSERT INTO users (id) VALUES (%s) ON CONFLICT (id) DO NOTHING",
+            (user_id,),
+        )
+
+        cursor.execute(
+            "INSERT INTO devices (id, user_id, model_name, last_sync) "
             "VALUES (%s, %s, %s, NOW()) "
-            "ON CONFLICT (device_id) DO NOTHING",
+            "ON CONFLICT (id) DO UPDATE SET "
+            "  user_id = EXCLUDED.user_id, "
+            "  model_name = COALESCE(EXCLUDED.model_name, devices.model_name), "
+            "  last_sync = NOW()",
             (device_id, user_id, model_name),
         )
 
         vitals = []
-        locations = []
+        gps_points = []
+        motion_events = []
+        audio_events = []
         events = []
+        seen_motion = set()
+
+        allowed_metrics = {1, 10, 20, 21}
 
         for reading in batch.data:
             if reading.type == "vital":
-                vitals.append((reading.t, device_id, reading.code, reading.val))
-            elif reading.type == "gps":
-                point = f"POINT({reading.lon} {reading.lat})"
-                locations.append((reading.t, device_id, point, reading.acc))
-            elif reading.type == "event":
-                events.append(
+                if reading.code not in allowed_metrics:
+                    continue
+                vitals.append(
                     (
                         reading.t,
+                        user_id,
                         device_id,
-                        reading.label,
-                        reading.val_text,
+                        None,  # session_id not provided in payload
+                        reading.code,
+                        reading.val,
+                        json.dumps({}),
+                    )
+                )
+            elif reading.type == "gps":
+                gps_points.append(
+                    (
+                        reading.t,
+                        user_id,
+                        device_id,
+                        None,
+                        reading.lat,
+                        reading.lon,
+                        reading.acc,
+                        None,
+                        None,
                         json.dumps(reading.metadata or {}),
                     )
                 )
+                if getattr(reading, "motion_context", None):
+                    motion_key = (reading.t, device_id, reading.motion_context)
+                    if motion_key not in seen_motion:
+                        seen_motion.add(motion_key)
+                        motion_events.append(
+                            (
+                                reading.t,
+                                user_id,
+                                device_id,
+                                None,
+                                reading.motion_context,
+                                json.dumps({"source": "gps_payload"}),
+                            )
+                        )
+            elif reading.type == "event":
+                label = reading.label
+                meta = reading.metadata or {}
+                if label == "motion_context":
+                    motion_value = reading.val_text or meta.get("context", "unknown")
+                    motion_key = (reading.t, device_id, motion_value)
+                    if motion_key not in seen_motion:
+                        seen_motion.add(motion_key)
+                        motion_events.append(
+                            (
+                                reading.t,
+                                user_id,
+                                device_id,
+                                None,
+                                motion_value,
+                                json.dumps(meta),
+                            )
+                        )
+                elif label == "audio_context":
+                    audio_events.append(
+                        (
+                            reading.t,
+                            user_id,
+                            device_id,
+                            None,
+                            reading.val_text or "unknown",
+                            _safe_float(meta.get("db")),
+                            _safe_float(meta.get("confidence")),
+                            meta.get("ai_label"),
+                            _safe_float(meta.get("ai_confidence")),
+                            json.dumps(meta),
+                        )
+                    )
+                else:
+                    events.append(
+                        (
+                            reading.t,
+                            user_id,
+                            device_id,
+                            None,
+                            reading.label,
+                            reading.val_text,
+                            json.dumps(meta),
+                        )
+                    )
 
         if vitals:
             execute_values(
                 cursor,
-                "INSERT INTO sensor_vitals (time, device_id, metric_type, val) VALUES %s",
+                "INSERT INTO vitals (time, user_id, device_id, session_id, metric_code, value, metadata) VALUES %s ON CONFLICT DO NOTHING",
                 vitals,
             )
 
-        if locations:
+        if gps_points:
             execute_values(
                 cursor,
-                "INSERT INTO sensor_location (time, device_id, coords, accuracy) VALUES %s",
-                locations,
-                template="(%s, %s, ST_GeogFromText(%s), %s)",
+                "INSERT INTO gps (time, user_id, device_id, session_id, lat, lon, acc, coarse_lat, coarse_lon, metadata) VALUES %s ON CONFLICT DO NOTHING",
+                gps_points,
+            )
+
+        if motion_events:
+            execute_values(
+                cursor,
+                "INSERT INTO motion_events (time, user_id, device_id, session_id, context, metadata) VALUES %s ON CONFLICT DO NOTHING",
+                motion_events,
+            )
+
+        if audio_events:
+            execute_values(
+                cursor,
+                "INSERT INTO audio_events (time, user_id, device_id, session_id, label, db, confidence, ai_label, ai_confidence, metadata) VALUES %s ON CONFLICT DO NOTHING",
+                audio_events,
             )
 
         if events:
             execute_values(
                 cursor,
-                "INSERT INTO user_events (time, device_id, event_type, label, metadata) VALUES %s",
+                "INSERT INTO events (time, user_id, device_id, session_id, label, val_text, metadata) VALUES %s ON CONFLICT DO NOTHING",
                 events,
             )
 
         connection.commit()
-        total_records = len(vitals) + len(locations) + len(events)
+        total_records = len(vitals) + len(gps_points) + len(motion_events) + len(audio_events) + len(events)
         logger.info("ingest_success device_id=%s records=%s", device_id, total_records)
     except Exception:
         if connection:
@@ -101,3 +201,10 @@ def ingest_batch(batch: Batch) -> None:
             cursor.close()
         if connection:
             release_connection(connection)
+
+
+def _safe_float(val):
+    try:
+        return float(val) if val is not None else None
+    except (TypeError, ValueError):
+        return None

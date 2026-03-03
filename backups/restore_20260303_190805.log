@@ -1,0 +1,252 @@
+pg_restore: connecting to database for restore
+pg_restore: creating EXTENSION "timescaledb"
+pg_restore: creating COMMENT "EXTENSION timescaledb"
+pg_restore: creating EXTENSION "postgis"
+pg_restore: creating COMMENT "EXTENSION postgis"
+pg_restore: creating TABLE "public.vitals"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_1_1_chunk"
+pg_restore: creating TABLE "public.gps"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_2_2_chunk"
+pg_restore: creating TABLE "public.motion_events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_3_7_chunk"
+pg_restore: creating TABLE "public.audio_events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_4_8_chunk"
+pg_restore: creating TABLE "public.events"
+pg_restore: creating TABLE "_timescaledb_internal._hyper_5_3_chunk"
+pg_restore: creating TABLE "public.devices"
+pg_restore: creating TABLE "public.metric_catalog"
+pg_restore: creating TABLE "public.sessions"
+pg_restore: creating SEQUENCE "public.sessions_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.sessions_id_seq"
+pg_restore: creating TABLE "public.users"
+pg_restore: creating DEFAULT "public.sessions id"
+pg_restore: processing data for table "_timescaledb_catalog.hypertable"
+pg_restore: processing data for table "_timescaledb_catalog.chunk"
+pg_restore: processing data for table "_timescaledb_catalog.chunk_column_stats"
+pg_restore: processing data for table "_timescaledb_catalog.dimension"
+pg_restore: processing data for table "_timescaledb_catalog.dimension_slice"
+pg_restore: processing data for table "_timescaledb_catalog.chunk_constraint"
+pg_restore: processing data for table "_timescaledb_catalog.compression_chunk_size"
+pg_restore: processing data for table "_timescaledb_catalog.compression_settings"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg_migrate_plan"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_agg_migrate_plan_step"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_bucket_function"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_hypertable_invalidation_log"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_invalidation_threshold"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_materialization_invalidation_log"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_materialization_ranges"
+pg_restore: processing data for table "_timescaledb_catalog.continuous_aggs_watermark"
+pg_restore: processing data for table "_timescaledb_catalog.metadata"
+pg_restore: processing data for table "_timescaledb_catalog.tablespace"
+pg_restore: processing data for table "_timescaledb_config.bgw_job"
+pg_restore: processing data for table "_timescaledb_internal._hyper_1_1_chunk"
+pg_restore: processing data for table "_timescaledb_internal._hyper_2_2_chunk"
+pg_restore: processing data for table "_timescaledb_internal._hyper_3_7_chunk"
+pg_restore: processing data for table "_timescaledb_internal._hyper_4_8_chunk"
+pg_restore: processing data for table "_timescaledb_internal._hyper_5_3_chunk"
+pg_restore: processing data for table "public.audio_events"
+pg_restore: processing data for table "public.devices"
+pg_restore: processing data for table "public.events"
+pg_restore: processing data for table "public.gps"
+pg_restore: processing data for table "public.metric_catalog"
+pg_restore: processing data for table "public.motion_events"
+pg_restore: processing data for table "public.sessions"
+pg_restore: processing data for table "public.spatial_ref_sys"
+pg_restore: processing data for table "public.users"
+pg_restore: processing data for table "public.vitals"
+pg_restore: executing SEQUENCE SET chunk_column_stats_id_seq
+pg_restore: executing SEQUENCE SET chunk_constraint_name
+pg_restore: executing SEQUENCE SET chunk_id_seq
+pg_restore: executing SEQUENCE SET continuous_agg_migrate_plan_step_step_id_seq
+pg_restore: executing SEQUENCE SET dimension_id_seq
+pg_restore: executing SEQUENCE SET dimension_slice_id_seq
+pg_restore: executing SEQUENCE SET hypertable_id_seq
+pg_restore: executing SEQUENCE SET bgw_job_id_seq
+pg_restore: executing SEQUENCE SET sessions_id_seq
+pg_restore: creating CONSTRAINT "_timescaledb_internal._hyper_1_1_chunk 1_3_vitals_pkey"
+pg_restore: creating CONSTRAINT "_timescaledb_internal._hyper_2_2_chunk 2_7_gps_pkey"
+pg_restore: creating CONSTRAINT "_timescaledb_internal._hyper_5_3_chunk 3_11_events_pkey"
+pg_restore: creating CONSTRAINT "_timescaledb_internal._hyper_3_7_chunk 7_27_motion_events_pkey"
+pg_restore: creating CONSTRAINT "_timescaledb_internal._hyper_4_8_chunk 8_31_audio_events_pkey"
+pg_restore: creating CONSTRAINT "public.audio_events audio_events_pkey"
+pg_restore: creating CONSTRAINT "public.devices devices_pkey"
+pg_restore: creating CONSTRAINT "public.events events_pkey"
+pg_restore: creating CONSTRAINT "public.gps gps_pkey"
+pg_restore: creating CONSTRAINT "public.metric_catalog metric_catalog_pkey"
+pg_restore: creating CONSTRAINT "public.motion_events motion_events_pkey"
+pg_restore: creating CONSTRAINT "public.sessions sessions_pkey"
+pg_restore: creating CONSTRAINT "public.users users_pkey"
+pg_restore: creating CONSTRAINT "public.vitals vitals_pkey"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_1_1_chunk_vitals_session_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_1_1_chunk_vitals_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_1_1_chunk_vitals_user_id_metric_code_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_1_1_chunk_vitals_user_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_2_2_chunk_gps_session_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_2_2_chunk_gps_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_2_2_chunk_gps_user_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_3_7_chunk_motion_events_session_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_3_7_chunk_motion_events_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_3_7_chunk_motion_events_user_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_4_8_chunk_audio_events_session_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_4_8_chunk_audio_events_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_4_8_chunk_audio_events_user_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_5_3_chunk_events_session_id_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_5_3_chunk_events_time_idx"
+pg_restore: creating INDEX "_timescaledb_internal._hyper_5_3_chunk_events_user_id_time_idx"
+pg_restore: creating INDEX "public.audio_events_session_id_time_idx"
+pg_restore: creating INDEX "public.audio_events_time_idx"
+pg_restore: creating INDEX "public.audio_events_user_id_time_idx"
+pg_restore: creating INDEX "public.events_session_id_time_idx"
+pg_restore: creating INDEX "public.events_time_idx"
+pg_restore: creating INDEX "public.events_user_id_time_idx"
+pg_restore: creating INDEX "public.gps_session_id_time_idx"
+pg_restore: creating INDEX "public.gps_time_idx"
+pg_restore: creating INDEX "public.gps_user_id_time_idx"
+pg_restore: creating INDEX "public.motion_events_session_id_time_idx"
+pg_restore: creating INDEX "public.motion_events_time_idx"
+pg_restore: creating INDEX "public.motion_events_user_id_time_idx"
+pg_restore: creating INDEX "public.vitals_session_id_time_idx"
+pg_restore: creating INDEX "public.vitals_time_idx"
+pg_restore: creating INDEX "public.vitals_user_id_metric_code_time_idx"
+pg_restore: creating INDEX "public.vitals_user_id_time_idx"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_1_1_chunk 1_1_vitals_device_id_fkey"
+pg_restore: while PROCESSING TOC:
+pg_restore: from TOC entry 4923; 2606 18447 FK CONSTRAINT _hyper_1_1_chunk 1_1_vitals_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  table "vitals" is not a hypertable
+CONTEXT:  SQL statement "SELECT fk."device_id" FROM ONLY "_timescaledb_internal"."_hyper_1_1_chunk" fk LEFT OUTER JOIN ONLY "public"."devices" pk ON ( pk."id" OPERATOR(pg_catalog.=) fk."device_id") WHERE pk."id" IS NULL AND (fk."device_id" IS NOT NULL)"
+Command was: ALTER TABLE ONLY _timescaledb_internal._hyper_1_1_chunk
+    ADD CONSTRAINT "1_1_vitals_device_id_fkey" FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_1_1_chunk 1_2_vitals_metric_code_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_1_1_chunk 1_4_vitals_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_1_1_chunk 1_5_vitals_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_2_2_chunk 2_6_gps_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_2_2_chunk 2_8_gps_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_2_2_chunk 2_9_gps_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_5_3_chunk 3_10_events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_5_3_chunk 3_12_events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_5_3_chunk 3_13_events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_3_7_chunk 7_26_motion_events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_3_7_chunk 7_28_motion_events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_3_7_chunk 7_29_motion_events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_4_8_chunk 8_30_audio_events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_4_8_chunk 8_32_audio_events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "_timescaledb_internal._hyper_4_8_chunk 8_33_audio_events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_device_id_fkey"
+pg_restore: from TOC entry 4917; 2606 18391 FK CONSTRAINT audio_events audio_events_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.audio_events
+    ADD CONSTRAINT audio_events_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_session_id_fkey"
+pg_restore: from TOC entry 4918; 2606 18396 FK CONSTRAINT audio_events audio_events_session_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.audio_events
+    ADD CONSTRAINT audio_events_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_user_id_fkey"
+pg_restore: from TOC entry 4919; 2606 18386 FK CONSTRAINT audio_events audio_events_user_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.audio_events
+    ADD CONSTRAINT audio_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.devices devices_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.events events_device_id_fkey"
+pg_restore: from TOC entry 4920; 2606 18416 FK CONSTRAINT events events_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.events events_session_id_fkey"
+pg_restore: from TOC entry 4921; 2606 18421 FK CONSTRAINT events events_session_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.events events_user_id_fkey"
+pg_restore: from TOC entry 4922; 2606 18411 FK CONSTRAINT events events_user_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.gps gps_device_id_fkey"
+pg_restore: from TOC entry 4911; 2606 18341 FK CONSTRAINT gps gps_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.gps
+    ADD CONSTRAINT gps_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.gps gps_session_id_fkey"
+pg_restore: from TOC entry 4912; 2606 18346 FK CONSTRAINT gps gps_session_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.gps
+    ADD CONSTRAINT gps_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.gps gps_user_id_fkey"
+pg_restore: from TOC entry 4913; 2606 18336 FK CONSTRAINT gps gps_user_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.gps
+    ADD CONSTRAINT gps_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_device_id_fkey"
+pg_restore: from TOC entry 4914; 2606 18366 FK CONSTRAINT motion_events motion_events_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.motion_events
+    ADD CONSTRAINT motion_events_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_session_id_fkey"
+pg_restore: from TOC entry 4915; 2606 18371 FK CONSTRAINT motion_events motion_events_session_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.motion_events
+    ADD CONSTRAINT motion_events_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_user_id_fkey"
+pg_restore: from TOC entry 4916; 2606 18361 FK CONSTRAINT motion_events motion_events_user_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.motion_events
+    ADD CONSTRAINT motion_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.sessions sessions_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.sessions sessions_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_device_id_fkey"
+pg_restore: from TOC entry 4907; 2606 18310 FK CONSTRAINT vitals vitals_device_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.vitals
+    ADD CONSTRAINT vitals_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_metric_code_fkey"
+pg_restore: from TOC entry 4908; 2606 18320 FK CONSTRAINT vitals vitals_metric_code_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.vitals
+    ADD CONSTRAINT vitals_metric_code_fkey FOREIGN KEY (metric_code) REFERENCES public.metric_catalog(code);
+
+
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_session_id_fkey"
+pg_restore: from TOC entry 4909; 2606 18315 FK CONSTRAINT vitals vitals_session_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.vitals
+    ADD CONSTRAINT vitals_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id);
+
+
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_user_id_fkey"
+pg_restore: from TOC entry 4910; 2606 18305 FK CONSTRAINT vitals vitals_user_id_fkey postgres
+pg_restore: error: could not execute query: ERROR:  ONLY option not supported on hypertable operations
+Command was: ALTER TABLE ONLY public.vitals
+    ADD CONSTRAINT vitals_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+pg_restore: warning: errors ignored on restore: 17

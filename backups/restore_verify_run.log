@@ -1,0 +1,146 @@
+[restore] host=18.166.106.91 port=5432 user=app_ingest
+[restore] dump=backups/sensing_db_timescale_20260303_195142.dump
+[restore] target_db=sensing_db_restore_verify
+[restore] dropping target db if exists
+NOTICE:  database "sensing_db_restore_verify" does not exist, skipping
+[restore] creating target db
+[restore] restoring pre-data (schema + extensions)
+[restore] running pg_restore (container) section=--section=pre-data
+pg_restore: connecting to database for restore
+pg_restore: creating EXTENSION "timescaledb"
+pg_restore: creating COMMENT "EXTENSION timescaledb"
+pg_restore: creating EXTENSION "postgis"
+pg_restore: creating COMMENT "EXTENSION postgis"
+pg_restore: creating TABLE "public.vitals"
+pg_restore: creating TABLE "public.gps"
+pg_restore: creating TABLE "public.motion_events"
+pg_restore: creating TABLE "public.audio_events"
+pg_restore: creating TABLE "public.events"
+pg_restore: creating TABLE "public.devices"
+pg_restore: creating TABLE "public.metric_catalog"
+pg_restore: creating TABLE "public.sessions"
+pg_restore: creating SEQUENCE "public.sessions_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.sessions_id_seq"
+pg_restore: creating TABLE "public.users"
+pg_restore: creating DEFAULT "public.sessions id"
+[restore] ensuring extensions and hypertables
+psql: error: connection to server at "18.166.106.91", port 5432 failed: FATAL:  database "sensing_db_restore_verify" does not exist
+[restore] restoring data (with triggers disabled)
+[restore] (container) restoring data section
+pg_restore: connecting to database for restore
+pg_restore: implied data-only restore
+pg_restore: disabling triggers for audio_events
+pg_restore: processing data for table "public.audio_events"
+pg_restore: enabling triggers for audio_events
+pg_restore: disabling triggers for devices
+pg_restore: processing data for table "public.devices"
+pg_restore: enabling triggers for devices
+pg_restore: disabling triggers for events
+pg_restore: processing data for table "public.events"
+pg_restore: enabling triggers for events
+pg_restore: disabling triggers for gps
+pg_restore: processing data for table "public.gps"
+pg_restore: enabling triggers for gps
+pg_restore: disabling triggers for metric_catalog
+pg_restore: processing data for table "public.metric_catalog"
+pg_restore: enabling triggers for metric_catalog
+pg_restore: disabling triggers for motion_events
+pg_restore: processing data for table "public.motion_events"
+pg_restore: enabling triggers for motion_events
+pg_restore: disabling triggers for sessions
+pg_restore: processing data for table "public.sessions"
+pg_restore: enabling triggers for sessions
+pg_restore: disabling triggers for spatial_ref_sys
+pg_restore: processing data for table "public.spatial_ref_sys"
+pg_restore: enabling triggers for spatial_ref_sys
+pg_restore: disabling triggers for users
+pg_restore: processing data for table "public.users"
+pg_restore: enabling triggers for users
+pg_restore: disabling triggers for vitals
+pg_restore: processing data for table "public.vitals"
+pg_restore: enabling triggers for vitals
+pg_restore: executing SEQUENCE SET sessions_id_seq
+[restore] restoring post-data (indexes, constraints)
+[restore] running pg_restore (container) section=--section=post-data
+pg_restore: connecting to database for restore
+pg_restore: creating CONSTRAINT "public.audio_events audio_events_pkey"
+pg_restore: creating CONSTRAINT "public.devices devices_pkey"
+pg_restore: creating CONSTRAINT "public.events events_pkey"
+pg_restore: creating CONSTRAINT "public.gps gps_pkey"
+pg_restore: creating CONSTRAINT "public.metric_catalog metric_catalog_pkey"
+pg_restore: creating CONSTRAINT "public.motion_events motion_events_pkey"
+pg_restore: creating CONSTRAINT "public.sessions sessions_pkey"
+pg_restore: creating CONSTRAINT "public.users users_pkey"
+pg_restore: creating CONSTRAINT "public.vitals vitals_pkey"
+pg_restore: creating INDEX "public.audio_events_session_id_time_idx"
+pg_restore: creating INDEX "public.audio_events_time_idx"
+pg_restore: creating INDEX "public.audio_events_user_id_time_idx"
+pg_restore: creating INDEX "public.events_session_id_time_idx"
+pg_restore: creating INDEX "public.events_time_idx"
+pg_restore: creating INDEX "public.events_user_id_time_idx"
+pg_restore: creating INDEX "public.gps_session_id_time_idx"
+pg_restore: creating INDEX "public.gps_time_idx"
+pg_restore: creating INDEX "public.gps_user_id_time_idx"
+pg_restore: creating INDEX "public.motion_events_session_id_time_idx"
+pg_restore: creating INDEX "public.motion_events_time_idx"
+pg_restore: creating INDEX "public.motion_events_user_id_time_idx"
+pg_restore: creating INDEX "public.vitals_session_id_time_idx"
+pg_restore: creating INDEX "public.vitals_time_idx"
+pg_restore: creating INDEX "public.vitals_user_id_metric_code_time_idx"
+pg_restore: creating INDEX "public.vitals_user_id_time_idx"
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.audio_events audio_events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.devices devices_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.events events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.events events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.events events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.gps gps_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.gps gps_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.gps gps_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.motion_events motion_events_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.sessions sessions_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.sessions sessions_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_device_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_metric_code_fkey"
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_session_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.vitals vitals_user_id_fkey"
+[restore] basic verification
+[restore] running verification inside container sensing_app_db
+   extname   
+-------------
+ postgis
+ timescaledb
+(2 rows)
+
+   table_name   
+----------------
+ audio_events
+ devices
+ events
+ gps
+ metric_catalog
+ motion_events
+ sessions
+ users
+ vitals
+(9 rows)
+
+ vitals_rows 
+-------------
+           0
+(1 row)
+
+ gps_rows 
+----------
+        0
+(1 row)
+
+ events_rows 
+-------------
+           0
+(1 row)
+
+[restore] completed for sensing_db_restore_verify

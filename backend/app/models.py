@@ -23,6 +23,8 @@ class GpsReading(BaseModel):
     lat: float
     lon: float
     acc: Optional[float] = Field(default=None, ge=0)
+    motion_context: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class EventReading(BaseModel):
