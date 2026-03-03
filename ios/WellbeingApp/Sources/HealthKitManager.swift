@@ -26,15 +26,11 @@ final class HealthKitManager {
         ]
         let readTypes: Set = [
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
-            HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
-            HKQuantityType.quantityType(forIdentifier: .restingHeartRate)!,
             HKQuantityType.quantityType(forIdentifier: .environmentalAudioExposure)!,
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-            HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!,
             HKQuantityType.quantityType(forIdentifier: .appleStandTime)!,
             HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-            HKQuantityType.quantityType(forIdentifier: .respiratoryRate)!,
             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
         ]
         do {
@@ -66,12 +62,8 @@ final class HealthKitManager {
         try await withThrowingTaskGroup(of: [BatchItem].self) { group in
             let metrics: [(HKQuantityTypeIdentifier, Int)] = [
                 (.heartRate, 1),
-                (.heartRateVariabilitySDNN, 2),
-                (.restingHeartRate, 3),
                 (.environmentalAudioExposure, 10),
                 (.stepCount, 20),
-                (.activeEnergyBurned, 5),
-                (.respiratoryRate, 30),
                 (.distanceWalkingRunning, 21)
             ]
             let s = self
@@ -126,18 +118,17 @@ final class HealthKitManager {
     func fetchDailyAggregates(for date: Date) async throws -> DailyAggregates {
         let deviceId = DeviceId.value
         async let steps = sum(.stepCount, unit: .count(), on: date)
-        async let energy = sum(.activeEnergyBurned, unit: .kilocalorie(), on: date)
         async let exercise = sum(.appleExerciseTime, unit: .minute(), on: date)
         async let stand = sum(.appleStandTime, unit: .minute(), on: date)
         async let sleep = sleepInterval(on: date)
 
-        let (s, e, ex, st, sleepSpan) = try await (steps, energy, exercise, stand, sleep)
+        let (s, ex, st, sleepSpan) = try await (steps, exercise, stand, sleep)
 
         let summary = DailySummary(
             date: date,
             device_id: deviceId,
             steps: Int(s),
-            active_energy_kcal: e,
+            active_energy_kcal: 0,
             exercise_min: Int(ex),
             sleep_start: sleepSpan?.0,
             sleep_end: sleepSpan?.1
@@ -177,11 +168,7 @@ final class HealthKitManager {
     private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
         switch id {
         case .heartRate: return HKUnit.count().unitDivided(by: .minute())
-        case .heartRateVariabilitySDNN: return HKUnit.secondUnit(with: .milli)
-        case .restingHeartRate: return HKUnit.count().unitDivided(by: .minute())
         case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
-        case .respiratoryRate: return HKUnit.count().unitDivided(by: .minute())
-        case .activeEnergyBurned: return .kilocalorie()
         case .distanceWalkingRunning: return .meter()
         default: return .count()
         }
@@ -303,13 +290,9 @@ final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKL
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
         let liveMappings: [(HKQuantityTypeIdentifier, Int)] = [
             (.heartRate, 1),
-            (.heartRateVariabilitySDNN, 2),
-            (.restingHeartRate, 3),
-            (.activeEnergyBurned, 5),
             (.environmentalAudioExposure, 10),
             (.stepCount, 20),
             (.distanceWalkingRunning, 21),
-            (.respiratoryRate, 30)
         ]
 
         var items: [BatchItem] = []
@@ -332,11 +315,7 @@ final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKL
     private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
         switch id {
         case .heartRate: return HKUnit.count().unitDivided(by: .minute())
-        case .heartRateVariabilitySDNN: return HKUnit.secondUnit(with: .milli)
-        case .restingHeartRate: return HKUnit.count().unitDivided(by: .minute())
         case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
-        case .respiratoryRate: return HKUnit.count().unitDivided(by: .minute())
-        case .activeEnergyBurned: return .kilocalorie()
         case .distanceWalkingRunning: return .meter()
         default: return .count()
         }

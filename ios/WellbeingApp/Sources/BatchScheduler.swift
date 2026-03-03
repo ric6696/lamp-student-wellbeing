@@ -11,7 +11,7 @@ struct SessionMetricsSnapshot {
 
 actor SessionMetricsTracker {
     private var snapshot = SessionMetricsSnapshot()
-    private let trackedVitalCodes: Set<Int> = [1, 2, 3, 5, 10, 20, 21, 30]
+    private let trackedVitalCodes: Set<Int> = [1, 10, 20, 21]
     private let trackedEventLabels: Set<String> = ["motion_context", "session_marker"]
 
     func reset() {

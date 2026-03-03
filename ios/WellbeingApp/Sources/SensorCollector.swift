@@ -23,12 +23,8 @@ final class SensorCollector {
     private var lastSampleDateByCode: [Int: Date] = [:]
     private let vitalMetrics: [(id: HKQuantityTypeIdentifier, code: Int)] = [
         (.heartRate, 1),
-        (.heartRateVariabilitySDNN, 2),
-        (.restingHeartRate, 3),
         (.environmentalAudioExposure, 10),
         (.stepCount, 20),
-        (.activeEnergyBurned, 5),
-        (.respiratoryRate, 30),
         (.distanceWalkingRunning, 21)
     ]
 
