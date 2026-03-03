@@ -18,19 +18,19 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSHealthShareUsageDescription</key>
-	<string>Used for wellbeing research and health monitoring.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>Used for wellbeing research and health monitoring.</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>WKAppBundleIdentifier</key>
-			<string>$(WK_APP_BUNDLE_IDENTIFIER)</string>
+			<string>com.lamp.wellbeing.rc.app.watchapp</string>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.watchkit</string>
 	</dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Used for wellbeing research and health monitoring.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Used for wellbeing research and health monitoring.</string>
 </dict>
 </plist>

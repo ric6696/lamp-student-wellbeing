@@ -63,13 +63,17 @@ final class SensorCollector {
     private func collectInstantNoise() async -> [BatchItem] {
         guard let window = sessionWindow(), window.contains(Date()) else { return [] }
         let db = NoiseManager.shared.currentDb
-        if db < 0 { return [] }
+        let mappedDbA = max(0.0, min(120.0, Double(db) + 120.0))
         let item = BatchItem(
             type: .vital,
             t: Date(),
             code: 10,
-            val: Double(db),
-            metadata: ["source": "ambient_noise_manager"]
+            val: mappedDbA,
+            metadata: [
+                "source": "ambient_noise_manager",
+                "raw_dbfs": String(format: "%.2f", db),
+                "mapped_dba": String(format: "%.2f", mappedDbA)
+            ]
         )
         try? LocalStore.shared.append(item)
         return [item]

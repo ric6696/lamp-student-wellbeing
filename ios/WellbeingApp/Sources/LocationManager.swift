@@ -7,6 +7,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let sessionLock = DispatchQueue(label: "location.session.lock")
     private var sessionStartDate: Date?
     private var sessionEndDate: Date?
+    var onLocationBatchItem: ((BatchItem) -> Void)?
 
     override private init() {
         super.init()
@@ -62,6 +63,7 @@ extension LocationManager: CLLocationManagerDelegate {
                     motion_context: context
                 )
                 try? LocalStore.shared.append(item)
+                onLocationBatchItem?(item)
             }
         }
     }

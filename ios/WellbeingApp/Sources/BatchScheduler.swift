@@ -89,6 +89,14 @@ final class BatchScheduler: ObservableObject {
                 self?.watchWorkoutState = status
             }
         }
+
+        LocationManager.shared.onLocationBatchItem = { [weak self] item in
+            Task { @MainActor in
+                guard let self, self.isSessionActive else { return }
+                self.sessionBuffer.append(item)
+                self.runningSessionItems = self.sessionBuffer
+            }
+        }
     }
 
     func startStudySession() {
