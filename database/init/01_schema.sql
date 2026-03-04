@@ -3,6 +3,7 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
 -- Drop old objects to allow idempotent rebuilds during early development
+DROP MATERIALIZED VIEW IF EXISTS audio_exposure_10m_stats CASCADE;
 DROP TABLE IF EXISTS audio_events CASCADE;
 DROP TABLE IF EXISTS motion_events CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
@@ -134,3 +135,62 @@ CREATE TABLE events (
 SELECT create_hypertable('events', 'time');
 CREATE INDEX ON events (user_id, time DESC);
 CREATE INDEX ON events (session_id, time);
+
+-- 7. Session-aligned 10-minute audio exposure stats (relative to session start/end)
+-- Example: session 12:06 -> 13:01 produces buckets 12:06-12:16, 12:16-12:26, ... 12:56-13:01.
+CREATE OR REPLACE FUNCTION get_session_audio_exposure_10m_stats(p_session_id BIGINT)
+RETURNS TABLE (
+    session_id BIGINT,
+    bucket_index INTEGER,
+    bucket_start TIMESTAMPTZ,
+    bucket_end TIMESTAMPTZ,
+    sample_count BIGINT,
+    mean_audio_exposure DOUBLE PRECISION,
+    stddev_audio_exposure DOUBLE PRECISION
+)
+LANGUAGE SQL
+STABLE
+AS $$
+WITH session_bounds AS (
+    SELECT
+        s.id AS session_id,
+        s.user_id,
+        s.device_id,
+        s.started_at,
+        COALESCE(s.ended_at, now()) AS ended_at,
+        GREATEST(
+            0,
+            CEIL(EXTRACT(EPOCH FROM (COALESCE(s.ended_at, now()) - s.started_at)) / 600.0)::INT
+        ) AS bucket_count
+    FROM sessions s
+    WHERE s.id = p_session_id
+),
+bucket_ranges AS (
+    SELECT
+        sb.session_id,
+        gs AS bucket_index,
+        sb.started_at + (gs * INTERVAL '10 minutes') AS bucket_start,
+        LEAST(sb.started_at + ((gs + 1) * INTERVAL '10 minutes'), sb.ended_at) AS bucket_end,
+        sb.user_id,
+        sb.device_id
+    FROM session_bounds sb
+    CROSS JOIN LATERAL generate_series(0, GREATEST(sb.bucket_count - 1, 0)) AS gs
+)
+SELECT
+    br.session_id,
+    br.bucket_index,
+    br.bucket_start,
+    br.bucket_end,
+    COUNT(v.value)::BIGINT AS sample_count,
+    AVG(v.value)::DOUBLE PRECISION AS mean_audio_exposure,
+    STDDEV_SAMP(v.value)::DOUBLE PRECISION AS stddev_audio_exposure
+FROM bucket_ranges br
+LEFT JOIN vitals v
+    ON v.user_id = br.user_id
+   AND v.device_id = br.device_id
+   AND v.metric_code = 10
+   AND v.time >= br.bucket_start
+   AND v.time < br.bucket_end
+GROUP BY br.session_id, br.bucket_index, br.bucket_start, br.bucket_end
+ORDER BY br.bucket_start;
+$$;
