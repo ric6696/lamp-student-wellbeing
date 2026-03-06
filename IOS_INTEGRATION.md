@@ -1,8 +1,20 @@
 # iOS Integration Guide
 
-This guide defines the request payload, Swift models, and a curl test for the `/ingest` endpoint.
+This guide documents the current request contract used by `ios/WellbeingApp` when posting to `/ingest`.
 
-## JSON Sample
+## Current Client Behavior
+
+The live iOS client currently:
+
+- sends `metadata.device_id`
+- does not send `metadata.user_id` by default
+- posts to the URL in `ios/WellbeingApp/Resources/Info.plist` under `APIBaseURL`
+- sends `X-API-Key: dev_key` from `ios/WellbeingApp/Sources/APIClient.swift`
+- emits `session_marker` events for session start and end
+- emits `audio_context` events with classifier metadata
+- stores numeric audio exposure as `vital` with `code = 10`
+
+## JSON Example
 
 ```json
 {
@@ -13,131 +25,134 @@ This guide defines the request payload, Swift models, and a curl test for the `/
   },
   "data": [
     {
-      "t": "2026-02-10T14:57:07Z",
-      "type": "gps",
-      "lat": 34.0522,
-      "lon": -118.2437,
-      "acc": 5.0
-    },
-    {
-      "t": "2026-02-10T14:57:02Z",
-      "type": "vital",
-      "code": 1,
-      "val": 72
-    },
-    {
-      "t": "2026-02-10T14:56:57Z",
+      "t": "2026-03-06T04:19:06Z",
       "type": "event",
-      "label": "motion_state",
-      "val_text": "walking"
+      "label": "session_marker",
+      "val_text": "START"
+    },
+    {
+      "t": "2026-03-06T04:19:08Z",
+      "type": "gps",
+      "lat": 22.3193,
+      "lon": 114.1694,
+      "acc": 8.0,
+      "motion_context": "walking",
+      "metadata": {
+        "source": "core_location"
+      }
+    },
+    {
+      "t": "2026-03-06T04:19:10Z",
+      "type": "vital",
+      "code": 10,
+      "val": 63.2
+    },
+    {
+      "t": "2026-03-06T04:19:12Z",
+      "type": "event",
+      "label": "audio_context",
+      "val_text": "busy",
+      "metadata": {
+        "db": "-37.20",
+        "confidence": "0.71",
+        "label_source": "sound_analysis",
+        "heuristic_label": "busy",
+        "ai_label": "Speech",
+        "ai_confidence": "0.66"
+      }
+    },
+    {
+      "t": "2026-03-06T04:29:22Z",
+      "type": "event",
+      "label": "session_marker",
+      "val_text": "END"
     }
   ]
 }
 ```
 
-## Swift Structs
+## Backend Mapping
 
-```swift
-import Foundation
+Current server-side routing in `backend/app/ingest.py` writes to:
 
-struct Batch: Codable {
-    let metadata: Metadata
-    let data: [Reading]
-}
+- `vital` -> `vitals`
+- `gps` -> `gps`
+- `event(label=motion_context)` -> `motion_events`
+- `event(label=audio_context)` -> `audio_events`
+- all other events -> `events`
+- `event(label=session_marker, val_text=START|END)` -> `sessions` plus backfilled `session_id`
 
-struct Metadata: Codable {
-    let deviceId: String
-    let version: String?
-    let userId: String?
-    let modelName: String?
+## Swift Models In Repo
 
-    enum CodingKeys: String, CodingKey {
-        case deviceId = "device_id"
-        case version
-        case userId = "user_id"
-        case modelName = "model_name"
-    }
-}
+The active Swift request types live in:
 
-enum Reading: Codable {
-    case vital(VitalReading)
-    case gps(GpsReading)
-    case event(EventReading)
+- `ios/WellbeingApp/Sources/Models.swift`
+- `ios/WellbeingApp/Sources/APIClient.swift`
 
-    enum CodingKeys: String, CodingKey {
-        case type
-    }
+Important note:
 
-    enum ReadingType: String, Codable {
-        case vital
-        case gps
-        case event
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decode(ReadingType.self, forKey: .type)
-        switch type {
-        case .vital:
-            self = .vital(try VitalReading(from: decoder))
-        case .gps:
-            self = .gps(try GpsReading(from: decoder))
-        case .event:
-            self = .event(try EventReading(from: decoder))
-        }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        switch self {
-        case .vital(let reading):
-            try reading.encode(to: encoder)
-        case .gps(let reading):
-            try reading.encode(to: encoder)
-        case .event(let reading):
-            try reading.encode(to: encoder)
-        }
-    }
-}
-
-struct VitalReading: Codable {
-    let type: String
-    let t: String
-    let code: Int
-    let val: Double
-}
-
-struct GpsReading: Codable {
-    let type: String
-    let t: String
-    let lat: Double
-    let lon: Double
-    let acc: Double?
-}
-
-struct EventReading: Codable {
-    let type: String
-    let t: String
-    let label: String
-    let valText: String?
-    let metadata: [String: String]?
-
-    enum CodingKeys: String, CodingKey {
-        case type
-        case t
-        case label
-        case valText = "val_text"
-        case metadata
-    }
-}
-```
+- `BatchEnvelope.Metadata` currently only encodes `device_id`.
+- If you want canonical cross-device users, `user_id` support needs to be added in the client and coordinated with the backend identity model.
 
 ## curl Test
 
-Replace the base URL and API key as needed.
+Replace the host with your local machine IP or ngrok URL.
 
 ```bash
-curl -X POST https://<your-ngrok-domain>.ngrok-free.app/ingest \
+curl -X POST http://<your-host>:8000/ingest \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: <INGEST_API_KEY>" \
-  -d '{"metadata":{"device_id":"11111111-1111-1111-1111-111111111111","version":"1.0","model_name":"iPhone 15 Pro"},"data":[{"t":"2026-02-10T14:57:07Z","type":"gps","lat":34.0522,"lon":-118.2437,"acc":5.0},{"t":"2026-02-10T14:57:02Z","type":"vital","code":1,"val":72},{"t":"2026-02-10T14:56:57Z","type":"event","label":"motion_state","val_text":"walking"}]}'
+  -H "X-API-Key: dev_key" \
+  -d '{
+    "metadata": {
+      "device_id": "11111111-1111-1111-1111-111111111111",
+      "version": "1.0",
+      "model_name": "iPhone 15 Pro"
+    },
+    "data": [
+      {
+        "t": "2026-03-06T04:19:06Z",
+        "type": "event",
+        "label": "session_marker",
+        "val_text": "START"
+      },
+      {
+        "t": "2026-03-06T04:19:10Z",
+        "type": "vital",
+        "code": 10,
+        "val": 63.2
+      },
+      {
+        "t": "2026-03-06T04:19:12Z",
+        "type": "event",
+        "label": "audio_context",
+        "val_text": "busy",
+        "metadata": {
+          "db": "-37.20",
+          "confidence": "0.71"
+        }
+      },
+      {
+        "t": "2026-03-06T04:29:22Z",
+        "type": "event",
+        "label": "session_marker",
+        "val_text": "END"
+      }
+    ]
+  }'
+```
+
+Expected response:
+
+```json
+{ "status": "accepted", "records": 4 }
+```
+
+## Post-Request SQL Checks
+
+```bash
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT id, device_id, started_at, ended_at FROM sessions ORDER BY started_at DESC LIMIT 5;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, metric_code, value, session_id FROM vitals WHERE device_id = '11111111-1111-1111-1111-111111111111' ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, label, db, confidence, ai_label, session_id FROM audio_events WHERE device_id = '11111111-1111-1111-1111-111111111111' ORDER BY time DESC LIMIT 10;"
+unset PGPASSWORD
 ```

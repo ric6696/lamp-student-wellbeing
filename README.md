@@ -1,122 +1,115 @@
-# LAMP: Multimodal Mobile Sensing Systems for Enhancing Student Mental Health and Concentration
+# LAMP: Multimodal Mobile Sensing for Study Sessions
 
-## Developer Hand-off
+This repository contains:
 
-### Setup (5 minutes)
+- a FastAPI ingestion service in `backend/app`
+- a PostgreSQL + TimescaleDB local database in `docker-compose.yml`
+- the schema and helper SQL in `database/init/01_schema.sql`
+- an iPhone + Apple Watch client in `ios/WellbeingApp`
 
-1. Copy env template:
-   - `cp .env.example .env`
-2. Start the database sandbox:
-   - `docker compose up -d`
-3. The schema auto-applies from [database/init/01_schema.sql](database/init/01_schema.sql).
-4. Metric codes for clients are documented in [metrics.md](metrics.md).
+The current flow is:
 
-**Default DB connection (local):**
+`iPhone / Watch -> JSON batch -> FastAPI /ingest -> Postgres`
 
-- Host: `localhost`
-- Port: `5433` (mapped from container 5432)
-- DB: `sensing_db`
-- User: `postgres`
-- Password: from `.env`
+## Quick Start
 
-## The Goal
+### 1. Create local env
 
-We are building a batch-processing system. iOS collects locally $\rightarrow$ flushes JSON batch to API $\rightarrow$ API inserts into Postgres.
-
-## The Schema
-
-We use TimescaleDB hypertables for high-frequency vitals and PostGIS for location data.
-Daily aggregates (e.g., steps, sleep) live in `daily_summaries`; see [metrics.md](metrics.md) for the metric code list.
-
-## Data Contract (Batch JSON)
-
-Clients send a batch with device metadata and a list of readings:
-
-- `metadata.device_id`: UUID string
-- `data[].type`: `vital` | `gps` | `event`
-- `data[].t`: ISO 8601 timestamp
-
-See [scripts/mock_generator.py](scripts/mock_generator.py) for a concrete example payload.
-
-For iOS specifics (Swift structs + curl), see [IOS_INTEGRATION.md](IOS_INTEGRATION.md).
-
-## Integration Manifest
-
-### JSON Schema (keys and types)
-
-- `metadata.device_id`: string (UUID)
-- `metadata.user_id`: string (UUID, optional)
-- `metadata.model_name`: string (optional)
-- `metadata.version`: string (optional)
-- `data[]`: array of readings
-  - `type`: `vital` | `gps` | `event`
-  - `t`: string (ISO 8601 timestamp)
-  - `vital`: `code` (int), `val` (number)
-  - `gps`: `lat` (number), `lon` (number), `acc` (number, optional)
-  - `event`: `label` (string), `val_text` (string, optional), `metadata` (object, optional)
-
-### Metric Codes (`sensor_vitals.metric_type`)
-
-| Metric             | Code |
-| ------------------ | ---- |
-| Heart Rate         | 1    |
-| HRV (SDNN)         | 2    |
-| Ambient Noise (dB) | 10   |
-| Step Count         | 20   |
-
-Daily summaries (e.g., steps) are stored in `daily_summaries`. Step Count can also be sent
-as `metric_type` 20 when hourly aggregates are needed.
-
-### Batch Limit
-
-- Send a batch every 5 minutes or every 100 records, whichever comes first.
-
-### Hourly Summary (Materialized View)
-
-The hourly summary view powers fast charts in dev:
-
-- `REFRESH MATERIALIZED VIEW sensor_hourly_summary;`
-
-Example cron (every 15 minutes):
-
-```cron
-*/15 * * * * docker exec -i sensing_app_db psql -U postgres -d sensing_db -c "REFRESH MATERIALIZED VIEW sensor_hourly_summary;"
+```bash
+cp .env.example .env
 ```
 
-### Daily Step Summary (Materialized View)
+Set at least these values in `.env`:
 
-- `REFRESH MATERIALIZED VIEW daily_step_summary;`
+```env
+POSTGRES_PASSWORD=dev_password
+INGEST_API_KEY=dev_key
+```
 
-## Ingestion Logic
+Notes:
 
-The routing logic is implemented in [scripts/ingest_logic.py](scripts/ingest_logic.py). It parses each reading and inserts into:
+- The iOS app currently sends `X-API-Key: dev_key` from `ios/WellbeingApp/Sources/APIClient.swift`.
+- Local DB defaults are already aligned with the app and backend:
+  - `POSTGRES_HOST=localhost`
+  - `POSTGRES_PORT=5433`
+  - `POSTGRES_DB=sensing_db`
+  - `POSTGRES_USER=postgres`
 
-- `sensor_vitals` (TimescaleDB hypertable)
-- `sensor_location` (PostGIS geography)
-- `user_events` (discrete events)
+### 2. Start the database
 
-## Ingestion API (FastAPI)
+```bash
+docker compose up -d db
+```
 
-The `/ingest` endpoint validates payloads, checks an API key, and enqueues DB insertion in the background.
+The schema is applied from `database/init/01_schema.sql` when the DB container is created.
 
-1. Install dependencies:
-   - `pip install -r requirements.txt`
-2. Ensure `.env` contains `INGEST_API_KEY` and DB settings.
-3. Run the API:
-   - `uvicorn backend.app.main:app --reload --port 8000`
+If you need a clean rebuild of the local DB and schema:
 
-One-liner (DB + API):
+```bash
+docker compose down
+docker compose up -d db
+```
 
-`docker compose up -d && uvicorn backend.app.main:app --reload --port 8000`
+### 3. Create the Python environment
 
-### /docs usage example (iOS)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-Open the interactive docs at `https://<your-ngrok-domain>.ngrok-free.app/docs` and use:
+### 4. Start the API
 
-- Header: `X-API-Key: <INGEST_API_KEY>`
-- Endpoint: `POST /ingest`
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-Sample request body:
+Verify health:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Expected response:
+
+```json
+{ "status": "ok" }
+```
+
+## Current Schema
+
+The active tables are:
+
+- `users`
+- `devices`
+- `sessions`
+- `vitals`
+- `gps`
+- `motion_events`
+- `audio_events`
+- `events`
+- `metric_catalog`
+
+Important details:
+
+- `vitals.metric_code = 10` stores numeric audio exposure / noise samples.
+- `audio_events` stores categorical audio context labels like `quiet`, `busy`, or SoundAnalysis labels.
+- `events` stores generic markers such as `session_marker`.
+- `sessions` are now created from `session_marker` `START` / `END` events during ingest.
+
+## Supported Payload
+
+Clients send:
+
+- `metadata.device_id`: required
+- `metadata.user_id`: optional; if omitted, backend currently uses `device_id` as `user_id`
+- `metadata.version`: optional
+- `metadata.model_name`: optional
+- `data[]`: array of `vital`, `gps`, or `event` readings
+
+Current Pydantic models live in `backend/app/models.py`.
+
+### Example payload
 
 ```json
 {
@@ -127,53 +120,96 @@ Sample request body:
   },
   "data": [
     {
-      "t": "2026-02-10T14:57:07Z",
-      "type": "gps",
-      "lat": 34.0522,
-      "lon": -118.2437,
-      "acc": 5.0
-    },
-    {
-      "t": "2026-02-10T14:57:02Z",
-      "type": "vital",
-      "code": 1,
-      "val": 72
-    },
-    {
-      "t": "2026-02-10T14:56:57Z",
+      "t": "2026-03-06T04:19:06Z",
       "type": "event",
-      "label": "motion_state",
-      "val_text": "walking"
+      "label": "session_marker",
+      "val_text": "START"
+    },
+    {
+      "t": "2026-03-06T04:19:10Z",
+      "type": "vital",
+      "code": 10,
+      "val": 63.2
+    },
+    {
+      "t": "2026-03-06T04:19:12Z",
+      "type": "event",
+      "label": "audio_context",
+      "val_text": "busy",
+      "metadata": {
+        "db": "-37.20",
+        "confidence": "0.71",
+        "label_source": "sound_analysis"
+      }
+    },
+    {
+      "t": "2026-03-06T04:29:22Z",
+      "type": "event",
+      "label": "session_marker",
+      "val_text": "END"
     }
   ]
 }
 ```
 
-## Expose API for teammates (ngrok)
+## Running The iOS App
 
-1. Install ngrok (macOS):
-   - `brew install ngrok/ngrok/ngrok`
-2. Add your authtoken:
-   - `ngrok config add-authtoken <YOUR_TOKEN>`
-3. Start the tunnel:
-   - `ngrok http 8000`
-4. Share the HTTPS URL shown (e.g., `https://xxxxx.ngrok-free.app/docs`).
+See `ios/WellbeingApp/README.md` and `DEVICE_RUNBOOK.md` for the full device workflow.
 
-## How to run the test
+Before building:
 
-1. Install the Postgres driver:
-   - `pip install psycopg2-binary`
-2. Run the script:
-   - `python scripts/test_ingest.py`
+- update `APIBaseURL` in `ios/WellbeingApp/Resources/Info.plist` if your machine IP changed
+- make sure the API is reachable from the phone on port `8000`
+- keep `INGEST_API_KEY=dev_key` locally unless you also change `APIClient.swift`
 
-## Quick Verification (SQL)
+## Useful Local Checks
 
-- `SELECT * FROM sensor_vitals;`
-- `SELECT time, ST_AsText(coords) FROM sensor_location;`
-- `SELECT * FROM user_events;`
+### Tail ingest logs
 
-## Troubleshooting
+```bash
+tail -n 200 -F logs/ingest_audit.log logs/ingest_errors.log
+```
 
-- Docker paused: unpause Docker Desktop and re-run `docker compose up -d`.
-- 401 Unauthorized: ensure `X-API-Key` matches `INGEST_API_KEY` in `.env`.
-- ngrok URL changes: use the current “Forwarding” URL from the ngrok terminal.
+### Smoke-test ingestion without the phone
+
+```bash
+source .venv/bin/activate
+python scripts/test_ingest.py
+```
+
+### Inspect latest rows
+
+```bash
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT id, device_id, started_at, ended_at FROM sessions ORDER BY started_at DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, metric_code, value, session_id FROM vitals ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, label, db, ai_label, session_id FROM audio_events ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, label, val_text, session_id FROM events ORDER BY time DESC LIMIT 10;"
+unset PGPASSWORD
+```
+
+### Check 10-minute audio stats for a session
+
+```bash
+export PGPASSWORD=YOUR_PASSWORD
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT * FROM get_session_audio_exposure_10m_stats(<session_id>);"
+unset PGPASSWORD
+```
+
+## File Guide
+
+- `backend/app/main.py`: FastAPI app, auth, `/ingest`, `/health`
+- `backend/app/ingest.py`: DB write path, session creation, row linking
+- `backend/app/models.py`: request contract
+- `database/init/01_schema.sql`: schema + helper SQL functions
+- `metrics.md`: metric code reference
+- `DEVICE_RUNBOOK.md`: phone-to-backend verification workflow
+- `IOS_INTEGRATION.md`: payload examples and curl checks
+- `TEAM_DB_ONBOARDING.md`: shared DB onboarding notes
+
+## Common Pitfalls
+
+- If `/health` fails, verify the DB container is running and `.env` matches `localhost:5433`.
+- If iPhone uploads fail with `401`, your server `INGEST_API_KEY` does not match the hardcoded `dev_key` in `APIClient.swift`.
+- If no new tables appear after schema edits, recreate the DB container so `database/init/01_schema.sql` runs again.
+- If session rows are missing, confirm the client sent both `session_marker START` and `session_marker END` events.

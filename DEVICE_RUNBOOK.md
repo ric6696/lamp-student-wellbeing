@@ -1,73 +1,126 @@
-# Device Runbook (Phone → Backend → DB)
+# Device Runbook
 
-## 1) Start local services
+Use this when verifying the end-to-end path from iPhone and Watch to the local backend and database.
+
+## 1. Start the local database
 
 ```bash
-docker compose -f docker-compose.yml up -d --build db
+docker compose up -d db
 ```
 
-## 2) Start API server
+## 2. Start the API server
 
 ```bash
+python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Expected:
+Expected checks:
 
-- `GET /health` responds with `{\"status\": \"ok\"}`
-- API key is read from `.env` (`INGEST_API_KEY=dev_key`)
+```bash
+curl http://localhost:8000/health
+```
 
-## 3) iOS app backend target
+Expected response:
 
-Configured in `ios/WellbeingApp/Resources/Info.plist`:
+```json
+{ "status": "ok" }
+```
 
-- `APIBaseURL = http://10.89.132.230:8000/ingest`
+Important:
 
-If your IP changes, update that value before building.
+- The iOS client currently sends `X-API-Key: dev_key`.
+- Set `INGEST_API_KEY=dev_key` in `.env` unless you also change `ios/WellbeingApp/Sources/APIClient.swift`.
 
-## 4) Build + run on iPhone
+## 3. Point the iPhone app at your machine
 
-1. Open Xcode project from `ios/WellbeingApp`.
-2. Select your iPhone as run target.
-3. Ensure Signing Team is set.
-4. Run app and grant requested permissions (Health, Motion, Location, Microphone).
+The app reads `APIBaseURL` from `ios/WellbeingApp/Resources/Info.plist`.
 
-## 5) Collect and upload sample session
+Current format:
 
-1. Tap **Start Study Session**.
-2. Walk around for 1-2 minutes.
-3. Tap **End Study Session** to flush final upload.
+```text
+http://<your-mac-ip>:8000/ingest
+```
 
-## 6) Verify ingestion
+If your local IP changes, update this value before building.
 
-In a new terminal, tail logs:
+## 4. Build and run on iPhone
+
+1. Open `ios/WellbeingApp/WellbeingApp.xcodeproj` in Xcode.
+2. Select a physical iPhone target.
+3. Ensure signing is configured.
+4. Grant permissions when prompted:
+   - Health
+   - Motion
+   - Location
+   - Microphone
+
+## 5. Run a study session
+
+1. Tap `Start Study Session`.
+2. Wait at least 30-60 seconds so the app can collect audio, motion, GPS, and vitals.
+3. Tap `End Session & Upload`.
+
+Current ingest behavior:
+
+- `session_marker START` creates a row in `sessions`.
+- readings between `START` and `END` are linked with `session_id`.
+- `audio_context` events go to `audio_events`.
+- motion context goes to `motion_events` and generic `events` only when applicable.
+- numeric audio exposure is stored in `vitals` with `metric_code = 10`.
+
+## 6. Watch logs during the session
 
 ```bash
 tail -n 200 -F logs/ingest_audit.log logs/ingest_errors.log
 ```
 
-Check DB row counts:
+Success looks like:
+
+- new `ingest_success` lines in `logs/ingest_audit.log`
+- no new traceback in `logs/ingest_errors.log`
+
+## 7. Verify rows in Postgres
 
 ```bash
-export PGPASSWORD={PGPASSWORD}
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT count(*) AS vitals FROM vitals;"
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT count(*) AS gps FROM gps;"
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT count(*) AS events FROM events;"
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS sessions FROM sessions;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS vitals FROM vitals;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS gps FROM gps;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS motion_events FROM motion_events;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS audio_events FROM audio_events;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) AS events FROM events;"
+unset PGPASSWORD
 ```
 
-Check most recent rows:
+Inspect the most recent rows:
 
 ```bash
-export PGPASSWORD={PGPASSWORD}
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT ts, device_id, code, value FROM vitals ORDER BY ts DESC LIMIT 10;"
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT ts, device_id, geom, acc FROM gps ORDER BY ts DESC LIMIT 10;"
-psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT ts, device_id, label, value_text FROM events ORDER BY ts DESC LIMIT 10;"
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT id, user_id, device_id, started_at, ended_at FROM sessions ORDER BY started_at DESC LIMIT 5;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, metric_code, value, session_id FROM vitals ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, context, session_id FROM motion_events ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, label, db, ai_label, session_id FROM audio_events ORDER BY time DESC LIMIT 10;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT time, device_id, label, val_text, session_id FROM events ORDER BY time DESC LIMIT 10;"
+unset PGPASSWORD
 ```
 
-## 7) Pass criteria
+## 8. Check 10-minute audio exposure stats for the latest session
 
-- API returns accepted ingest responses
-- `logs/ingest_errors.log` stays empty (or no new traceback)
-- Counts in `vitals`, `gps`, `events` increase after each session
-- Latest rows contain current timestamps and your test device ID
+```bash
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT id FROM sessions ORDER BY started_at DESC LIMIT 1;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT * FROM get_session_audio_exposure_10m_stats(<session_id>);"
+unset PGPASSWORD
+```
+
+## Pass Criteria
+
+- `/health` returns `{"status":"ok"}`
+- the app successfully posts batches to `/ingest`
+- a new row appears in `sessions`
+- new rows appear in `vitals`, `gps`, and at least one of `motion_events` or `audio_events`
+- inserted rows carry the expected `device_id`
+- rows captured during the session have a non-null `session_id`

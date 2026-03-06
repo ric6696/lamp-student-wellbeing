@@ -1,61 +1,71 @@
-# Team DB Onboarding (EC2 PostgreSQL)
+# Team DB Onboarding
 
-Use this checklist for every developer joining the project.
+Use this checklist when a developer needs database access for local work or the shared environment.
 
----
+## 1. Local-first development
 
-## 1) Access prerequisites
+For most development work, use the local Docker DB instead of the shared instance.
 
-- Have project repository access.
-- Have local Python environment set up for this repo.
-- Receive DB credentials via secure channel (1Password/Bitwarden), **not chat**:
-  - `POSTGRES_HOST` (current: `18.166.106.91`)
-  - `POSTGRES_PORT` (current: `5432`)
-  - `POSTGRES_DB` (current: `sensing_db`)
-  - `POSTGRES_USER` (e.g. `app_ingest`)
-  - `POSTGRES_PASSWORD`
-
----
-
-## 2) AWS security group allowlist
-
-For each developer machine, add inbound rule to the EC2 instance security group:
-
-- Type: `PostgreSQL`
-- Port: `5432`
-- Source: `<developer_public_ip>/32`
-
-Get current public IP:
-
-```bash
-curl -4 ifconfig.me
-```
-
-Notes:
-
-- IPs can change (home/mobile networks). If DB suddenly fails, re-check this first.
-- Only add `SSH 22` for developers who actually need server administration.
-
----
-
-## 3) Local project env setup
-
-Update local `.env` in repo root:
+Local defaults:
 
 ```env
-POSTGRES_HOST=18.166.106.91
-POSTGRES_PORT=5432
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5433
 POSTGRES_DB=sensing_db
-POSTGRES_USER=app_ingest
-POSTGRES_PASSWORD=<REAL_PASSWORD>
-
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=dev_password
 INGEST_API_KEY=dev_key
-CORS_ORIGINS=*
 ```
 
----
+Start the local DB:
 
-## 4) Install and verify psql client
+```bash
+docker compose up -d db
+```
+
+List current tables:
+
+```bash
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "\dt"
+unset PGPASSWORD
+```
+
+Expected core tables include:
+
+- `users`
+- `devices`
+- `sessions`
+- `vitals`
+- `gps`
+- `motion_events`
+- `audio_events`
+- `events`
+- `metric_catalog`
+
+## 2. Shared DB access prerequisites
+
+Only use the shared DB when the task actually requires collaboration on shared data.
+
+Before connecting, you need:
+
+- repo access
+- project `.env` configured for the shared host
+- credentials received via a secure channel
+- security-group allowlisting if the DB is hosted behind EC2 rules
+
+Suggested shared env template:
+
+```env
+POSTGRES_HOST=<shared-host>
+POSTGRES_PORT=<shared-port>
+POSTGRES_DB=sensing_db
+POSTGRES_USER=<shared-user>
+POSTGRES_PASSWORD=<shared-password>
+INGEST_API_KEY=<shared-api-key>
+```
+
+## 3. Install `psql`
 
 ### macOS
 
@@ -65,84 +75,90 @@ echo 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-### Verify connectivity
+Verify:
 
 ```bash
-export PGPASSWORD='<REAL_PASSWORD>'
-psql -h 18.166.106.91 -p 5432 -U app_ingest -d sensing_db -c "\dt"
+psql --version
+```
+
+## 4. Shared DB connectivity check
+
+```bash
+export PGPASSWORD='<shared-password>'
+psql -h <shared-host> -p <shared-port> -U <shared-user> -d sensing_db -c "\dt"
 unset PGPASSWORD
 ```
 
-Expected output includes:
+## 5. Smoke test the repo ingestion path
 
-- `devices`
-- `sensor_vitals`
-- `sensor_location`
-- `user_events`
-- `daily_summaries`
-
----
-
-## 5) Project smoke test
-
-Run ingestion test from repo root:
+From the repo root:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 python scripts/test_ingest.py
 ```
 
-Then verify row counts:
+Then verify rows:
 
 ```bash
-export PGPASSWORD='<REAL_PASSWORD>'
-psql -h 18.166.106.91 -p 5432 -U app_ingest -d sensing_db -c "SELECT COUNT(*) FROM sensor_vitals;"
-psql -h 18.166.106.91 -p 5432 -U app_ingest -d sensing_db -c "SELECT COUNT(*) FROM sensor_location;"
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM sessions;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM vitals;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM gps;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM motion_events;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM audio_events;"
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT COUNT(*) FROM events;"
 unset PGPASSWORD
 ```
 
----
+## 6. Session-specific checks
 
-## 6) Team collaboration rules
-
-- Never edit schema directly in production-like DB first.
-- Schema changes must be committed to git (migration SQL or migration tool output), reviewed, then applied.
-- Keep one person responsible for applying schema changes to shared EC2 DB.
-- Avoid using `postgres` superuser in application code.
-
----
-
-## 7) Minimum operational hygiene
-
-- Restrict security group rules to developer `/32` IPs.
-- Rotate DB passwords when team membership changes.
-- Keep backups/snapshots enabled.
-- Document current credential owner and rotation date.
-
----
-
-## 8) Troubleshooting quick map
-
-### Timeout (`Operation timed out`)
-
-Usually network path issue:
-
-- Security group missing `5432` from your current IP.
-- Wrong EC2 public IP.
-- Route table/NACL issue.
-
-Quick check:
+Recent sessions:
 
 ```bash
-nc -vz 18.166.106.91 5432
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT id, user_id, device_id, started_at, ended_at FROM sessions ORDER BY started_at DESC LIMIT 10;"
+unset PGPASSWORD
 ```
 
-### Authentication failed
+10-minute audio exposure stats for one session:
 
-Usually password mismatch:
+```bash
+export PGPASSWORD=dev_password
+psql -h localhost -p 5433 -U postgres -d sensing_db -c "SELECT * FROM get_session_audio_exposure_10m_stats(<session_id>);"
+unset PGPASSWORD
+```
 
-- Confirm `.env` password is correct.
-- Reset DB user password on EC2 if needed.
+## 7. Collaboration rules
 
-### `psql` not found
+- Do not change the shared schema first and then backfill git later.
+- Put schema changes in `database/init/01_schema.sql` or a reviewed migration flow.
+- Coordinate any shared restore or backup action before running it.
+- Avoid using the `postgres` superuser outside local development unless the task requires it.
 
-Install `libpq` and ensure PATH updated (see section 4).
+## 8. Troubleshooting
+
+### `psql: command not found`
+
+Install `libpq` and update your `PATH`.
+
+### Connection timeout
+
+Common causes:
+
+- DB host or port is wrong
+- Docker DB is not running locally
+- shared DB security rules do not include your current IP
+
+### `401 Unauthorized` from `/ingest`
+
+The backend `INGEST_API_KEY` does not match the client header.
+
+### No rows in `sessions`
+
+Confirm the request includes both:
+
+- `event(label=session_marker, val_text=START)`
+- `event(label=session_marker, val_text=END)`
