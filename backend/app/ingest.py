@@ -61,10 +61,18 @@ def ingest_batch(batch: Batch) -> None:
         audio_events = []
         events = []
         seen_motion = set()
+        active_session = _find_active_session(cursor, user_id, device_id)
 
         allowed_metrics = {1, 10, 20, 21}
 
-        for reading in batch.data:
+        for reading in sorted(batch.data, key=lambda item: item.t):
+            session_id = active_session["id"] if active_session else _find_session_for_time(
+                cursor,
+                user_id,
+                device_id,
+                reading.t,
+            )
+
             if reading.type == "vital":
                 if reading.code not in allowed_metrics:
                     continue
@@ -73,7 +81,7 @@ def ingest_batch(batch: Batch) -> None:
                         reading.t,
                         user_id,
                         device_id,
-                        None,  # session_id not provided in payload
+                        session_id,
                         reading.code,
                         reading.val,
                         json.dumps({}),
@@ -85,7 +93,7 @@ def ingest_batch(batch: Batch) -> None:
                         reading.t,
                         user_id,
                         device_id,
-                        None,
+                        session_id,
                         reading.lat,
                         reading.lon,
                         reading.acc,
@@ -103,7 +111,7 @@ def ingest_batch(batch: Batch) -> None:
                                 reading.t,
                                 user_id,
                                 device_id,
-                                None,
+                                session_id,
                                 reading.motion_context,
                                 json.dumps({"source": "gps_payload"}),
                             )
@@ -111,6 +119,23 @@ def ingest_batch(batch: Batch) -> None:
             elif reading.type == "event":
                 label = reading.label
                 meta = reading.metadata or {}
+                if label == "session_marker":
+                    marker = (reading.val_text or "").upper()
+                    if marker == "START":
+                        active_session = _get_or_create_session(cursor, user_id, device_id, reading.t)
+                        session_id = active_session["id"]
+                    elif marker == "END" and active_session:
+                        session_id = active_session["id"]
+                        _close_session(cursor, active_session["id"], reading.t)
+                        _backfill_session_rows(
+                            cursor,
+                            active_session["id"],
+                            user_id,
+                            device_id,
+                            active_session["started_at"],
+                            reading.t,
+                        )
+
                 if label == "motion_context":
                     motion_value = reading.val_text or meta.get("context", "unknown")
                     motion_key = (reading.t, device_id, motion_value)
@@ -121,7 +146,7 @@ def ingest_batch(batch: Batch) -> None:
                                 reading.t,
                                 user_id,
                                 device_id,
-                                None,
+                                session_id,
                                 motion_value,
                                 json.dumps(meta),
                             )
@@ -132,7 +157,7 @@ def ingest_batch(batch: Batch) -> None:
                             reading.t,
                             user_id,
                             device_id,
-                            None,
+                            session_id,
                             reading.val_text or "unknown",
                             _safe_float(meta.get("db")),
                             _safe_float(meta.get("confidence")),
@@ -147,12 +172,15 @@ def ingest_batch(batch: Batch) -> None:
                             reading.t,
                             user_id,
                             device_id,
-                            None,
+                            session_id,
                             reading.label,
                             reading.val_text,
                             json.dumps(meta),
                         )
                     )
+
+                if label == "session_marker" and (reading.val_text or "").upper() == "END":
+                    active_session = None
 
         if vitals:
             execute_values(
@@ -208,3 +236,74 @@ def _safe_float(val):
         return float(val) if val is not None else None
     except (TypeError, ValueError):
         return None
+
+
+def _find_active_session(cursor, user_id: str, device_id: str):
+    cursor.execute(
+        "SELECT id, started_at FROM sessions "
+        "WHERE user_id = %s AND device_id = %s AND ended_at IS NULL "
+        "ORDER BY started_at DESC LIMIT 1",
+        (user_id, device_id),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+    return {"id": row[0], "started_at": row[1]}
+
+
+def _find_session_for_time(cursor, user_id: str, device_id: str, reading_time: str):
+    cursor.execute(
+        "SELECT id FROM sessions "
+        "WHERE user_id = %s AND device_id = %s "
+        "  AND started_at <= %s::timestamptz "
+        "  AND (ended_at IS NULL OR ended_at >= %s::timestamptz) "
+        "ORDER BY started_at DESC LIMIT 1",
+        (user_id, device_id, reading_time, reading_time),
+    )
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+
+def _get_or_create_session(cursor, user_id: str, device_id: str, started_at: str):
+    cursor.execute(
+        "SELECT id, started_at FROM sessions "
+        "WHERE user_id = %s AND device_id = %s AND started_at = %s::timestamptz "
+        "ORDER BY id DESC LIMIT 1",
+        (user_id, device_id, started_at),
+    )
+    existing = cursor.fetchone()
+    if existing:
+        return {"id": existing[0], "started_at": existing[1]}
+
+    cursor.execute(
+        "INSERT INTO sessions (user_id, device_id, started_at, label) "
+        "VALUES (%s, %s, %s::timestamptz, %s) RETURNING id, started_at",
+        (user_id, device_id, started_at, "study_session"),
+    )
+    created = cursor.fetchone()
+    return {"id": created[0], "started_at": created[1]}
+
+
+def _close_session(cursor, session_id: int, ended_at: str) -> None:
+    cursor.execute(
+        "UPDATE sessions "
+        "SET ended_at = CASE "
+        "    WHEN ended_at IS NULL OR ended_at < %s::timestamptz THEN %s::timestamptz "
+        "    ELSE ended_at "
+        "END "
+        "WHERE id = %s",
+        (ended_at, ended_at, session_id),
+    )
+
+
+def _backfill_session_rows(cursor, session_id: int, user_id: str, device_id: str, started_at, ended_at: str) -> None:
+    for table in ("vitals", "gps", "motion_events", "audio_events", "events"):
+        cursor.execute(
+            f"UPDATE {table} SET session_id = %s "
+            f"WHERE session_id IS NULL "
+            f"  AND user_id = %s "
+            f"  AND device_id = %s "
+            f"  AND time >= %s::timestamptz "
+            f"  AND time <= %s::timestamptz",
+            (session_id, user_id, device_id, started_at, ended_at),
+        )
