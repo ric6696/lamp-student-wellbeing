@@ -238,10 +238,13 @@ struct ContentView: View {
         switch definition.kind {
         case .vital(let code):
             return latestItems.filter { $0.type == .vital && $0.code == code }
+                .sorted { $0.t > $1.t }
         case .event(let label):
             return latestItems.filter { $0.type == .event && $0.label == label }
+                .sorted { $0.t > $1.t }
         case .gps:
             return latestItems.filter { $0.type == .gps }
+                .sorted { $0.t > $1.t }
         }
     }
 
