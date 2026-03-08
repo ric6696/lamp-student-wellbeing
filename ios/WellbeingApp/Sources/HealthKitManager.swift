@@ -26,12 +26,10 @@ final class HealthKitManager {
         ]
         let readTypes: Set = [
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
+            HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
             HKQuantityType.quantityType(forIdentifier: .environmentalAudioExposure)!,
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-            HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!,
-            HKQuantityType.quantityType(forIdentifier: .appleStandTime)!,
-            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
         ]
         do {
             try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
@@ -97,44 +95,26 @@ final class HealthKitManager {
         let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
 
         return try await withCheckedThrowingContinuation { cont in
-            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, err in
-                if let err = err { cont.resume(throwing: err); return }
-                let items: [BatchItem] = (samples as? [HKCategorySample] ?? []).compactMap { sample in
-                    guard let stage = SleepStage.from(sample) else { return nil }
-                    return BatchItem(
-                        type: .event,
-                        t: sample.startDate,
-                        label: "sleep_stage",
-                        val_text: stage.label,
-                        metadata: ["stage_code": "\(stage.code)", "duration_sec": "\(Int(sample.endDate.timeIntervalSince(sample.startDate)))"]
-                    )
-                }
-                cont.resume(returning: items)
-            }
-            store.execute(q)
+            cont.resume(returning: [])
         }
     }
 
     func fetchDailyAggregates(for date: Date) async throws -> DailyAggregates {
         let deviceId = DeviceId.value
         async let steps = sum(.stepCount, unit: .count(), on: date)
-        async let exercise = sum(.appleExerciseTime, unit: .minute(), on: date)
-        async let stand = sum(.appleStandTime, unit: .minute(), on: date)
-        async let sleep = sleepInterval(on: date)
-
-        let (s, ex, st, sleepSpan) = try await (steps, exercise, stand, sleep)
+        let s = try await steps
 
         let summary = DailySummary(
             date: date,
             device_id: deviceId,
             steps: Int(s),
             active_energy_kcal: 0,
-            exercise_min: Int(ex),
-            sleep_start: sleepSpan?.0,
-            sleep_end: sleepSpan?.1
+            exercise_min: 0,
+            sleep_start: nil,
+            sleep_end: nil
         )
 
-        return DailyAggregates(summary: summary, standMinutes: Int(st))
+        return DailyAggregates(summary: summary, standMinutes: 0)
     }
 
     // MARK: - Private
@@ -183,23 +163,6 @@ final class HealthKitManager {
             let q = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, stats, err in
                 if let err = err { cont.resume(throwing: err); return }
                 cont.resume(returning: stats?.sumQuantity()?.doubleValue(for: unit) ?? 0)
-            }
-            store.execute(q)
-        }
-    }
-
-    private func sleepInterval(on date: Date) async throws -> (Date, Date)? {
-        let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
-        return try await withCheckedThrowingContinuation { cont in
-            let start = Calendar.current.startOfDay(for: date)
-            let end = Calendar.current.date(byAdding: .day, value: 1, to: start)!
-            let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
-            let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, samples, err in
-                if let err = err { cont.resume(throwing: err); return }
-                guard let first = (samples as? [HKCategorySample])?.first else { cont.resume(returning: nil); return }
-                let last = (samples as? [HKCategorySample])?.last
-                cont.resume(returning: (first.startDate, last?.endDate ?? first.endDate))
             }
             store.execute(q)
         }
@@ -386,35 +349,5 @@ actor LiveVitalsBuffer {
     func drain() -> [BatchItem] {
         defer { items.removeAll() }
         return items
-    }
-}
-
-struct SleepStage {
-    let label: String
-    let code: Int
-
-    static func from(_ sample: HKCategorySample) -> SleepStage? {
-        let value = sample.value
-        if #available(iOS 16.0, *) {
-            switch value {
-            case HKCategoryValueSleepAnalysis.awake.rawValue:
-                return SleepStage(label: "awake", code: value)
-            case HKCategoryValueSleepAnalysis.asleepREM.rawValue:
-                return SleepStage(label: "rem", code: value)
-            case HKCategoryValueSleepAnalysis.asleepCore.rawValue:
-                return SleepStage(label: "core", code: value)
-            case HKCategoryValueSleepAnalysis.asleepDeep.rawValue:
-                return SleepStage(label: "deep", code: value)
-            default:
-                return nil
-            }
-        } else {
-            switch value {
-            case HKCategoryValueSleepAnalysis.awake.rawValue:
-                return SleepStage(label: "awake", code: value)
-            default:
-                return nil
-            }
-        }
     }
 }

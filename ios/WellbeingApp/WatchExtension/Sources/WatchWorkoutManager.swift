@@ -152,25 +152,34 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         let mappings: [(HKQuantityTypeIdentifier, Int, HKUnit)] = [
             (.heartRate, 1, HKUnit.count().unitDivided(by: .minute())),
             (.heartRateVariabilitySDNN, 2, HKUnit.secondUnit(with: .milli)),
-            (.activeEnergyBurned, 5, .kilocalorie()),
             (.stepCount, 20, .count()),
-            (.distanceWalkingRunning, 21, .meter()),
-            (.respiratoryRate, 30, HKUnit.count().unitDivided(by: .minute()))
+            (.distanceWalkingRunning, 21, .meter())
         ]
 
         var vitals: [[String: Any]] = []
         for (identifier, code, unit) in mappings {
             guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else { continue }
-            // Some newer HealthKit builders might not have the type in collectedTypes immediately
-            // so we skip the collectedTypes.contains check if we just want the latest stats
-            // guard collectedTypes.contains(quantityType) else { continue }
             
-            guard let stats = workoutBuilder.statistics(for: quantityType),
-                  let quantity = stats.mostRecentQuantity() else { continue }
-
-            let value = quantity.doubleValue(for: unit)
-            if value < 0 { continue }
-
+            var value: Double = 0
+            if let stats = workoutBuilder.statistics(for: quantityType) {
+                let quantity: HKQuantity?
+                if identifier == .stepCount || identifier == .distanceWalkingRunning {
+                    quantity = stats.sumQuantity()
+                } else {
+                    quantity = stats.mostRecentQuantity()
+                }
+                
+                if let q = quantity {
+                    value = q.doubleValue(for: unit)
+                }
+            }
+            
+            // For HR and HRV, we only send if we have a real non-zero sample
+            if (identifier == .heartRate || identifier == .heartRateVariabilitySDNN) && value <= 0 {
+                continue
+            }
+            // For steps and distance, we send 0 even if no data yet (per user request)
+            
             vitals.append([
                 "code": code,
                 "val": value
@@ -203,9 +212,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
             HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-            HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
-            HKQuantityType.quantityType(forIdentifier: .respiratoryRate)!
+            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
         ]
 
         print("WatchWorkoutManager: Requesting HealthKit authorization from Watch OS...")

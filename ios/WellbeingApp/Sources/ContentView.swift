@@ -12,21 +12,18 @@ struct ContentView: View {
     fileprivate static let sensorDefinitions: [SensorDisplayType] = [
         .init(id: "vital_1", title: "Heart Rate", description: "Beats per minute from the live workout", kind: .vital(1), source: .watch),
         .init(id: "vital_2", title: "HRV (SDNN)", description: "Heart rate variability from the watch", kind: .vital(2), source: .watch),
-        .init(id: "vital_3", title: "Resting Heart Rate", description: "Baseline heart rate samples", kind: .vital(3), source: .watch),
-        .init(id: "vital_5", title: "Active Energy", description: "Active calories burned", kind: .vital(5), source: .watch),
-        .init(id: "vital_10", title: "Audio Exposure", description: "HealthKit audio exposure (dBA)", kind: .vital(10), source: .phone),
+        .init(id: "vital_45", title: "Motion Context", description: "Motion classifier from Apple Watch", kind: .vital(45), source: .watch),
         .init(id: "vital_20", title: "Steps", description: "Step counts from watch workout", kind: .vital(20), source: .watch),
         .init(id: "vital_21", title: "Distance", description: "Distance walked or run", kind: .vital(21), source: .watch),
-        .init(id: "vital_30", title: "Resp. Rate", description: "Breaths per minute", kind: .vital(30), source: .watch),
         .init(id: "vital_40", title: "Accel Mean", description: "Mean accel magnitude window", kind: .vital(40), source: .watch),
         .init(id: "vital_41", title: "Accel StdDev", description: "Accel variability", kind: .vital(41), source: .watch),
         .init(id: "vital_42", title: "Gyro X Mean", description: "Rotation rate X axis", kind: .vital(42), source: .watch),
         .init(id: "vital_43", title: "Gyro Y Mean", description: "Rotation rate Y axis", kind: .vital(43), source: .watch),
         .init(id: "vital_44", title: "Gyro Z Mean", description: "Rotation rate Z axis", kind: .vital(44), source: .watch),
-        .init(id: "vital_45", title: "Activity Code", description: "Motion classifier from watch", kind: .vital(45), source: .watch),
-        .init(id: "event_motion", title: "Motion Context", description: "Phone CoreMotion activity labels", kind: .event("motion_context"), source: .phone),
+        .init(id: "gps", title: "GPS", description: "Latitude / longitude traces", kind: .gps, source: .phone),
+        .init(id: "event_motion", title: "Motion Context", description: "Motion context from the iPhone", kind: .event("motion_context"), source: .phone),
         .init(id: "event_audio", title: "Audio Context", description: "SoundAnalysis AI scenes", kind: .event("audio_context"), source: .phone),
-        .init(id: "gps", title: "GPS", description: "Latitude / longitude traces", kind: .gps, source: .phone)
+        .init(id: "vital_10", title: "Audio Exposure", description: "HealthKit audio exposure (dBA)", kind: .vital(10), source: .phone)
     ]
 
     @EnvironmentObject var scheduler: BatchScheduler
@@ -387,10 +384,24 @@ struct DataTypeDetailView: View {
     private func sampleTitle(for item: BatchItem) -> String {
         switch item.type {
         case .event:
-            if let val = item.val_text, !val.isEmpty {
-                return "\(item.label ?? "Event") — \(val)"
+            let label = item.label ?? "Event"
+            var valueText = item.val_text ?? ""
+            
+            // Format Motion Context value
+            if label == "motion_context", let vt = item.val_text {
+                // If it's a number (watch data mapped to number), use the helper
+                if let code = Int(vt) {
+                    valueText = motionStateName(for: code)
+                } else {
+                    // It's already a string (phone data), just capitalize it
+                    valueText = vt.capitalized
+                }
             }
-            return item.label ?? "Event"
+            
+            if !valueText.isEmpty {
+                return "\(label) — \(valueText)"
+            }
+            return label
         case .vital:
             let code = item.code ?? 0
             let name = ContentView.sensorDefinitions.first(where: { definition in
@@ -398,11 +409,26 @@ struct DataTypeDetailView: View {
                 return false
             })?.title ?? "Metric \(code)"
             if let value = item.val {
+                if code == 45 {
+                    return "\(name): \(motionStateName(for: Int(value.rounded())))"
+                }
                 return "\(name): \(Int(value.rounded()))"
             }
             return name
         case .gps:
             return "GPS Reading"
+        }
+    }
+
+    private func motionStateName(for code: Int) -> String {
+        switch code {
+        case 0: return "Unknown"
+        case 1: return "Stationary"
+        case 2: return "Walking"
+        case 3: return "Running"
+        case 4: return "Automotive"
+        case 5: return "Cycling"
+        default: return "Other (\(code))"
         }
     }
 
