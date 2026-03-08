@@ -11,3 +11,6 @@ logs/
 DerivedData/
 *.xcuserstate
 .DS_Store
+
+# Ignore per-developer local Xcode config
+ios/WellbeingApp/Configs/Local.xcconfig
