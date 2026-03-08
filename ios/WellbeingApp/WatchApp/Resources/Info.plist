@@ -23,7 +23,7 @@
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Used for wellbeing research and health monitoring.</string>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>com.lamp.wellbeing.rc.app</string>
+	<string>$(WK_COMPANION_APP_BUNDLE_IDENTIFIER)</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>

@@ -30,3 +30,23 @@ This repository uses **XcodeGen** to manage the project file. This ensures the p
 - Resources/: Info.plist, Entitlements, and Setup notes
 - project.yml: The project definition file used by XcodeGen
 
+## Per-developer setup (one-time)
+
+This project uses a committed `Configs/Project.xcconfig` which includes a gitignored `Configs/Local.xcconfig`. Each developer should copy the example and set their local overrides (e.g. `USER_ID`, `TEAM_ID`).
+
+```bash
+cd ios/WellbeingApp
+cp Configs/Local.example.xcconfig Configs/Local.xcconfig
+# Edit Configs/Local.xcconfig and set USER_ID and optional TEAM_ID
+open Configs/Local.xcconfig
+```
+
+After creating `Local.xcconfig`, generate the Xcode project as usual:
+
+```bash
+xcodegen generate
+open WellbeingApp.xcodeproj
+```
+
+CI: ensure `Configs/Local.xcconfig` is provided during CI runs (or set the `USER_ID` env var before running `xcodegen`).
+

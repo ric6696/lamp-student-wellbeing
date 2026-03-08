@@ -1,6 +1,8 @@
 name: WellbeingApp
 options:
   bundleIdPrefix: com.lamp.wellbeing.kevin
+settings:
+  USER_ID: kevin
 targets:
   WellbeingApp:
     type: application
@@ -11,8 +13,11 @@ targets:
       - path: Resources
     settings:
       INFOPLIST_FILE: Resources/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    configFiles:
+      Debug: Configs/Project.xcconfig
+      Release: Configs/Project.xcconfig
     capabilities:
       HealthKit: {}
     entitlements:
@@ -34,8 +39,11 @@ targets:
       - path: WatchApp/Resources
     settings:
       INFOPLIST_FILE: WatchApp/Resources/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp
-      WK_COMPANION_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app.watchapp
+      WK_COMPANION_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app
+    configFiles:
+      Debug: Configs/Project.xcconfig
+      Release: Configs/Project.xcconfig
     dependencies:
       - target: WellbeingWatchExtension
 
@@ -48,8 +56,11 @@ targets:
       - path: WatchExtension/Resources
     settings:
       INFOPLIST_FILE: WatchExtension/Resources/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp.extension
-      WK_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.kevin.app.watchapp
+      PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app.watchapp.extension
+      WK_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app.watchapp
+    configFiles:
+      Debug: Configs/Project.xcconfig
+      Release: Configs/Project.xcconfig
     capabilities:
       HealthKit: {}
     entitlements:
