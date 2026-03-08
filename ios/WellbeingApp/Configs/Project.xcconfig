@@ -1,9 +1,6 @@
-// Project.xcconfig
-// Committed defaults. Each developer should create a gitignored Local.xcconfig to override values.
-#include "Local.xcconfig"
+// Shared project configuration.
+// Per-developer overrides belong in Local.xcconfig, which is gitignored.
 
-// Default developer identifier (can be overridden in Local.xcconfig)
-USER_ID = kevin
-
-// Optional: define TEAM_ID here or in Local.xcconfig (empty by default)
 TEAM_ID =
+
+#include? "Local.xcconfig"
