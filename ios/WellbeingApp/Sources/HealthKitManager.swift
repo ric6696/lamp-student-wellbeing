@@ -95,28 +95,7 @@ final class HealthKitManager {
         let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
 
         return try await withCheckedThrowingContinuation { cont in
-<<<<<<< Updated upstream
             cont.resume(returning: [])
-=======
-            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, err in
-                if let err = err { cont.resume(throwing: err); return }
-                let items: [BatchItem] = (samples as? [HKCategorySample] ?? []).compactMap { sample in
-                    guard let stage = SleepStage.from(sample) else { return nil }
-                    return BatchItem(
-                        type: .event,
-                        t: sample.startDate,
-                        label: "sleep_stage",
-                        val_text: stage.label,
-                        metadata: [
-                            "stage_code": .number(Double(stage.code)),
-                            "duration_sec": .number(sample.endDate.timeIntervalSince(sample.startDate))
-                        ]
-                    )
-                }
-                cont.resume(returning: items)
-            }
-            store.execute(q)
->>>>>>> Stashed changes
         }
     }
 
@@ -370,5 +349,49 @@ actor LiveVitalsBuffer {
     func drain() -> [BatchItem] {
         defer { items.removeAll() }
         return items
+    }
+}
+
+private enum SleepStage {
+    case inBed
+    case asleep
+    case awake
+
+    static func from(_ sample: HKCategorySample) -> SleepStage? {
+        switch sample.value {
+        case HKCategoryValueSleepAnalysis.inBed.rawValue:
+            return .inBed
+        case HKCategoryValueSleepAnalysis.awake.rawValue:
+            return .awake
+        case HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
+             HKCategoryValueSleepAnalysis.asleepCore.rawValue,
+             HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
+             HKCategoryValueSleepAnalysis.asleepREM.rawValue:
+            return .asleep
+        default:
+            return nil
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .inBed:
+            return "in_bed"
+        case .asleep:
+            return "asleep"
+        case .awake:
+            return "awake"
+        }
+    }
+
+    var code: Int {
+        switch self {
+        case .inBed:
+            return 1
+        case .asleep:
+            return 2
+        case .awake:
+            return 3
+        }
     }
 }
