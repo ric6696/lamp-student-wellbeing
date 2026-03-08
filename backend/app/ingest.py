@@ -63,7 +63,7 @@ def ingest_batch(batch: Batch) -> None:
         seen_motion = set()
         active_session = _find_active_session(cursor, user_id, device_id)
 
-        allowed_metrics = {1, 10, 20, 21}
+        allowed_metrics = {1, 2, 10, 20, 21}
 
         for reading in sorted(batch.data, key=lambda item: item.t):
             session_id = active_session["id"] if active_session else _find_session_for_time(

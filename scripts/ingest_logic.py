@@ -19,7 +19,7 @@ def ingest_batch(connection, batch_data):
     gps_points = []
     events = []
 
-    allowed_metrics = {1, 10, 20, 21}
+    allowed_metrics = {1, 2, 10, 20, 21}
 
     for reading in batch_data['data']:
         r_type = reading.get('type')

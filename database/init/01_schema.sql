@@ -25,6 +25,7 @@ CREATE TABLE metric_catalog (
 
 INSERT INTO metric_catalog (code, name, unit, description) VALUES
     (1, 'heart_rate_bpm', 'count/min', 'Heart rate in beats per minute'),
+    (2, 'heart_rate_variability_sdnn_ms', 'ms', 'Heart rate variability SDNN in milliseconds'),
     (10, 'environmental_noise_db', 'dBA', 'Ambient or environmental noise level'),
     (20, 'steps', 'count', 'Step count increment'),
     (21, 'distance_m', 'meter', 'Distance walked/running');
