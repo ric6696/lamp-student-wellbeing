@@ -70,9 +70,9 @@ final class SensorCollector {
             code: 10,
             val: mappedDbA,
             metadata: [
-                "source": "ambient_noise_manager",
-                "raw_dbfs": String(format: "%.2f", db),
-                "mapped_dba": String(format: "%.2f", mappedDbA)
+                "source": .string("ambient_noise_manager"),
+                "raw_dbfs": .number(Double(db)),
+                "mapped_dba": .number(mappedDbA)
             ]
         )
         try? LocalStore.shared.append(item)
@@ -148,17 +148,17 @@ final class SensorCollector {
             return []
         }
 
-        var metadata: [String: String] = [
-            "confidence": String(format: "%.2f", snapshot.confidence),
-            "db": String(format: "%.2f", snapshot.decibel),
-            "label_source": snapshot.labelSource,
-            "heuristic_label": snapshot.heuristicLabel
+        var metadata: [String: JSONValue] = [
+            "confidence": .number(snapshot.confidence),
+            "db": .number(Double(snapshot.decibel)),
+            "label_source": .string(snapshot.labelSource),
+            "heuristic_label": .string(snapshot.heuristicLabel)
         ]
         if let aiLabel = snapshot.aiLabel {
-            metadata["ai_label"] = aiLabel
+            metadata["ai_label"] = .string(aiLabel)
         }
         if let aiConfidence = snapshot.aiConfidence {
-            metadata["ai_confidence"] = String(format: "%.2f", aiConfidence)
+            metadata["ai_confidence"] = .number(aiConfidence)
         }
 
         let item = BatchItem(

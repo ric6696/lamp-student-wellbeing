@@ -29,7 +29,7 @@ actor SessionMetricsTracker {
                 let key = "vital_\(code)"
                 snapshot.counts[key, default: 0] += 1
                 if code == 10 {
-                    if item.metadata?["source"] == "ambient_noise_manager" {
+                    if item.metadata?["source"]?.stringValue == "ambient_noise_manager" {
                         snapshot.latestAmbientNoise = item
                         snapshot.counts["vital_ambient_noise", default: 0] += 1
                     } else {

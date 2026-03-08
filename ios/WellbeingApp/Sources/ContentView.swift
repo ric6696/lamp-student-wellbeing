@@ -441,7 +441,10 @@ struct DataTypeDetailView: View {
             return item.motion_context?.capitalized
         case .event:
             if let metadata = item.metadata, !metadata.isEmpty {
-                return metadata.map { "\($0.key)=\($0.value)" }.joined(separator: ", ")
+                return metadata
+                    .sorted { $0.key < $1.key }
+                    .map { "\($0.key)=\($0.value.displayText)" }
+                    .joined(separator: ", ")
             }
             return nil
         case .vital:

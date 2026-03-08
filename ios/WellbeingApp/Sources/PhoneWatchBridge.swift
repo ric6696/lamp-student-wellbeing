@@ -113,7 +113,8 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
                 else if let n = item["val"] as? NSNumber { val = n.doubleValue }
                 else { val = nil }
                 guard let val else { return nil }
-                return BatchItem(type: .vital, t: date, code: code, val: val, metadata: ["source": "watch"])
+                // metadata expects JSONValue; wrap string in .string
+                return BatchItem(type: .vital, t: date, code: code, val: val, metadata: ["source": .string("watch")])
             }
 
             guard !batchItems.isEmpty else { return }

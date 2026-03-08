@@ -95,7 +95,28 @@ final class HealthKitManager {
         let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
 
         return try await withCheckedThrowingContinuation { cont in
+<<<<<<< Updated upstream
             cont.resume(returning: [])
+=======
+            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, err in
+                if let err = err { cont.resume(throwing: err); return }
+                let items: [BatchItem] = (samples as? [HKCategorySample] ?? []).compactMap { sample in
+                    guard let stage = SleepStage.from(sample) else { return nil }
+                    return BatchItem(
+                        type: .event,
+                        t: sample.startDate,
+                        label: "sleep_stage",
+                        val_text: stage.label,
+                        metadata: [
+                            "stage_code": .number(Double(stage.code)),
+                            "duration_sec": .number(sample.endDate.timeIntervalSince(sample.startDate))
+                        ]
+                    )
+                }
+                cont.resume(returning: items)
+            }
+            store.execute(q)
+>>>>>>> Stashed changes
         }
     }
 
