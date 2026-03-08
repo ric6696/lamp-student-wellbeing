@@ -15,13 +15,15 @@ targets:
       INFOPLIST_FILE: Resources/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      CODE_SIGN_ENTITLEMENTS: Resources/WellbeingApp.entitlements
     configFiles:
       Debug: Configs/Project.xcconfig
       Release: Configs/Project.xcconfig
     capabilities:
       HealthKit: {}
-    entitlements:
-      path: Resources/WellbeingApp.entitlements
+    # Removed entitlements path to prevent xcodegen from overwriting/resetting it
+    # entitlements:
+    #   path: Resources/WellbeingApp.entitlements
     dependencies:
       - sdk: HealthKit.framework
       - sdk: CoreLocation.framework
@@ -58,13 +60,15 @@ targets:
       INFOPLIST_FILE: WatchExtension/Resources/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app.watchapp.extension
       WK_APP_BUNDLE_IDENTIFIER: com.lamp.wellbeing.$(USER_ID).app.watchapp
+      CODE_SIGN_ENTITLEMENTS: WatchExtension/Resources/WellbeingWatchExtension.entitlements
     configFiles:
       Debug: Configs/Project.xcconfig
       Release: Configs/Project.xcconfig
     capabilities:
       HealthKit: {}
-    entitlements:
-      path: WatchExtension/Resources/WellbeingWatchExtension.entitlements
+    # Removed entitlements path to prevent xcodegen from overwriting/resetting it
+    # entitlements:
+    #   path: WatchExtension/Resources/WellbeingWatchExtension.entitlements
     dependencies:
       - sdk: HealthKit.framework
       - sdk: WatchConnectivity.framework

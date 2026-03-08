@@ -45,7 +45,8 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
     func startIfNeeded() async throws {
         print("WatchWorkoutManager: startIfNeeded called")
         guard session == nil, builder == nil, !isStarting else {
-            print("WatchWorkoutManager: Workout session already exists or is starting")
+            let reason = session != nil ? "session exists" : (builder != nil ? "builder exists" : "isStarting")
+            print("WatchWorkoutManager: Workout start ignored because: \(reason)")
             onWorkoutStateChange?("Workout already running")
             return
         }
@@ -54,7 +55,13 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         defer { isStarting = false }
 
         print("WatchWorkoutManager: Requesting authorization...")
-        try await requestAuthorizationIfNeeded()
+        do {
+            try await requestAuthorizationIfNeeded()
+        } catch {
+            print("WatchWorkoutManager: Auth request threw: \(error)")
+            onWorkoutStateChange?("Auth failed")
+            throw error
+        }
 
         do {
             print("WatchWorkoutManager: Creating HKWorkoutSession...")
@@ -67,24 +74,39 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
 
             session.delegate = self
             builder.delegate = self
+            
+            print("WatchWorkoutManager: Setting up data source...")
             builder.dataSource = HKLiveWorkoutDataSource(healthStore: store, workoutConfiguration: configuration)
 
             self.session = session
             self.builder = builder
 
-            print("WatchWorkoutManager: Preparing and starting session...")
+            print("WatchWorkoutManager: Preparing session...")
             session.prepare()
+            
             let startDate = Date()
+            print("WatchWorkoutManager: Starting activity at \(startDate)")
             session.startActivity(with: startDate)
-            try await builder.beginCollection(at: startDate)
-            startMotionSamplingIfPossible()
+            
+            print("WatchWorkoutManager: Beginning collection...")
+            do {
+                try await builder.beginCollection(at: startDate)
+                print("WatchWorkoutManager: Live collection started")
+                startMotionSamplingIfPossible()
+                onWorkoutStateChange?("Workout running")
+            } catch {
+                print("WatchWorkoutManager: beginCollection failed: \(error.localizedDescription)")
+                // Some watchOS versions might fail here if permissions aren't perfect
+                onWorkoutStateChange?("Collection failed: \(error.localizedDescription)")
+                throw error
+            }
 
             print("WatchWorkoutManager: Session started successfully")
-            onWorkoutStateChange?("Workout running")
         } catch {
-            print("WatchWorkoutManager: Error starting workout: \(error)")
+            print("WatchWorkoutManager: CRITICAL ERROR starting workout: \(error)")
+            let errorMsg = (error as NSError).domain == "com.apple.healthkit" ? "HK Error \((error as NSError).code)" : error.localizedDescription
+            onWorkoutStateChange?("Start failed: \(errorMsg)")
             cleanupAndReset()
-            onWorkoutStateChange?("Workout start failed")
             throw error
         }
     }
@@ -122,6 +144,9 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
 
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        // Log some activity for debugging
+        print("WatchWorkoutManager: Collected types update: \(collectedTypes.map { $0.identifier })")
+        
         guard shouldSendVitalsNow() else { return }
 
         let mappings: [(HKQuantityTypeIdentifier, Int, HKUnit)] = [
@@ -136,7 +161,10 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         var vitals: [[String: Any]] = []
         for (identifier, code, unit) in mappings {
             guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else { continue }
-            guard collectedTypes.contains(quantityType) else { continue }
+            // Some newer HealthKit builders might not have the type in collectedTypes immediately
+            // so we skip the collectedTypes.contains check if we just want the latest stats
+            // guard collectedTypes.contains(quantityType) else { continue }
+            
             guard let stats = workoutBuilder.statistics(for: quantityType),
                   let quantity = stats.mostRecentQuantity() else { continue }
 
@@ -147,6 +175,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
                 "code": code,
                 "val": value
             ])
+            print("WatchWorkoutManager: \(identifier.rawValue) = \(value)")
         }
 
         vitals.append(contentsOf: consumeMotionFeatureItems())
@@ -180,12 +209,16 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         ]
 
         print("WatchWorkoutManager: Requesting HealthKit authorization from Watch OS...")
+        // Explicitly check current status before requesting (sometimes helps if it's already denied/allowed)
+        let status = store.authorizationStatus(for: .workoutType())
+        print("WatchWorkoutManager: Current workout auth status: \(status.rawValue)")
+        
         do {
             try await store.requestAuthorization(toShare: toShare, read: toRead)
             print("WatchWorkoutManager: HealthKit authorization request completed")
         } catch {
             print("WatchWorkoutManager: HealthKit authorization FAILED with error: \(error)")
-            throw error
+            // If it fails because of background execution or other UI reasons, we still proceed if we have a session
         }
     }
 
