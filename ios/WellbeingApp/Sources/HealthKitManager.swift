@@ -60,6 +60,7 @@ final class HealthKitManager {
         try await withThrowingTaskGroup(of: [BatchItem].self) { group in
             let metrics: [(HKQuantityTypeIdentifier, Int)] = [
                 (.heartRate, 1),
+                (.heartRateVariabilitySDNN, 2),
                 (.environmentalAudioExposure, 10),
                 (.stepCount, 20),
                 (.distanceWalkingRunning, 21)
@@ -148,6 +149,7 @@ final class HealthKitManager {
     private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
         switch id {
         case .heartRate: return HKUnit.count().unitDivided(by: .minute())
+        case .heartRateVariabilitySDNN: return .secondUnit(with: .milli)
         case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
         case .distanceWalkingRunning: return .meter()
         default: return .count()
@@ -253,6 +255,7 @@ final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKL
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
         let liveMappings: [(HKQuantityTypeIdentifier, Int)] = [
             (.heartRate, 1),
+            (.heartRateVariabilitySDNN, 2),
             (.environmentalAudioExposure, 10),
             (.stepCount, 20),
             (.distanceWalkingRunning, 21),
@@ -278,6 +281,7 @@ final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKL
     private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
         switch id {
         case .heartRate: return HKUnit.count().unitDivided(by: .minute())
+        case .heartRateVariabilitySDNN: return .secondUnit(with: .milli)
         case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
         case .distanceWalkingRunning: return .meter()
         default: return .count()
