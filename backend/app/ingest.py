@@ -1,6 +1,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Optional
 from psycopg2.extras import execute_values
 
 from .db import get_connection, release_connection
@@ -61,6 +62,7 @@ def ingest_batch(batch: Batch) -> None:
         audio_events = []
         events = []
         seen_motion = set()
+        supports_session_key = _sessions_has_session_key(cursor)
         active_sessions = {base_device_id: _find_active_session(cursor, user_id, base_device_id)}
         active_sessions_by_key = {}
         known_device_ids = {base_device_id}
@@ -69,7 +71,7 @@ def ingest_batch(batch: Batch) -> None:
 
         for reading in sorted(batch.data, key=lambda item: item.t):
             reading_device_id = _reading_device_id(reading, base_device_id)
-            session_key = _reading_session_key(reading)
+            session_key = _reading_session_key(reading) if supports_session_key else None
             if reading_device_id not in known_device_ids:
                 cursor.execute(
                     "INSERT INTO devices (id, user_id, model_name, last_sync) "
@@ -153,22 +155,36 @@ def ingest_batch(batch: Batch) -> None:
                 if label == "session_marker":
                     marker = (reading.val_text or "").upper()
                     if marker == "START":
-                        active_session = _get_or_create_session(cursor, user_id, base_device_id, reading.t, session_key)
+                        active_session = _get_or_create_session(
+                            cursor,
+                            user_id,
+                            base_device_id,
+                            reading.t,
+                            session_key,
+                            supports_session_key,
+                        )
                         session_id = active_session["id"]
                         active_sessions[reading_device_id] = active_session
                         if session_key:
                             active_sessions_by_key[session_key] = active_session
-                    elif marker == "END" and active_session:
-                        session_id = active_session["id"]
-                        _close_session(cursor, active_session["id"], reading.t)
-                        _backfill_session_rows(
-                            cursor,
-                            active_session["id"],
-                            user_id,
-                            reading_device_id,
-                            active_session["started_at"],
-                            reading.t,
-                        )
+                    elif marker == "END":
+                        if not active_session:
+                            if session_key:
+                                active_session = _find_latest_session_by_key(cursor, user_id, session_key, reading.t)
+                            else:
+                                active_session = _find_latest_session_by_device(cursor, user_id, reading_device_id, reading.t)
+
+                        if active_session:
+                            session_id = active_session["id"]
+                            _close_session(cursor, active_session["id"], reading.t)
+                            _backfill_session_rows(
+                                cursor,
+                                active_session["id"],
+                                user_id,
+                                reading_device_id,
+                                active_session["started_at"],
+                                reading.t,
+                            )
 
                 if label == "motion_context":
                     motion_value = reading.val_text or meta.get("context", "unknown")
@@ -274,12 +290,25 @@ def _safe_float(val):
         return None
 
 
+def _sessions_has_session_key(cursor) -> bool:
+    cursor.execute(
+        "SELECT EXISTS ("
+        "  SELECT 1 FROM information_schema.columns "
+        "  WHERE table_schema = 'public' "
+        "    AND table_name = 'sessions' "
+        "    AND column_name = 'session_key'"
+        ")"
+    )
+    row = cursor.fetchone()
+    return bool(row and row[0])
+
+
 def _reading_device_id(reading, default_device_id: str) -> str:
     value = getattr(reading, "device_id", None)
     return (value or default_device_id).lower()
 
 
-def _reading_session_key(reading) -> str | None:
+def _reading_session_key(reading) -> Optional[str]:
     metadata = getattr(reading, "metadata", None) or {}
     value = metadata.get("session_key")
     if not value:
@@ -339,8 +368,43 @@ def _find_session_for_time_by_key(cursor, user_id: str, session_key: str, readin
     return row[0] if row else None
 
 
-def _get_or_create_session(cursor, user_id: str, device_id: str, started_at: str, session_key: str | None):
-    if session_key:
+def _find_latest_session_by_key(cursor, user_id: str, session_key: str, reading_time: str):
+    cursor.execute(
+        "SELECT id, started_at FROM sessions "
+        "WHERE user_id = %s AND session_key = %s "
+        "  AND started_at <= %s::timestamptz "
+        "ORDER BY started_at DESC LIMIT 1",
+        (user_id, session_key, reading_time),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+    return {"id": row[0], "started_at": row[1]}
+
+
+def _find_latest_session_by_device(cursor, user_id: str, device_id: str, reading_time: str):
+    cursor.execute(
+        "SELECT id, started_at FROM sessions "
+        "WHERE user_id = %s AND device_id = %s "
+        "  AND started_at <= %s::timestamptz "
+        "ORDER BY started_at DESC LIMIT 1",
+        (user_id, device_id, reading_time),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+    return {"id": row[0], "started_at": row[1]}
+
+
+def _get_or_create_session(
+    cursor,
+    user_id: str,
+    device_id: str,
+    started_at: str,
+    session_key: Optional[str],
+    supports_session_key: bool,
+):
+    if supports_session_key and session_key:
         cursor.execute(
             "SELECT id, started_at FROM sessions "
             "WHERE user_id = %s AND session_key = %s "
@@ -358,11 +422,18 @@ def _get_or_create_session(cursor, user_id: str, device_id: str, started_at: str
     if existing:
         return {"id": existing[0], "started_at": existing[1]}
 
-    cursor.execute(
-        "INSERT INTO sessions (user_id, device_id, started_at, ended_at, label, session_key) "
-        "VALUES (%s, %s, %s::timestamptz, NULL, %s, %s) RETURNING id, started_at",
-        (user_id, device_id, started_at, "study_session", session_key),
-    )
+    if supports_session_key:
+        cursor.execute(
+            "INSERT INTO sessions (user_id, device_id, started_at, ended_at, label, session_key) "
+            "VALUES (%s, %s, %s::timestamptz, NULL, %s, %s) RETURNING id, started_at",
+            (user_id, device_id, started_at, "study_session", session_key),
+        )
+    else:
+        cursor.execute(
+            "INSERT INTO sessions (user_id, device_id, started_at, ended_at, label) "
+            "VALUES (%s, %s, %s::timestamptz, NULL, %s) RETURNING id, started_at",
+            (user_id, device_id, started_at, "study_session"),
+        )
     created = cursor.fetchone()
     return {"id": created[0], "started_at": created[1]}
 

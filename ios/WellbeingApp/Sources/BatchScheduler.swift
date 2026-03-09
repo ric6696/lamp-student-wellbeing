@@ -75,11 +75,8 @@ final class BatchScheduler: ObservableObject {
     private var sessionEndBackgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     private static func resolveIngestURL() -> URL {
-        if let urlString = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
-           let url = URL(string: urlString) {
-            return url
-        }
-        return URL(string: "http://10.89.132.230:8000/ingest")!
+        // Hardcoding to bypass any Info.plist / xcconfig injection issues causing -1000 bad URL
+        return URL(string: "http://10.89.237.157:8000/ingest")!
     }
 
     init(intervalMinutes: Double) {
@@ -185,8 +182,29 @@ final class BatchScheduler: ObservableObject {
             }
             print("BatchScheduler: endStudySession async cleanup started")
 
+            print("BatchScheduler: requesting watch workout stop")
+            let watchOk = await watchBridge.requestStopWorkout()
+            print("BatchScheduler: watch workout stop acknowledged = \(watchOk)")
+            
+            // Give a short grace period for the async WCSession event (END marker) to be received and saved to LocalStore
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+
             // 2. Stop HealthKit session
-            try? await HealthKitManager.shared.stopActiveSensingSession()
+            do {
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    group.addTask {
+                        try? await HealthKitManager.shared.stopActiveSensingSession()
+                    }
+                    group.addTask {
+                        try await Task.sleep(nanoseconds: 2_000_000_000)
+                        throw CancellationError()
+                    }
+                    _ = try await group.next()
+                    group.cancelAll()
+                }
+            } catch {
+                print("BatchScheduler: stopActiveSensingSession timed out or canceled")
+            }
 
             // 3. Final collection and upload
             let collected = await collectSessionData(captureSession: true)
@@ -206,14 +224,6 @@ final class BatchScheduler: ObservableObject {
             StudySessionContext.clear()
             await MainActor.run {
                 endSessionEndBackgroundTask()
-            }
-        }
-
-        Task { [weak self] in
-            guard let self else { return }
-            let ok = await self.watchBridge.requestStopWorkout()
-            if !ok {
-                print("Watch workout stop request was not acknowledged")
             }
         }
     }

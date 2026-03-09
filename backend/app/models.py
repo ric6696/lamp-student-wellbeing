@@ -15,7 +15,7 @@ class VitalReading(BaseModel):
     type: Literal["vital"]
     t: str
     code: int
-    val: float = Field(ge=0)
+    val: float
     metadata: Optional[Dict[str, Any]] = None
 
 
