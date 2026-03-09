@@ -23,6 +23,7 @@ final class SensorCollector {
     private var lastSampleDateByCode: [Int: Date] = [:]
     private let vitalMetrics: [(id: HKQuantityTypeIdentifier, code: Int)] = [
         (.heartRate, 1),
+        (.heartRateVariabilitySDNN, 2),
         (.environmentalAudioExposure, 10),
         (.stepCount, 20),
         (.distanceWalkingRunning, 21)
@@ -75,8 +76,9 @@ final class SensorCollector {
                 "mapped_dba": .number(mappedDbA)
             ]
         )
-        try? LocalStore.shared.append(item)
-        return [item]
+        let stamped = StudySessionContext.stamp(item: item)
+        try? LocalStore.shared.append(stamped)
+        return [stamped]
     }
 
     private func collectVitals() async -> [BatchItem] {
@@ -93,7 +95,10 @@ final class SensorCollector {
             }
 
             let liveItems = await HealthKitManager.shared.consumeLiveVitals().filter { window.contains($0.t) }
-            let items = dedupeVitals((queriedItems + liveItems).filter { window.contains($0.t) })
+            let stampedItems = (queriedItems + liveItems)
+                .filter { window.contains($0.t) }
+                .map { StudySessionContext.stamp(item: $0) }
+            let items = dedupeVitals(stampedItems)
             try LocalStore.shared.append(items)
             updateLastSampleDates(with: items)
 
@@ -118,7 +123,8 @@ final class SensorCollector {
         for item in items {
             guard let code = item.code, let value = item.val else { continue }
             let rounded = (value * 100).rounded() / 100
-            let key = "\(code)|\(iso.string(from: item.t))|\(rounded)"
+            let sourceDeviceId = item.device_id ?? DeviceId.value
+            let key = "\(sourceDeviceId)|\(code)|\(iso.string(from: item.t))|\(rounded)"
             if seen.contains(key) { continue }
             seen.insert(key)
             output.append(item)
@@ -134,10 +140,12 @@ final class SensorCollector {
             t: Date(),
             motion_context: context.rawValue,
             label: "motion_context",
-            val_text: context.rawValue
+            val_text: context.rawValue,
+            metadata: ["source": .string("core_motion_phone")]
         )
-        try? LocalStore.shared.append(item)
-        return [item]
+        let stamped = StudySessionContext.stamp(item: item)
+        try? LocalStore.shared.append(stamped)
+        return [stamped]
     }
 
     private func collectAudioContext() -> [BatchItem] {
@@ -168,8 +176,9 @@ final class SensorCollector {
             val_text: snapshot.label,
             metadata: metadata
         )
-        try? LocalStore.shared.append(item)
-        return [item]
+        let stamped = StudySessionContext.stamp(item: item)
+        try? LocalStore.shared.append(stamped)
+        return [stamped]
     }
 }
 

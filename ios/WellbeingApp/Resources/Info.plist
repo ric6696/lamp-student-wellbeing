@@ -37,6 +37,8 @@
 	<string>Used to track student mobility patterns for wellbeing analysis.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to track student mobility patterns for wellbeing analysis.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Used to upload sensed data to the study server running on your local network.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used to measure ambient noise levels for stress analysis.</string>
 	<key>NSMotionUsageDescription</key>

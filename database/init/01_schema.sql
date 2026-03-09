@@ -51,10 +51,12 @@ CREATE TABLE sessions (
     id BIGSERIAL PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
     device_id TEXT NOT NULL REFERENCES devices(id),
+    session_key TEXT,
     started_at TIMESTAMPTZ NOT NULL,
     ended_at TIMESTAMPTZ,
     label TEXT
 );
+CREATE UNIQUE INDEX sessions_user_session_key_idx ON sessions (user_id, session_key) WHERE session_key IS NOT NULL;
 
 -- 2. Vitals (numeric time series)
 CREATE TABLE vitals (

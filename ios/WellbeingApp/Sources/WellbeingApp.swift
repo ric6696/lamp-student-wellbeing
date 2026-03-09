@@ -17,7 +17,10 @@ struct WellbeingApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(scheduler)
-                .onAppear { scheduler.resume() }
+                .onAppear {
+                    scheduler.resume()
+                    Task { _ = await scheduler.flushIfNeeded(reason: .appOpen) }
+                }
         }
     }
 }

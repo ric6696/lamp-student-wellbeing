@@ -7,7 +7,9 @@ This guide documents the current request contract used by `ios/WellbeingApp` whe
 The live iOS client currently:
 
 - sends `metadata.device_id`
-- does not send `metadata.user_id` by default
+- sends `metadata.user_id`
+- generates a stable random `user_id` on first launch and persists it in Keychain
+- uploads phone-originated and watch-originated samples under different `device_id` values within the same ingest batch when needed
 - posts to the URL in `ios/WellbeingApp/Resources/Info.plist` under `APIBaseURL`
 - sends `X-API-Key: dev_key` from `ios/WellbeingApp/Sources/APIClient.swift`
 - emits `session_marker` events for session start and end
@@ -19,6 +21,7 @@ The live iOS client currently:
 ```json
 {
   "metadata": {
+    "user_id": "study-user-001",
     "device_id": "11111111-1111-1111-1111-111111111111",
     "version": "1.0",
     "model_name": "iPhone 15 Pro"
@@ -89,10 +92,11 @@ The active Swift request types live in:
 - `ios/WellbeingApp/Sources/Models.swift`
 - `ios/WellbeingApp/Sources/APIClient.swift`
 
-Important note:
+Important notes:
 
-- `BatchEnvelope.Metadata` currently only encodes `device_id`.
-- If you want canonical cross-device users, `user_id` support needs to be added in the client and coordinated with the backend identity model.
+- `BatchEnvelope.Metadata` now encodes both `user_id` and `device_id`.
+- `user_id` is generated once on-device, stored in Keychain, and then reused across uploads.
+- The phone still performs the upload, and watch-originated samples keep their own per-reading `device_id` inside the posted batch.
 
 ## curl Test
 
@@ -104,6 +108,7 @@ curl -X POST http://<your-host>:8000/ingest \
   -H "X-API-Key: dev_key" \
   -d '{
     "metadata": {
+      "user_id": "study-user-001",
       "device_id": "11111111-1111-1111-1111-111111111111",
       "version": "1.0",
       "model_name": "iPhone 15 Pro"

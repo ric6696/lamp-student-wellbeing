@@ -6,6 +6,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
     static let shared = WatchWorkoutManager()
 
     var onVitals: (([String: Any]) -> Void)?
+    var onEvent: (([String: Any]) -> Void)?
     var onWorkoutStateChange: ((String) -> Void)?
 
     private let store = HKHealthStore()
@@ -16,6 +17,8 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
     private var isStopping = false
     private var isFinalizing = false
     private var stopContinuation: CheckedContinuation<Void, Error>?
+    private var currentSessionKey: String?
+    private var lastEmittedMotionContext: String?
 
     private var lastVitalsSentAt: Date?
     private let motionManager = CMMotionManager()
@@ -42,7 +45,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         super.init()
     }
 
-    func startIfNeeded() async throws {
+    func startIfNeeded(sessionKey: String?) async throws {
         print("WatchWorkoutManager: startIfNeeded called")
         guard session == nil, builder == nil, !isStarting else {
             let reason = session != nil ? "session exists" : (builder != nil ? "builder exists" : "isStarting")
@@ -53,6 +56,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
 
         isStarting = true
         defer { isStarting = false }
+        currentSessionKey = sessionKey
 
         print("WatchWorkoutManager: Requesting authorization...")
         do {
@@ -93,6 +97,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
                 try await builder.beginCollection(at: startDate)
                 print("WatchWorkoutManager: Live collection started")
                 startMotionSamplingIfPossible()
+                sendSessionMarker("START", at: startDate)
                 onWorkoutStateChange?("Workout running")
             } catch {
                 print("WatchWorkoutManager: beginCollection failed: \(error.localizedDescription)")
@@ -192,11 +197,16 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         guard !vitals.isEmpty else { return }
 
         lastVitalsSentAt = Date()
-        onVitals?([
+        var payload: [String: Any] = [
             "type": "vitals",
+            "device_id": WatchIdentity.deviceId,
             "t": ISO8601DateFormatter().string(from: Date()),
             "items": vitals
-        ])
+        ]
+        if let currentSessionKey, !currentSessionKey.isEmpty {
+            payload["session_key"] = currentSessionKey
+        }
+        onVitals?(payload)
     }
 
     // MARK: - Private
@@ -240,6 +250,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
     private func finalizeStopFlow(endDate: Date) {
         guard !isFinalizing else { return }
         isFinalizing = true
+        sendSessionMarker("END", at: endDate)
 
         guard let builder = builder, let session = session else {
             completeStop(error: nil)
@@ -294,6 +305,8 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         isStopping = false
         isFinalizing = false
         lastVitalsSentAt = nil
+        currentSessionKey = nil
+        lastEmittedMotionContext = nil
     }
 
     private func startMotionSamplingIfPossible() {
@@ -388,6 +401,25 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
             self.motionLock.lock()
             self.latestActivityCode = code
             self.motionLock.unlock()
+
+            guard self.session != nil else { return }
+            let context = self.motionContextLabel(for: code)
+            guard context != self.lastEmittedMotionContext else { return }
+            self.lastEmittedMotionContext = context
+
+            var metadata: [String: Any] = ["source": "watch_motion"]
+            if let sessionKey = self.currentSessionKey, !sessionKey.isEmpty {
+                metadata["session_key"] = sessionKey
+            }
+
+            self.onEvent?([
+                "type": "event",
+                "device_id": WatchIdentity.deviceId,
+                "t": ISO8601DateFormatter().string(from: Date()),
+                "label": "motion_context",
+                "val_text": context,
+                "metadata": metadata
+            ])
         }
     }
 
@@ -452,5 +484,51 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
         features.append(["code": 45, "val": Double(activity)])
 
         return features
+    }
+
+    private func sendSessionMarker(_ marker: String, at date: Date) {
+        var metadata: [String: Any] = ["source": "watch_workout"]
+        if let currentSessionKey, !currentSessionKey.isEmpty {
+            metadata["session_key"] = currentSessionKey
+        }
+        onEvent?([
+            "type": "event",
+            "device_id": WatchIdentity.deviceId,
+            "t": ISO8601DateFormatter().string(from: date),
+            "label": "session_marker",
+            "val_text": marker,
+            "metadata": metadata
+        ])
+    }
+
+    private func motionContextLabel(for code: Int) -> String {
+        switch code {
+        case 1:
+            return "stationary"
+        case 2:
+            return "walking"
+        case 3:
+            return "running"
+        case 4:
+            return "driving"
+        case 5:
+            return "cycling"
+        default:
+            return "unknown"
+        }
+    }
+}
+
+private enum WatchIdentity {
+    private static let defaults = UserDefaults.standard
+    private static let deviceIdKey = "lamp.identity.watch_device_id"
+
+    static var deviceId: String {
+        if let existing = defaults.string(forKey: deviceIdKey), !existing.isEmpty {
+            return existing
+        }
+        let created = "watch-\(UUID().uuidString.lowercased())"
+        defaults.set(created, forKey: deviceIdKey)
+        return created
     }
 }

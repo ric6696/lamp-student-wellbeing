@@ -91,7 +91,7 @@ extension LocationManager: CLLocationManagerDelegate {
                     lon: loc.coordinate.longitude,
                     acc: loc.horizontalAccuracy,
                     motion_context: context,
-                    metadata: metadata(for: loc, signalQuality: signalQuality)
+                    metadata: StudySessionContext.stamp(metadata: metadata(for: loc, signalQuality: signalQuality))
                 )
                 try? LocalStore.shared.append(item)
                 onLocationBatchItem?(item)

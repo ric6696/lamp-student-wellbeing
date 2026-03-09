@@ -21,11 +21,13 @@ This repository uses **XcodeGen** to manage the project file. This ensures the p
    ```
 
 ## Requirements
+
 - **Xcode 14+**
 - **iOS 16+** (for advanced sleep stages and HealthKit features)
 - **Physical Device**: Health, Motion, and Background Location updates require a real iPhone.
 
 ## Files
+
 - Sources/: All Swift logic (Health, Location, Motion, Noise, Sync)
 - Resources/: Info.plist, Entitlements, and Setup notes
 - project.yml: The project definition file used by XcodeGen
@@ -50,3 +52,4 @@ open WellbeingApp.xcodeproj
 
 CI: ensure `Configs/Local.xcconfig` is provided during CI runs (or set the `USER_ID` env var before running `xcodegen`).
 
+Runtime identity note: the canonical backend `user_id` is generated automatically by the app and stored in Keychain so it is more likely to survive reinstalls than a `UserDefaults`-backed identifier. Phone and watch samples keep distinct `device_id` values, and the phone uploader preserves watch-originated `device_id` values on individual readings.

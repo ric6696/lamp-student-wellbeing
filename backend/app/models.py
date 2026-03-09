@@ -5,19 +5,22 @@ from typing import Literal
 
 class Metadata(BaseModel):
     device_id: str
+    user_id: str
     version: Optional[str] = None
-    user_id: Optional[str] = None
     model_name: Optional[str] = None
 
 
 class VitalReading(BaseModel):
+    device_id: Optional[str] = None
     type: Literal["vital"]
     t: str
     code: int
     val: float = Field(ge=0)
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class GpsReading(BaseModel):
+    device_id: Optional[str] = None
     type: Literal["gps"]
     t: str
     lat: float
@@ -28,6 +31,7 @@ class GpsReading(BaseModel):
 
 
 class EventReading(BaseModel):
+    device_id: Optional[str] = None
     type: Literal["event"]
     t: str
     label: str

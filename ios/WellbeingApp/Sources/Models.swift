@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import UIKit
 
 enum JSONValue: Codable, Equatable {
@@ -70,12 +71,17 @@ enum SampleType: String, Codable {
 }
 
 struct BatchEnvelope: Codable {
-    struct Metadata: Codable { let device_id: String }
+    struct Metadata: Codable {
+        let device_id: String
+        let user_id: String
+        let model_name: String?
+    }
     let metadata: Metadata
     var data: [BatchItem]
 }
 
 struct BatchItem: Codable {
+    var device_id: String?
     var type: SampleType
     var t: Date
     // vitals
@@ -92,6 +98,7 @@ struct BatchItem: Codable {
     var metadata: [String: JSONValue]?
 
     init(
+        device_id: String? = nil,
         type: SampleType,
         t: Date,
         code: Int? = nil,
@@ -104,6 +111,7 @@ struct BatchItem: Codable {
         val_text: String? = nil,
         metadata: [String: JSONValue]? = nil
     ) {
+        self.device_id = device_id
         self.type = type
         self.t = t
         self.code = code
@@ -142,8 +150,125 @@ enum MotionContext: String, Codable {
     case unknown
 }
 
+enum AppIdentity {
+    private static let defaults = UserDefaults.standard
+    private static let userIdKey = "lamp.identity.user_id"
+    private static let phoneDeviceIdKey = "lamp.identity.phone_device_id"
+
+    static var userId: String {
+        if let persisted = KeychainValueStore.string(for: userIdKey) {
+            return persisted
+        }
+
+        if let migrated = defaults.string(forKey: userIdKey), !migrated.isEmpty {
+            KeychainValueStore.set(migrated, for: userIdKey)
+            return migrated
+        }
+
+        let created = "user-\(UUID().uuidString.lowercased())"
+        KeychainValueStore.set(created, for: userIdKey)
+        return created
+    }
+
+    static var phoneDeviceId: String {
+        persistedIdentifier(forKey: phoneDeviceIdKey, prefix: "phone")
+    }
+
+    private static func persistedIdentifier(forKey key: String, prefix: String) -> String {
+        if let existing = defaults.string(forKey: key), !existing.isEmpty {
+            return existing
+        }
+        let created = "\(prefix)-\(UUID().uuidString.lowercased())"
+        defaults.set(created, forKey: key)
+        return created
+    }
+}
+
+private enum KeychainValueStore {
+    private static let service = "com.lamp.wellbeing.identity"
+
+    static func string(for account: String) -> String? {
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: account,
+            kSecReturnData: true,
+            kSecMatchLimit: kSecMatchLimitOne,
+        ]
+
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess,
+              let data = result as? Data,
+              let value = String(data: data, encoding: .utf8),
+              !value.isEmpty else {
+            return nil
+        }
+
+        return value
+    }
+
+    static func set(_ value: String, for account: String) {
+        let encoded = Data(value.utf8)
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: account,
+        ]
+        let attributes: [CFString: Any] = [
+            kSecValueData: encoded,
+        ]
+
+        let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+        if updateStatus == errSecSuccess {
+            return
+        }
+
+        var createQuery = query
+        createQuery[kSecValueData] = encoded
+        SecItemAdd(createQuery as CFDictionary, nil)
+    }
+}
+
 struct DeviceId {
     static var value: String {
-        UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+        AppIdentity.phoneDeviceId
+    }
+}
+
+enum StudySessionContext {
+    private static let queue = DispatchQueue(label: "study.session.context")
+    private static var activeSessionKey: String?
+
+    static func startNewSession() -> String {
+        let created = "study-session-\(UUID().uuidString.lowercased())"
+        queue.sync {
+            activeSessionKey = created
+        }
+        return created
+    }
+
+    static func currentSessionKey() -> String? {
+        queue.sync { activeSessionKey }
+    }
+
+    static func clear() {
+        queue.sync {
+            activeSessionKey = nil
+        }
+    }
+
+    static func stamp(metadata: [String: JSONValue]?) -> [String: JSONValue]? {
+        guard let sessionKey = currentSessionKey() else { return metadata }
+        var stamped = metadata ?? [:]
+        stamped["session_key"] = .string(sessionKey)
+        return stamped
+    }
+
+    static func stamp(item: BatchItem) -> BatchItem {
+        guard currentSessionKey() != nil else { return item }
+        var stamped = item
+        stamped.metadata = stamp(metadata: item.metadata)
+        return stamped
     }
 }

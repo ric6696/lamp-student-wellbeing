@@ -45,12 +45,12 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
         print("WCSession activating")
     }
 
-    func requestStartWorkout() async -> Bool {
-        await sendCommandAwaitingAck("start_workout")
+    func requestStartWorkout(sessionKey: String) async -> Bool {
+        await sendCommandAwaitingAck("start_workout", sessionKey: sessionKey)
     }
 
     func requestStopWorkout() async -> Bool {
-        await sendCommandAwaitingAck("stop_workout")
+        await sendCommandAwaitingAck("stop_workout", sessionKey: nil)
     }
 
     // MARK: - WCSessionDelegate
@@ -99,6 +99,8 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
         switch type {
         case "vitals":
             guard let items = message["items"] as? [[String: Any]] else { return }
+            guard let sourceDeviceId = message["device_id"] as? String, !sourceDeviceId.isEmpty else { return }
+            let sessionKey = message["session_key"] as? String
             let date: Date
             if let t = message["t"] as? String, let parsed = iso.date(from: t) {
                 date = parsed
@@ -113,8 +115,18 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
                 else if let n = item["val"] as? NSNumber { val = n.doubleValue }
                 else { val = nil }
                 guard let val else { return nil }
-                // metadata expects JSONValue; wrap string in .string
-                return BatchItem(type: .vital, t: date, code: code, val: val, metadata: ["source": .string("watch")])
+                var metadata: [String: JSONValue] = ["source": .string("watch")]
+                if let sessionKey, !sessionKey.isEmpty {
+                    metadata["session_key"] = .string(sessionKey)
+                }
+                return BatchItem(
+                    device_id: sourceDeviceId,
+                    type: .vital,
+                    t: date,
+                    code: code,
+                    val: val,
+                    metadata: metadata
+                )
             }
 
             guard !batchItems.isEmpty else { return }
@@ -124,6 +136,28 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
             Task { @MainActor in
                 self.onWorkoutStateUpdate?("Workout running (inferred)")
             }
+
+        case "event":
+            guard let sourceDeviceId = message["device_id"] as? String, !sourceDeviceId.isEmpty else { return }
+            guard let label = message["label"] as? String else { return }
+
+            let date: Date
+            if let t = message["t"] as? String, let parsed = iso.date(from: t) {
+                date = parsed
+            } else {
+                date = Date()
+            }
+
+            let metadata = (message["metadata"] as? [String: Any])?.compactMapValues { self.jsonValue(from: $0) }
+            let item = BatchItem(
+                device_id: sourceDeviceId,
+                type: .event,
+                t: date,
+                label: label,
+                val_text: message["val_text"] as? String,
+                metadata: metadata
+            )
+            try? LocalStore.shared.append(item)
 
         case "workout_state":
             if let state = message["state"] as? String {
@@ -138,9 +172,13 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    private func sendCommandAwaitingAck(_ command: String) async -> Bool {
+    private func sendCommandAwaitingAck(_ command: String, sessionKey: String?) async -> Bool {
         guard WCSession.isSupported() else { return false }
         let session = WCSession.default
+        var payload: [String: Any] = ["command": command]
+        if let sessionKey, !sessionKey.isEmpty {
+            payload["session_key"] = sessionKey
+        }
 
         if !isStarted {
             start()
@@ -148,14 +186,14 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
 
         guard session.isPaired, session.isWatchAppInstalled else {
             refreshSessionState(session)
-            print("Watch not paired or watch app not installed")
-            return false
+            print("PhoneWatchBridge: skipping \(command); watch not paired or app not installed")
+            return true
         }
 
         if session.isReachable {
             refreshSessionState(session)
             return await withCheckedContinuation { cont in
-                session.sendMessage(["command": command], replyHandler: { reply in
+                session.sendMessage(payload, replyHandler: { reply in
                     let ok = reply["ok"] as? Bool ?? false
                     cont.resume(returning: ok)
                 }, errorHandler: { error in
@@ -164,9 +202,9 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
                 })
             }
         } else {
-            session.transferUserInfo(["command": command])
+            session.transferUserInfo(payload)
             do {
-                try session.updateApplicationContext(["command": command])
+                try session.updateApplicationContext(payload)
             } catch {
                 print("updateApplicationContext(\(command)) error: \(error)")
             }
@@ -182,6 +220,20 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
             isWatchAppInstalled = session.isWatchAppInstalled
             isReachable = session.isReachable
             activationStateRaw = session.activationState.rawValue
+        }
+    }
+
+    private func jsonValue(from raw: Any) -> JSONValue? {
+        switch raw {
+        case let value as String:
+            return .string(value)
+        case let value as NSNumber:
+            if CFGetTypeID(value) == CFBooleanGetTypeID() {
+                return .bool(value.boolValue)
+            }
+            return .number(value.doubleValue)
+        default:
+            return nil
         }
     }
 }

@@ -39,13 +39,13 @@ def run() -> int:
         health = client.get("/health")
         results["health"] = {"status": health.status_code, "body": health.json()}
 
-        payload_empty = {"metadata": {"device_id": "preflight-device"}, "data": []}
+        payload_empty = {"metadata": {"device_id": "preflight-device", "user_id": "preflight-user"}, "data": []}
         r = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_empty)
         results["empty_payload"] = {"status": r.status_code, "body": r.json()}
 
-        payload_missing = {"metadata": {}, "data": []}
+        payload_missing = {"metadata": {"device_id": "preflight-device"}, "data": []}
         r = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_missing)
-        results["missing_device_id"] = {"status": r.status_code, "body": r.json()}
+        results["missing_user_id"] = {"status": r.status_code, "body": r.json()}
 
         r = client.post("/ingest", headers={"X-API-Key": "bad"}, json=payload_empty)
         results["bad_api_key"] = {"status": r.status_code, "body": r.json()}
@@ -89,6 +89,31 @@ def run() -> int:
         r = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_real)
         results["reality_payload"] = {"status": r.status_code, "body": r.json()}
 
+        payload_mixed_device = {
+            "metadata": {"device_id": "preflight-device", "user_id": "preflight-user", "model_name": "iPhone"},
+            "data": [
+                {"type": "event", "t": now, "label": "session_marker", "val_text": "START"},
+                {
+                    "type": "vital",
+                    "t": now,
+                    "device_id": "preflight-watch",
+                    "code": 1,
+                    "val": 77.0,
+                    "metadata": {"source": "watch"},
+                },
+                {
+                    "type": "event",
+                    "t": now,
+                    "device_id": "preflight-watch",
+                    "label": "session_marker",
+                    "val_text": "START",
+                    "metadata": {"source": "watch_workout"},
+                },
+            ],
+        }
+        r = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_mixed_device)
+        results["mixed_device_payload"] = {"status": r.status_code, "body": r.json()}
+
         r1 = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_real)
         r2 = client.post("/ingest", headers={"X-API-Key": os.environ["INGEST_API_KEY"]}, json=payload_real)
         results["duplicate_send"] = {"status1": r1.status_code, "status2": r2.status_code}
@@ -106,10 +131,12 @@ def run() -> int:
         "counts": "SELECT (SELECT count(*) FROM vitals), (SELECT count(*) FROM gps), (SELECT count(*) FROM events), (SELECT count(*) FROM motion_events), (SELECT count(*) FROM audio_events)",
         "device_rows": "SELECT count(*) FROM devices WHERE id='preflight-device'",
         "user_rows": "SELECT count(*) FROM users WHERE id='preflight-user'",
-        "invalid_metric_rows": "SELECT count(*) FROM vitals WHERE metric_code NOT IN (1,10,20,21)",
+        "watch_device_rows": "SELECT count(*) FROM devices WHERE id='preflight-watch'",
+        "invalid_metric_rows": "SELECT count(*) FROM vitals WHERE metric_code NOT IN (1,2,10,20,21)",
         "orphan_vitals": "SELECT count(*) FROM vitals v LEFT JOIN devices d ON v.device_id = d.id WHERE d.id IS NULL",
         "dup_vitals": "SELECT count(*) FROM (SELECT device_id, metric_code, time, count(*) c FROM vitals GROUP BY 1,2,3 HAVING count(*) > 1) t",
         "latest_preflight_vitals": "SELECT metric_code, value FROM vitals WHERE device_id='preflight-device' ORDER BY time DESC, metric_code LIMIT 6",
+        "latest_watch_vitals": "SELECT device_id, metric_code, value, metadata->>'source' FROM vitals WHERE device_id='preflight-watch' ORDER BY time DESC, metric_code LIMIT 3",
         "latest_preflight_gps_place": "SELECT metadata->>'place_category' FROM gps WHERE device_id='preflight-device' ORDER BY time DESC LIMIT 1",
         "latest_motion": "SELECT context FROM motion_events WHERE device_id='preflight-device' ORDER BY time DESC LIMIT 1",
         "latest_audio": "SELECT label, db, confidence, ai_label, ai_confidence FROM audio_events WHERE device_id='preflight-device' ORDER BY time DESC LIMIT 1",

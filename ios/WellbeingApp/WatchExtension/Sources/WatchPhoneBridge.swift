@@ -14,6 +14,9 @@ final class WatchPhoneBridge: NSObject, WCSessionDelegate {
         workoutManager.onVitals = { [weak self] payload in
             self?.sendToPhone(payload)
         }
+        workoutManager.onEvent = { [weak self] payload in
+            self?.sendToPhone(payload)
+        }
         workoutManager.onWorkoutStateChange = { [weak self] stateText in
             self?.onStatusUpdate?(stateText)
             self?.sendToPhone(["type": "workout_state", "state": stateText])
@@ -73,9 +76,10 @@ final class WatchPhoneBridge: NSObject, WCSessionDelegate {
         switch command {
         case "start_workout":
             print("WatchPhoneBridge: Handling start_workout command")
+            let sessionKey = message["session_key"] as? String
             Task {
                 do {
-                    try await workoutManager.startIfNeeded()
+                    try await workoutManager.startIfNeeded(sessionKey: sessionKey)
                     print("WatchPhoneBridge: startIfNeeded completed successfully")
                     reply?(["ok": true])
                 } catch {

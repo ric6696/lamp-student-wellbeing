@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct SessionMetricsSnapshot {
     var vitals: [Int: BatchItem] = [:]
@@ -71,6 +72,7 @@ final class BatchScheduler: ObservableObject {
     @Published private(set) var sessionMetricsSnapshot = SessionMetricsSnapshot()
     private let sessionMetricsTracker = SessionMetricsTracker()
     private let watchBridge = PhoneWatchBridge.shared
+    private var sessionEndBackgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     private static func resolveIngestURL() -> URL {
         if let urlString = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
@@ -82,7 +84,7 @@ final class BatchScheduler: ObservableObject {
 
     init(intervalMinutes: Double) {
         self.interval = intervalMinutes * 60
-        self.api = APIClient(baseURL: Self.resolveIngestURL(), deviceId: DeviceId.value)
+        self.api = APIClient(baseURL: Self.resolveIngestURL(), userId: AppIdentity.userId, deviceId: DeviceId.value)
 
         watchBridge.onWorkoutStateUpdate = { [weak self] status in
             Task { @MainActor in
@@ -100,11 +102,14 @@ final class BatchScheduler: ObservableObject {
     }
 
     func startStudySession() {
+        print("BatchScheduler: startStudySession user_id=\(AppIdentity.userId) device_id=\(DeviceId.value)")
+
         // 1. Clear ambient buffered data
         try? LocalStore.shared.clear()
 
         // 2. Set session state immediately
         let startTime = Date()
+        let sessionKey = StudySessionContext.startNewSession()
         isSessionActive = true
         currentSessionStartTime = startTime
         currentSessionEndTime = nil
@@ -114,7 +119,13 @@ final class BatchScheduler: ObservableObject {
         LocationManager.shared.beginSession(at: startTime)
 
         // 3. Log start marker immediately
-        let startEvent = BatchItem(type: .event, t: startTime, label: "session_marker", val_text: "START")
+        let startEvent = BatchItem(
+            type: .event,
+            t: startTime,
+            label: "session_marker",
+            val_text: "START",
+            metadata: ["session_key": .string(sessionKey)]
+        )
         try? LocalStore.shared.append(startEvent)
         sessionBuffer.append(startEvent)
         runningSessionItems = sessionBuffer
@@ -129,7 +140,7 @@ final class BatchScheduler: ObservableObject {
 
         Task { [weak self] in
             guard let self else { return }
-            let ok = await self.watchBridge.requestStartWorkout()
+            let ok = await self.watchBridge.requestStartWorkout(sessionKey: sessionKey)
             if !ok {
                 print("Watch workout start request was not acknowledged")
             }
@@ -140,10 +151,17 @@ final class BatchScheduler: ObservableObject {
 
     func endStudySession() {
         guard isSessionActive else { return }
+        print("BatchScheduler: endStudySession requested")
 
         // 1. End visible session state immediately so UI switches right away.
         let endTime = Date()
-        let endEvent = BatchItem(type: .event, t: endTime, label: "session_marker", val_text: "END")
+        let endEvent = BatchItem(
+            type: .event,
+            t: endTime,
+            label: "session_marker",
+            val_text: "END",
+            metadata: StudySessionContext.stamp(metadata: nil)
+        )
         try? LocalStore.shared.append(endEvent)
 
         var completedItems = sessionBuffer
@@ -160,14 +178,21 @@ final class BatchScheduler: ObservableObject {
         runningSessionItems = []
         sessionBuffer = completedItems
         currentSessionStartTime = nil
-        
+
         Task {
+            await MainActor.run {
+                beginSessionEndBackgroundTask()
+            }
+            print("BatchScheduler: endStudySession async cleanup started")
+
             // 2. Stop HealthKit session
             try? await HealthKitManager.shared.stopActiveSensingSession()
 
             // 3. Final collection and upload
-            _ = await collectSessionData(captureSession: true)
-            _ = await uploadPendingItems()
+            let collected = await collectSessionData(captureSession: true)
+            print("BatchScheduler: final collection produced \(collected.count) items")
+            let uploaded = await uploadPendingItems()
+            print("BatchScheduler: final upload result=\(uploaded)")
 
             await MainActor.run {
                 previousSessionItems = sessionBuffer
@@ -178,6 +203,10 @@ final class BatchScheduler: ObservableObject {
             await sessionMetricsTracker.reset()
             await MainActor.run { sessionMetricsSnapshot = SessionMetricsSnapshot() }
             SensorCollector.shared.completeSession()
+            StudySessionContext.clear()
+            await MainActor.run {
+                endSessionEndBackgroundTask()
+            }
         }
 
         Task { [weak self] in
@@ -203,27 +232,37 @@ final class BatchScheduler: ObservableObject {
 
     @discardableResult
     func flushIfNeeded(reason: Reason, captureSession: Bool = false) async -> Bool {
+        print("BatchScheduler: flushIfNeeded reason=\(reason.label) captureSession=\(captureSession) isSessionActive=\(isSessionActive)")
+        if reason == .appOpen {
+            await api.probeConnectivity(context: reason.label)
+        }
         let shouldCollect = isSessionActive || captureSession
         if shouldCollect {
-            _ = await collectSessionData(captureSession: captureSession)
+            let collected = await collectSessionData(captureSession: captureSession)
+            print("BatchScheduler: flush collected \(collected.count) items")
         }
-
-        if reason == .timer || reason == .appOpen {
-            return true
-        }
-
-        return await uploadPendingItems()
+        let uploaded = await uploadPendingItems()
+        print("BatchScheduler: flush upload result=\(uploaded)")
+        return uploaded
     }
 
     private func uploadPendingItems() async -> Bool {
         do {
+            let pendingBefore = try LocalStore.shared.count()
+            print("BatchScheduler: uploadPendingItems starting pending_count=\(pendingBefore)")
             while true {
                 let items = try LocalStore.shared.drain(limit: 100)
-                guard !items.isEmpty else { return true }
+                guard !items.isEmpty else {
+                    print("BatchScheduler: uploadPendingItems drained 0 items, done")
+                    return true
+                }
+                print("BatchScheduler: uploadPendingItems drained batch_count=\(items.count)")
                 guard await api.send(items: items) else {
+                    print("BatchScheduler: uploadPendingItems send failed, requeueing \(items.count) items")
                     try LocalStore.shared.append(items)
                     return false
                 }
+                print("BatchScheduler: uploadPendingItems send succeeded for \(items.count) items")
             }
         } catch {
             print("Upload failed: \(error)")
@@ -233,6 +272,7 @@ final class BatchScheduler: ObservableObject {
 
     private func collectSessionData(captureSession: Bool) async -> [BatchItem] {
         let collectedItems = await SensorCollector.shared.collect()
+        print("BatchScheduler: collectSessionData captureSession=\(captureSession) collected=\(collectedItems.count)")
         let shouldTrack = isSessionActive || captureSession
         if shouldTrack {
             await MainActor.run {
@@ -244,5 +284,38 @@ final class BatchScheduler: ObservableObject {
             await MainActor.run { sessionMetricsSnapshot = snapshot }
         }
         return collectedItems
+    }
+
+    @MainActor
+    private func beginSessionEndBackgroundTask() {
+        endSessionEndBackgroundTask()
+        sessionEndBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "StudySessionUpload") { [weak self] in
+            print("BatchScheduler: session-end background task expired")
+            Task { @MainActor in
+                self?.endSessionEndBackgroundTask()
+            }
+        }
+        print("BatchScheduler: session-end background task started id=\(sessionEndBackgroundTask.rawValue)")
+    }
+
+    @MainActor
+    private func endSessionEndBackgroundTask() {
+        guard sessionEndBackgroundTask != .invalid else { return }
+        print("BatchScheduler: session-end background task finished id=\(sessionEndBackgroundTask.rawValue)")
+        UIApplication.shared.endBackgroundTask(sessionEndBackgroundTask)
+        sessionEndBackgroundTask = .invalid
+    }
+}
+
+private extension BatchScheduler.Reason {
+    var label: String {
+        switch self {
+        case .timer:
+            return "timer"
+        case .appOpen:
+            return "appOpen"
+        case .manual:
+            return "manual"
+        }
     }
 }
