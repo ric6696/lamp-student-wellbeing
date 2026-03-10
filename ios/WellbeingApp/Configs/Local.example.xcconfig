@@ -1,12 +1,14 @@
 // Local.example.xcconfig
 // Copy this file to Local.xcconfig and edit to match your machine.
 
+SLASH = /
+
 // Example developer identifier (rc or kevin)
 USER_ID = rc
 
 // Local backend ingest endpoint (prefer mDNS host to avoid LAN IP changes)
 // Example: http://Your-MacBook-Pro.local:8000/ingest
-API_BASE_URL = http://YOUR_MAC_LOCAL_HOSTNAME.local:8000/ingest
+API_BASE_URL = http:$(SLASH)$(SLASH)YOUR_MAC_LOCAL_HOSTNAME.local:8000/ingest
 
 // Optional: set your Apple Team ID here if needed for signing
 # TEAM_ID = ABCDEFG123

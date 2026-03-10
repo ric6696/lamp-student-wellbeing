@@ -14,6 +14,8 @@ struct APIClient {
 
     func send(items: [BatchItem]) async -> Bool {
         guard !items.isEmpty else { return true }
+        print("APIClient: baseURL=")
+        print(baseURL.absoluteString)
         await probeConnectivity(context: "send")
         let normalizedItems = items.map { item -> BatchItem in
             var normalized = item
@@ -68,6 +70,7 @@ struct APIClient {
 
     private func sendEnvelope(_ envelope: BatchEnvelope) async -> Bool {
         var request = URLRequest(url: baseURL)
+        print("APIClient: sending POST to \(baseURL.absoluteString)")
         request.httpMethod = "POST"
         request.timeoutInterval = 10
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -92,7 +95,7 @@ struct APIClient {
             return false
         } catch {
             let nsError = error as NSError
-            print("APIClient: network error domain=\(nsError.domain) code=\(nsError.code) description=\(nsError.localizedDescription)")
+            print("APIClient: network error domain=\(nsError.domain) code=\(nsError.code) description=\(nsError.localizedDescription) url=\(baseURL.absoluteString)")
             return false
         }
     }

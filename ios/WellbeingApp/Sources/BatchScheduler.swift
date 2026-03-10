@@ -75,8 +75,16 @@ final class BatchScheduler: ObservableObject {
     private var sessionEndBackgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     private static func resolveIngestURL() -> URL {
-        // Hardcoding to bypass any Info.plist / xcconfig injection issues causing -1000 bad URL
-        return URL(string: "http://10.89.237.157:8000/ingest")!
+        if let configured = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
+           let url = URL(string: configured),
+           !configured.isEmpty {
+            print("BatchScheduler: resolved ingest URL from Info.plist = \(configured)")
+            return url
+        }
+
+        let fallback = "http://localhost:8000/ingest"
+        print("BatchScheduler: missing APIBaseURL in Info.plist, falling back to \(fallback)")
+        return URL(string: fallback)!
     }
 
     init(intervalMinutes: Double) {
