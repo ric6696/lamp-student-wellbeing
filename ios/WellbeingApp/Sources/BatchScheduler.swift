@@ -75,16 +75,30 @@ final class BatchScheduler: ObservableObject {
     private var sessionEndBackgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     private static func resolveIngestURL() -> URL {
-        if let configured = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
+        let configured = (Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let configured,
+           !configured.isEmpty,
+           !configured.contains("$("),
+           !configured.contains("YOUR_MAC_LOCAL_HOSTNAME"),
            let url = URL(string: configured),
-           !configured.isEmpty {
+           let scheme = url.scheme?.lowercased(),
+           (scheme == "http" || scheme == "https"),
+           url.host != nil {
             print("BatchScheduler: resolved ingest URL from Info.plist = \(configured)")
             return url
         }
 
+#if targetEnvironment(simulator)
         let fallback = "http://localhost:8000/ingest"
-        print("BatchScheduler: missing APIBaseURL in Info.plist, falling back to \(fallback)")
+        print("BatchScheduler: APIBaseURL is missing/invalid; using simulator fallback \(fallback)")
         return URL(string: fallback)!
+#else
+        let fallback = "http://YOUR_MAC_LOCAL_HOSTNAME.local:8000/ingest"
+        print("BatchScheduler: APIBaseURL is missing/invalid. Set API_BASE_URL in Configs/Local.xcconfig to your Mac mDNS host, e.g. \(fallback)")
+        return URL(string: fallback)!
+#endif
     }
 
     init(intervalMinutes: Double) {
