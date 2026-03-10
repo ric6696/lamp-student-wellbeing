@@ -29,12 +29,22 @@ if not logger.handlers:
     logger.setLevel(logging.INFO)
 
 
+CANONICAL_METRICS = [
+    (1, "heart_rate_bpm", "count/min", "Heart rate in beats per minute"),
+    (2, "heart_rate_variability_sdnn_ms", "ms", "Heart rate variability SDNN in milliseconds"),
+    (10, "environmental_noise_db", "dBA", "Ambient or environmental noise level"),
+    (20, "steps", "count", "Step count increment"),
+    (21, "distance_m", "meter", "Distance walked/running"),
+]
+
+
 def ingest_batch(batch: Batch) -> None:
     connection = None
     cursor = None
     try:
         connection = get_connection()
         cursor = connection.cursor()
+        _ensure_metric_catalog(cursor)
 
         base_device_id = batch.metadata.device_id.lower()
         user_id = batch.metadata.user_id.lower()
@@ -288,6 +298,14 @@ def _safe_float(val):
         return float(val) if val is not None else None
     except (TypeError, ValueError):
         return None
+
+
+def _ensure_metric_catalog(cursor) -> None:
+    execute_values(
+        cursor,
+        "INSERT INTO metric_catalog (code, name, unit, description) VALUES %s ON CONFLICT (code) DO NOTHING",
+        CANONICAL_METRICS,
+    )
 
 
 def _sessions_has_session_key(cursor) -> bool:
