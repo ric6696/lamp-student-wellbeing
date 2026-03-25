@@ -9,6 +9,8 @@ DROP TABLE IF EXISTS motion_events CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
 DROP TABLE IF EXISTS gps CASCADE;
 DROP TABLE IF EXISTS vitals CASCADE;
+DROP TABLE IF EXISTS session_discrepancy_analyses CASCADE;
+DROP TABLE IF EXISTS session_personalization_profiles CASCADE;
 DROP TABLE IF EXISTS sessions CASCADE;
 DROP TABLE IF EXISTS devices CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -57,6 +59,46 @@ CREATE TABLE sessions (
     label TEXT
 );
 CREATE UNIQUE INDEX sessions_user_session_key_idx ON sessions (user_id, session_key) WHERE session_key IS NOT NULL;
+
+-- 1b. Study-session discrepancy analysis output
+CREATE TABLE session_discrepancy_analyses (
+    id BIGSERIAL PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    model_name TEXT NOT NULL,
+    model_score DOUBLE PRECISION NOT NULL,
+    user_score DOUBLE PRECISION NOT NULL,
+    score_gap DOUBLE PRECISION NOT NULL,
+    discrepancy_reasoning JSONB NOT NULL,
+    raw_llm_response TEXT,
+    prompt_used TEXT
+);
+CREATE INDEX session_discrepancy_analyses_user_created_idx ON session_discrepancy_analyses (user_id, created_at DESC);
+CREATE INDEX session_discrepancy_analyses_session_idx ON session_discrepancy_analyses (session_id);
+
+-- 1c. Session-level personalization extraction output
+CREATE TABLE session_personalization_profiles (
+    id BIGSERIAL PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    user_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT REFERENCES devices(id),
+    session_id BIGINT REFERENCES sessions(id),
+    source_discrepancy_analysis_id BIGINT REFERENCES session_discrepancy_analyses(id),
+    model_name TEXT NOT NULL,
+    profile_confidence DOUBLE PRECISION,
+    profile_payload JSONB NOT NULL,
+    primary_sensitivity TEXT,
+    bias_direction TEXT,
+    recovery_speed TEXT,
+    task_type TEXT,
+    time_of_day TEXT
+);
+CREATE INDEX session_personalization_profiles_user_created_idx
+    ON session_personalization_profiles (user_id, created_at DESC);
+CREATE INDEX session_personalization_profiles_session_idx
+    ON session_personalization_profiles (session_id);
 
 -- 2. Vitals (numeric time series)
 CREATE TABLE vitals (
