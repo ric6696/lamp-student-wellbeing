@@ -1,0 +1,45 @@
+{
+  "session_reference": {
+    "session_id": "study_session_20260222_090000",
+    "session_start": "2026-02-22T09:00:00Z",
+    "session_end": "2026-02-22T09:04:00Z",
+    "session_duration_minutes": 4,
+    "time_of_day": "morning",
+    "task_type": "quick_review"
+  },
+  "user_reflection": {
+    "overall_focus_rating": 7.5,
+    "overall_focus_confidence": 0.75,
+    "why_different": "The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.",
+    "compared_to_model_result": "slightly_higher",
+    "session_trajectory": "maintained_focus",
+    "major_disruptions": [
+      "Slight anxiety about upcoming exam"
+    ],
+    "environment_quality": "moderately_quiet",
+    "noise_level_estimated_db": 50,
+    "task_difficulty": "easy",
+    "perceived_challenges": {
+      "environment": "moderately_quiet",
+      "task_difficulty": "easy",
+      "noise_level_estimated_db": 50
+    },
+    "what_hurt_focus": [
+      "Pre-exam anxiety"
+    ],
+    "what_helped_focus": [
+      "Very short session (easier to maintain focus)",
+      "Familiar material (quick review)",
+      "Morning time"
+    ],
+    "mental_fatigue_experienced": "none",
+    "stress_level_peak": 5.0,
+    "mind_wandering": "none",
+    "was_interrupted": false
+  },
+  "feedback_on_recommendations": {
+    "quieter_space": "Acknowledged - will try to study in the library next time",
+    "minimize_fidgeting": "Will be more intentional about posture and movement",
+    "noise_cancelling_headphones": "Good idea - already have a pair, will use them for longer study sessions"
+  }
+}

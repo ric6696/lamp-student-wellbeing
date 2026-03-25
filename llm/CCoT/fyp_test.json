@@ -1,0 +1,92 @@
+[
+  {
+    "timestamp": "2026-02-22T09:00:00Z",
+    "sensor_type": "heart_rate",
+    "value": 72,
+    "unit": "bpm"
+  },
+  {
+    "timestamp": "2026-02-22T09:00:00Z",
+    "sensor_type": "noise_level",
+    "value": 38,
+    "unit": "dB"
+  },
+  {
+    "timestamp": "2026-02-22T09:00:00Z",
+    "sensor_type": "number_of_steps_past_minute",
+    "value": 6,
+    "unit": "steps"
+  },
+  {
+    "timestamp": "2026-02-22T09:01:00Z",
+    "sensor_type": "heart_rate",
+    "value": 78,
+    "unit": "bpm"
+  },
+  {
+    "timestamp": "2026-02-22T09:01:00Z",
+    "sensor_type": "noise_level",
+    "value": 44,
+    "unit": "dB"
+  },
+  {
+    "timestamp": "2026-02-22T09:01:00Z",
+    "sensor_type": "number_of_steps_past_minute",
+    "value": 10,
+    "unit": "steps"
+  },
+  {
+    "timestamp": "2026-02-22T09:02:00Z",
+    "sensor_type": "heart_rate",
+    "value": 85,
+    "unit": "bpm"
+  },
+  {
+    "timestamp": "2026-02-22T09:02:00Z",
+    "sensor_type": "noise_level",
+    "value": 55,
+    "unit": "dB"
+  },
+  {
+    "timestamp": "2026-02-22T09:02:00Z",
+    "sensor_type": "number_of_steps_past_minute",
+    "value": 18,
+    "unit": "steps"
+  },
+  {
+    "timestamp": "2026-02-22T09:03:00Z",
+    "sensor_type": "heart_rate",
+    "value": 90,
+    "unit": "bpm"
+  },
+  {
+    "timestamp": "2026-02-22T09:03:00Z",
+    "sensor_type": "noise_level",
+    "value": 64,
+    "unit": "dB"
+  },
+  {
+    "timestamp": "2026-02-22T09:03:00Z",
+    "sensor_type": "number_of_steps_past_minute",
+    "value": 32,
+    "unit": "steps"
+  },
+  {
+    "timestamp": "2026-02-22T09:04:00Z",
+    "sensor_type": "heart_rate",
+    "value": 76,
+    "unit": "bpm"
+  },
+  {
+    "timestamp": "2026-02-22T09:04:00Z",
+    "sensor_type": "noise_level",
+    "value": 42,
+    "unit": "dB"
+  },
+  {
+    "timestamp": "2026-02-22T09:04:00Z",
+    "sensor_type": "number_of_steps_past_minute",
+    "value": 12,
+    "unit": "steps"
+  }
+]

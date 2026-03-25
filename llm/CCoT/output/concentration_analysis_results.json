@@ -1,0 +1,196 @@
+{
+  "timestamp": "2026-03-25T11:17:01.778921Z",
+  "model": "claude-3-5-sonnet",
+  "session": {
+    "id": null,
+    "label": "inferred_session",
+    "source": "inferred_time_window",
+    "started_at": "2026-02-22T09:00:00+00:00",
+    "ended_at": "2026-02-22T09:04:00+00:00",
+    "duration_min": 4.0,
+    "user_id": null,
+    "device_id": null
+  },
+  "sensor_features": {
+    "session": {
+      "id": null,
+      "label": "inferred_session",
+      "source": "inferred_time_window",
+      "started_at": "2026-02-22T09:00:00+00:00",
+      "ended_at": "2026-02-22T09:04:00+00:00",
+      "duration_min": 4.0,
+      "user_id": null,
+      "device_id": null
+    },
+    "counts": {
+      "audio_events_total": 5,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 0,
+      "motion_events": 0,
+      "vitals_rows": 10
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 48.6,
+      "label_counts_conf_gt_50": {
+        "noise_level": 5
+      },
+      "label_counts_conf_gt_50_text": "5 noise_level",
+      "ai_label_counts_conf_gt_50": {},
+      "ai_label_counts_conf_gt_50_text": "none"
+    },
+    "vitals": {
+      "avg_heart_rate": 80.2,
+      "avg_steps": 15.6,
+      "avg_distance_m": null,
+      "heart_rate_samples": 5,
+      "steps_samples": 5,
+      "distance_samples": 0
+    },
+    "gps": {
+      "points": 0,
+      "displacement_m": null,
+      "total_travel_m": null,
+      "drastic_location_change": false
+    },
+    "motion": {
+      "counts": {},
+      "counts_text": "none",
+      "stationary_count": 0,
+      "active_count": 0
+    }
+  },
+  "concentration_score": 7,
+  "reason": "The 48.6 dB audio level indicates an acceptable but not ideal study environment, while the heart rate of 80.2 bpm suggests a calm yet alert state. The minor movement indicated by 15.6 steps/min shows some restlessness, but the absence of major location changes or disruptive audio events supports maintained focus during the 4-minute window.",
+  "phase_1": {
+    "audio": "Average 48.6 dB falls in 'acceptable' range but above ideal. All 5 noise_level events suggest consistent background noise.",
+    "vitals": "Heart rate average of 80.2 bpm is within good focus range. 15.6 steps/min indicates minor fidgeting or movement.",
+    "gps_motion": "No GPS data but no drastic location changes detected. Motion context data absent but step data suggests minor movement."
+  },
+  "phase_2": {
+    "correlations": "Moderate noise level aligns with slight physical restlessness shown in step count. No major disruptive patterns across modalities.",
+    "holistic_assessment": "Environment and physiological indicators suggest adequate but not optimal concentration conditions."
+  },
+  "phase_3": {
+    "recommendations": "1) Find a quieter study space below 45 dB if possible. 2) Try to minimize fidgeting and small movements while studying. 3) Consider noise-canceling headphones to reduce ambient noise impact."
+  },
+  "raw_payload": {
+    "sessions": [],
+    "audio_events": [
+      {
+        "time": "2026-02-22T09:00:00Z",
+        "label": "noise_level",
+        "db": 38,
+        "confidence": 1.0,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:01:00Z",
+        "label": "noise_level",
+        "db": 44,
+        "confidence": 1.0,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:02:00Z",
+        "label": "noise_level",
+        "db": 55,
+        "confidence": 1.0,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:03:00Z",
+        "label": "noise_level",
+        "db": 64,
+        "confidence": 1.0,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:04:00Z",
+        "label": "noise_level",
+        "db": 42,
+        "confidence": 1.0,
+        "device_id": null,
+        "user_id": null
+      }
+    ],
+    "gps": [],
+    "motion_events": [],
+    "vitals": [
+      {
+        "time": "2026-02-22T09:00:00Z",
+        "metric_code": 1,
+        "value": 72,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:00:00Z",
+        "metric_code": 20,
+        "value": 6,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:01:00Z",
+        "metric_code": 1,
+        "value": 78,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:01:00Z",
+        "metric_code": 20,
+        "value": 10,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:02:00Z",
+        "metric_code": 1,
+        "value": 85,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:02:00Z",
+        "metric_code": 20,
+        "value": 18,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:03:00Z",
+        "metric_code": 1,
+        "value": 90,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:03:00Z",
+        "metric_code": 20,
+        "value": 32,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:04:00Z",
+        "metric_code": 1,
+        "value": 76,
+        "device_id": null,
+        "user_id": null
+      },
+      {
+        "time": "2026-02-22T09:04:00Z",
+        "metric_code": 20,
+        "value": 12,
+        "device_id": null,
+        "user_id": null
+      }
+    ],
+    "events": []
+  }
+}
