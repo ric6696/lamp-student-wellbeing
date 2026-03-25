@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 from psycopg2.extras import execute_values
 
+from .concentration import queue_session_analysis
 from .db import get_connection, release_connection
 from .models import Batch
 
@@ -76,6 +77,7 @@ def ingest_batch(batch: Batch) -> None:
         active_sessions = {base_device_id: _find_active_session(cursor, user_id, base_device_id)}
         active_sessions_by_key = {}
         known_device_ids = {base_device_id}
+        ended_sessions_to_analyze = set()
 
         allowed_metrics = {1, 2, 10, 20, 21}
 
@@ -195,6 +197,7 @@ def ingest_batch(batch: Batch) -> None:
                                 active_session["started_at"],
                                 reading.t,
                             )
+                            ended_sessions_to_analyze.add((active_session["id"], user_id, reading_device_id))
 
                 if label == "motion_context":
                     motion_value = reading.val_text or meta.get("context", "unknown")
@@ -278,6 +281,9 @@ def ingest_batch(batch: Batch) -> None:
                 "INSERT INTO events (time, user_id, device_id, session_id, label, val_text, metadata) VALUES %s ON CONFLICT DO NOTHING",
                 events,
             )
+
+        for session_id, analysis_user_id, analysis_device_id in ended_sessions_to_analyze:
+            queue_session_analysis(cursor, session_id, analysis_user_id, analysis_device_id)
 
         connection.commit()
         total_records = len(vitals) + len(gps_points) + len(motion_events) + len(audio_events) + len(events)

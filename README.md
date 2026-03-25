@@ -11,6 +11,10 @@ The current flow is:
 
 `iPhone / Watch -> JSON batch -> FastAPI /ingest -> Postgres`
 
+Concentration flow (auto on session end):
+
+`session_marker END -> session close -> concentration job queued -> worker runs LLM -> score/reason saved`
+
 ## Quick Start
 
 ### 1. Create local env
@@ -24,6 +28,8 @@ Set at least these values in `.env`:
 ```env
 POSTGRES_PASSWORD=dev_password
 INGEST_API_KEY=dev_key
+LLM_PROVIDER=snowflake
+LLM_MODEL=claude-3-5-sonnet
 ```
 
 Notes:
@@ -96,6 +102,38 @@ Important details:
 - `audio_events` stores categorical audio context labels like `quiet`, `busy`, or SoundAnalysis labels.
 - `events` stores generic markers such as `session_marker`.
 - `sessions` are now created from `session_marker` `START` / `END` events during ingest.
+- `session_concentration_analysis` is auto-created on backend startup and stores concentration `status`, `score`, and `reason`.
+
+## Auto Concentration Analysis
+
+- Trigger: ingest receives `event(label=session_marker, val_text=END)`.
+- Worker: backend picks pending jobs and computes features from `audio_events`, `vitals`, `gps`, and `motion_events`.
+- LLM: provider is controlled by `LLM_PROVIDER` (`snowflake` or `openai`).
+- Result endpoint: `GET /sessions/{session_id}/concentration`
+
+Snowflake mode env:
+
+```env
+LLM_PROVIDER=snowflake
+LLM_MODEL=claude-3-5-sonnet
+SNOWFLAKE_ACCOUNT=...
+SNOWFLAKE_USER=...
+SNOWFLAKE_USER_PASSWORD=...
+SNOWFLAKE_ROLE=...
+SNOWFLAKE_DATABASE=...
+SNOWFLAKE_SCHEMA=...
+SNOWFLAKE_WAREHOUSE=...
+```
+
+Dummy E2E test:
+
+```bash
+python3 scripts/test_end_session_concentration.py
+```
+
+Dummy test output:
+
+- `llm/CCoT/output/dummy_concentration_result_session_<session_id>.json`
 
 ## Supported Payload
 

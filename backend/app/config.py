@@ -9,6 +9,18 @@ class Settings(BaseSettings):
     postgres_port: int = 5433
     ingest_api_key: str = ""
     cors_origins: str = ""
+    llm_provider: str = "openai"
+    llm_api_key: str = ""
+    llm_model: str = "gpt-5-mini"
+    llm_api_base_url: str = "https://api.openai.com/v1"
+    llm_timeout_seconds: int = 60
+    snowflake_account: str = ""
+    snowflake_user: str = ""
+    snowflake_user_password: str = ""
+    snowflake_role: str = ""
+    snowflake_database: str = ""
+    snowflake_schema: str = ""
+    snowflake_warehouse: str = ""
 
     class Config:
         env_file = ".env"

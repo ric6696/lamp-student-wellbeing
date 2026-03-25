@@ -1,0 +1,717 @@
+import json
+import logging
+import re
+import threading
+import time
+from dataclasses import dataclass
+from datetime import datetime
+from math import atan2, cos, radians, sin, sqrt
+from pathlib import Path
+from typing import Any, Optional
+from urllib import error, request
+
+from .config import settings
+from .db import get_connection, release_connection
+
+
+_repo_root = Path(__file__).resolve().parents[2]
+_log_dir = _repo_root / "logs"
+_log_dir.mkdir(parents=True, exist_ok=True)
+
+logger = logging.getLogger("concentration")
+if not logger.handlers:
+    handler = logging.FileHandler(_log_dir / "concentration_worker.log")
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+
+def ensure_concentration_schema(cursor) -> None:
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS session_concentration_analysis (
+            session_id BIGINT PRIMARY KEY REFERENCES sessions(id) ON DELETE CASCADE,
+            user_id TEXT NOT NULL,
+            device_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending',
+            score SMALLINT,
+            reason TEXT,
+            model TEXT,
+            sensor_features JSONB,
+            llm_raw_response TEXT,
+            error_message TEXT,
+            triggered_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+            processing_started_at TIMESTAMPTZ,
+            completed_at TIMESTAMPTZ,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )
+        """
+    )
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS session_concentration_analysis_status_triggered_idx
+            ON session_concentration_analysis (status, triggered_at)
+        """
+    )
+
+
+def queue_session_analysis(cursor, session_id: int, user_id: str, device_id: str) -> None:
+    ensure_concentration_schema(cursor)
+    cursor.execute(
+        """
+        INSERT INTO session_concentration_analysis (session_id, user_id, device_id, status, triggered_at, updated_at)
+        VALUES (%s, %s, %s, 'pending', now(), now())
+        ON CONFLICT (session_id)
+        DO UPDATE SET
+            user_id = EXCLUDED.user_id,
+            device_id = EXCLUDED.device_id,
+            status = CASE
+                WHEN session_concentration_analysis.status = 'done' THEN session_concentration_analysis.status
+                ELSE 'pending'
+            END,
+            error_message = NULL,
+            updated_at = now()
+        """,
+        (session_id, user_id, device_id),
+    )
+
+
+@dataclass
+class AnalysisJob:
+    session_id: int
+    user_id: str
+    device_id: str
+
+
+def _claim_next_job(cursor) -> Optional[AnalysisJob]:
+    cursor.execute(
+        """
+        WITH candidate AS (
+            SELECT session_id
+            FROM session_concentration_analysis
+            WHERE status = 'pending'
+            ORDER BY triggered_at ASC
+            FOR UPDATE SKIP LOCKED
+            LIMIT 1
+        )
+        UPDATE session_concentration_analysis a
+        SET status = 'processing',
+            processing_started_at = now(),
+            updated_at = now()
+        FROM candidate
+        WHERE a.session_id = candidate.session_id
+        RETURNING a.session_id, a.user_id, a.device_id
+        """
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+    return AnalysisJob(session_id=row[0], user_id=row[1], device_id=row[2])
+
+
+def _to_float(value: Any) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _normalize_confidence(value: Any) -> Optional[float]:
+    conf = _to_float(value)
+    if conf is None:
+        return None
+    if conf > 1:
+        conf = conf / 100.0
+    return conf
+
+
+def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371000.0
+    p1 = radians(lat1)
+    p2 = radians(lat2)
+    dp = radians(lat2 - lat1)
+    dl = radians(lon2 - lon1)
+    a = sin(dp / 2) ** 2 + cos(p1) * cos(p2) * sin(dl / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return r * c
+
+
+def _format_counts(counts: dict[str, int]) -> str:
+    if not counts:
+        return "none"
+    items = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return ", ".join(f"{count} {label}" for label, count in items)
+
+
+def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
+    cursor.execute(
+        """
+        SELECT started_at, ended_at, label
+        FROM sessions
+        WHERE id = %s
+        """,
+        (job.session_id,),
+    )
+    session_row = cursor.fetchone()
+    if not session_row:
+        raise RuntimeError(f"Session {job.session_id} not found")
+    started_at, ended_at, label = session_row
+    if ended_at is None:
+        raise RuntimeError(f"Session {job.session_id} has no ended_at yet")
+
+    cursor.execute(
+        """
+        SELECT label, db, confidence, ai_label
+        FROM audio_events
+        WHERE session_id = %s
+          AND time >= %s
+          AND time <= %s
+        ORDER BY time ASC
+        """,
+        (job.session_id, started_at, ended_at),
+    )
+    audio_rows = cursor.fetchall()
+
+    label_counts: dict[str, int] = {}
+    ai_counts: dict[str, int] = {}
+    db_values: list[float] = []
+    qualified_audio_count = 0
+    for label_val, db, confidence, ai_label in audio_rows:
+        conf = _normalize_confidence(confidence)
+        if conf is None or conf <= 0.5:
+            continue
+        qualified_audio_count += 1
+        normalized_label = (label_val or "unknown").strip().lower()
+        label_counts[normalized_label] = label_counts.get(normalized_label, 0) + 1
+
+        if ai_label:
+            ai_key = str(ai_label).strip()
+            ai_counts[ai_key] = ai_counts.get(ai_key, 0) + 1
+
+        dbf = _to_float(db)
+        if dbf is not None:
+            db_values.append(dbf)
+
+    avg_db = sum(db_values) / len(db_values) if db_values else None
+
+    cursor.execute(
+        """
+        SELECT metric_code, value
+        FROM vitals
+        WHERE session_id = %s
+          AND time >= %s
+          AND time <= %s
+        ORDER BY time ASC
+        """,
+        (job.session_id, started_at, ended_at),
+    )
+    vital_rows = cursor.fetchall()
+
+    hr_values: list[float] = []
+    steps_values: list[float] = []
+    distance_values: list[float] = []
+    for metric_code, value in vital_rows:
+        val = _to_float(value)
+        if val is None:
+            continue
+        if metric_code == 1:
+            hr_values.append(val)
+        elif metric_code == 20:
+            steps_values.append(val)
+        elif metric_code == 21:
+            distance_values.append(val)
+
+    cursor.execute(
+        """
+        SELECT lat, lon
+        FROM gps
+        WHERE session_id = %s
+          AND time >= %s
+          AND time <= %s
+          AND lat IS NOT NULL
+          AND lon IS NOT NULL
+        ORDER BY time ASC
+        """,
+        (job.session_id, started_at, ended_at),
+    )
+    gps_rows = cursor.fetchall()
+
+    displacement_m = None
+    total_travel_m = None
+    if len(gps_rows) >= 2:
+        start_lat, start_lon = gps_rows[0]
+        end_lat, end_lon = gps_rows[-1]
+        displacement_m = _haversine_m(start_lat, start_lon, end_lat, end_lon)
+        travel = 0.0
+        for i in range(1, len(gps_rows)):
+            lat1, lon1 = gps_rows[i - 1]
+            lat2, lon2 = gps_rows[i]
+            travel += _haversine_m(lat1, lon1, lat2, lon2)
+        total_travel_m = travel
+
+    drastic_location_change = bool(
+        displacement_m is not None and total_travel_m is not None and (displacement_m >= 300 or total_travel_m >= 1000)
+    )
+
+    cursor.execute(
+        """
+        SELECT context
+        FROM motion_events
+        WHERE session_id = %s
+          AND time >= %s
+          AND time <= %s
+        ORDER BY time ASC
+        """,
+        (job.session_id, started_at, ended_at),
+    )
+    motion_rows = cursor.fetchall()
+    motion_counts: dict[str, int] = {}
+    stationary_labels = {"stationary", "still", "sitting", "idle"}
+    active_labels = {"walking", "running", "cycling", "automotive", "moving"}
+    stationary_count = 0
+    active_count = 0
+    for (context,) in motion_rows:
+        context_norm = str(context or "unknown").strip().lower()
+        motion_counts[context_norm] = motion_counts.get(context_norm, 0) + 1
+        if context_norm in stationary_labels:
+            stationary_count += 1
+        elif context_norm in active_labels:
+            active_count += 1
+
+    duration_min = max((ended_at - started_at).total_seconds() / 60.0, 0.0)
+
+    return {
+        "session": {
+            "id": job.session_id,
+            "user_id": job.user_id,
+            "device_id": job.device_id,
+            "label": label,
+            "started_at": started_at.isoformat(),
+            "ended_at": ended_at.isoformat(),
+            "duration_min": duration_min,
+        },
+        "counts": {
+            "audio_events_total": len(audio_rows),
+            "audio_events_conf_gt_50": qualified_audio_count,
+            "vitals_rows": len(vital_rows),
+            "gps_points": len(gps_rows),
+            "motion_events": len(motion_rows),
+        },
+        "audio": {
+            "avg_db_conf_gt_50": avg_db,
+            "label_counts_conf_gt_50": label_counts,
+            "label_counts_conf_gt_50_text": _format_counts(label_counts),
+            "ai_label_counts_conf_gt_50": ai_counts,
+            "ai_label_counts_conf_gt_50_text": _format_counts(ai_counts),
+        },
+        "vitals": {
+            "avg_heart_rate": (sum(hr_values) / len(hr_values)) if hr_values else None,
+            "avg_steps": (sum(steps_values) / len(steps_values)) if steps_values else None,
+            "avg_distance_m": (sum(distance_values) / len(distance_values)) if distance_values else None,
+            "heart_rate_samples": len(hr_values),
+            "steps_samples": len(steps_values),
+            "distance_samples": len(distance_values),
+        },
+        "gps": {
+            "points": len(gps_rows),
+            "displacement_m": displacement_m,
+            "total_travel_m": total_travel_m,
+            "drastic_location_change": drastic_location_change,
+        },
+        "motion": {
+            "counts": motion_counts,
+            "counts_text": _format_counts(motion_counts),
+            "stationary_count": stationary_count,
+            "active_count": active_count,
+        },
+    }
+
+
+def _build_prompt(features: dict[str, Any]) -> str:
+    session = features["session"]
+    counts = features["counts"]
+    audio = features["audio"]
+    vitals = features["vitals"]
+    gps = features["gps"]
+    motion = features["motion"]
+
+    return f"""You are an expert study concentration analyst. Use Compositional Chain-of-Thought (CCoT) with explicit 3-phase reasoning.
+
+SESSION WINDOW:
+- session_id: {session['id']}
+- started_at: {session['started_at']}
+- ended_at: {session['ended_at']}
+- duration_min: {session['duration_min']}
+
+MULTIMODAL SNAPSHOT (already aggregated from started_at to ended_at):
+- Audio events total: {counts['audio_events_total']}
+- Audio events used (confidence > 50%): {counts['audio_events_conf_gt_50']}
+- Avg audio dB (confidence > 50%): {audio['avg_db_conf_gt_50']}
+- Audio label counts (confidence > 50%): {audio['label_counts_conf_gt_50_text']}
+- Audio AI label counts (confidence > 50%): {audio['ai_label_counts_conf_gt_50_text']}
+- Avg heart rate (bpm): {vitals['avg_heart_rate']} (samples={vitals['heart_rate_samples']})
+- Avg steps: {vitals['avg_steps']} (samples={vitals['steps_samples']})
+- Avg distance (m): {vitals['avg_distance_m']} (samples={vitals['distance_samples']})
+- GPS points: {gps['points']}
+- GPS displacement (m): {gps['displacement_m']}
+- GPS total travel (m): {gps['total_travel_m']}
+- GPS drastic location change: {gps['drastic_location_change']}
+- Motion context counts: {motion['counts_text']}
+- Motion stationary count: {motion['stationary_count']}
+- Motion active count: {motion['active_count']}
+
+NORMAL CONCENTRATION THRESHOLDS:
+1) Audio environment:
+   - Good focus: avg dB <= 45
+   - Moderate: 45 < avg dB <= 60
+   - Distracting: avg dB > 60
+   - More quiet/stationary labels support concentration; more busy/speech labels reduce concentration.
+2) Vitals / movement:
+   - Heart rate 60-85 bpm generally supports calm focus.
+   - Lower steps/distance supports seated studying; higher values may indicate reduced concentration.
+3) GPS stability:
+   - Stable location supports concentration.
+   - Large displacement or high travel suggests context switching/interruptions.
+4) Motion events:
+   - Mostly stationary supports concentration.
+   - Frequent walking/running/active contexts reduce concentration.
+
+PHASE 1: INDIVIDUAL MODALITY DECOMPOSITION
+Step 1. Analyze audio independently against thresholds and label distribution.
+Step 2. Analyze vitals independently (heart rate, steps, distance) against thresholds.
+Step 3. Analyze GPS and motion independently for stability vs activity.
+
+PHASE 2: CROSS-MODAL COMPOSITION
+Step 4. Identify correlations across modalities (e.g., noisy + active motion + movement in location).
+Step 5. Synthesize a holistic concentration assessment from all modalities.
+
+PHASE 3: ACTIONABLE SYNTHESIS
+Step 6. Provide concise personalized recommendations tied to root causes from the composed analysis.
+
+OUTPUT REQUIREMENTS:
+Return ONLY valid JSON with this exact structure:
+{{
+  "phase_1": {{
+    "audio": "<brief modality-specific analysis>",
+    "vitals": "<brief modality-specific analysis>",
+    "gps_motion": "<brief modality-specific analysis>"
+  }},
+  "phase_2": {{
+    "correlations": "<cross-modal correlations>",
+    "holistic_assessment": "<overall concentration assessment>"
+  }},
+  "phase_3": {{
+    "recommendations": "<2-3 actionable recommendations>"
+  }},
+  "score": <integer 1-10>,
+  "reason": "<2 to 3 sentences explaining why this score was assigned>"
+}}
+
+Final rules:
+- score must be 1-10 integer.
+- reason must be 2-3 sentences.
+- Ensure the reason references audio, vitals, GPS, and motion evidence.
+- No text outside JSON.
+"""
+
+
+def _call_llm_openai(prompt: str) -> tuple[int, str, str]:
+    api_key = settings.llm_api_key
+    if not api_key:
+        raise RuntimeError("LLM_API_KEY is not configured")
+
+    model = settings.llm_model
+    body = {
+        "model": model,
+        "input": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": prompt,
+                    }
+                ],
+            }
+        ],
+        "text": {"format": {"type": "json_object"}},
+    }
+
+    payload = json.dumps(body).encode("utf-8")
+    req = request.Request(
+        url=settings.llm_api_base_url.rstrip("/") + "/responses",
+        data=payload,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+    )
+
+    try:
+        with request.urlopen(req, timeout=settings.llm_timeout_seconds) as resp:
+            raw = resp.read().decode("utf-8")
+    except error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"LLM request failed ({exc.code}): {detail}") from exc
+
+    data = json.loads(raw)
+    text_output = data.get("output_text")
+    if not text_output:
+        # Fallback parsing for cases where output_text is absent.
+        output_items = data.get("output") or []
+        chunks = []
+        for item in output_items:
+            for content in item.get("content") or []:
+                if content.get("type") == "output_text" and content.get("text"):
+                    chunks.append(content["text"])
+        text_output = "\n".join(chunks)
+
+    if not text_output:
+        raise RuntimeError("LLM response did not contain output text")
+
+    parsed = _parse_model_json(text_output)
+    score = parsed.get("score")
+    reason = parsed.get("reason")
+
+    if score is None or reason is None:
+        raise RuntimeError(f"LLM output missing required fields: {text_output}")
+
+    try:
+        score_int = int(score)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"Invalid score from LLM: {score}") from exc
+
+    if score_int < 1 or score_int > 10:
+        raise RuntimeError(f"Score out of range 1-10: {score_int}")
+
+    reason_str = str(reason).strip()
+    if not reason_str:
+        raise RuntimeError("Reason from LLM was empty")
+
+    return score_int, reason_str, text_output
+
+
+def _call_llm_snowflake(prompt: str) -> tuple[int, str, str]:
+    try:
+        from snowflake.snowpark import Session
+    except Exception as exc:
+        raise RuntimeError("snowflake-snowpark-python is required for LLM_PROVIDER=snowflake") from exc
+
+    required = {
+        "account": settings.snowflake_account,
+        "user": settings.snowflake_user,
+        "password": settings.snowflake_user_password,
+        "role": settings.snowflake_role,
+        "database": settings.snowflake_database,
+        "schema": settings.snowflake_schema,
+        "warehouse": settings.snowflake_warehouse,
+    }
+    missing = [k for k, v in required.items() if not v]
+    if missing:
+        raise RuntimeError(f"Missing Snowflake settings for Cortex call: {', '.join(missing)}")
+
+    escaped_prompt = prompt.replace("'", "''")
+    model = settings.llm_model
+    query = (
+        "SELECT SNOWFLAKE.CORTEX.COMPLETE("
+        f"'{model}', "
+        f"'{escaped_prompt}'"
+        ") AS response"
+    )
+
+    session = Session.builder.configs(required).create()
+    try:
+        rows = session.sql(query).collect()
+    finally:
+        session.close()
+
+    if not rows:
+        raise RuntimeError("Snowflake Cortex returned no rows")
+
+    response_text = rows[0]["RESPONSE"]
+    parsed = _parse_model_json(response_text)
+    score = parsed.get("score")
+    reason = parsed.get("reason")
+
+    if score is None or reason is None:
+        raise RuntimeError(f"Cortex output missing required fields: {response_text}")
+
+    try:
+        score_int = int(score)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"Invalid score from Cortex: {score}") from exc
+
+    if score_int < 1 or score_int > 10:
+        raise RuntimeError(f"Score out of range 1-10: {score_int}")
+
+    reason_str = str(reason).strip()
+    if not reason_str:
+        raise RuntimeError("Reason from Cortex was empty")
+
+    return score_int, reason_str, response_text
+
+
+def _call_llm(prompt: str) -> tuple[int, str, str]:
+    provider = (settings.llm_provider or "openai").strip().lower()
+    if provider == "snowflake":
+        return _call_llm_snowflake(prompt)
+    if provider == "openai":
+        return _call_llm_openai(prompt)
+    raise RuntimeError(f"Unsupported LLM_PROVIDER: {provider}")
+
+
+def _parse_model_json(text: str) -> dict[str, Any]:
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+
+    match = re.search(r"\{.*\}", text, flags=re.DOTALL)
+    if not match:
+        raise RuntimeError(f"Could not parse JSON from LLM output: {text}")
+
+    try:
+        parsed = json.loads(match.group(0))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Could not parse JSON from extracted content: {text}") from exc
+
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"Parsed LLM JSON was not an object: {text}")
+    return parsed
+
+
+def process_next_pending_job() -> bool:
+    connection = None
+    cursor = None
+    job = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+        ensure_concentration_schema(cursor)
+        job = _claim_next_job(cursor)
+        connection.commit()
+
+        if not job:
+            return False
+
+        logger.info("concentration_job_claimed session_id=%s", job.session_id)
+        features = _fetch_features(cursor, job)
+        prompt = _build_prompt(features)
+        score, reason, llm_raw = _call_llm(prompt)
+
+        cursor.execute(
+            """
+            UPDATE session_concentration_analysis
+            SET status = 'done',
+                score = %s,
+                reason = %s,
+                model = %s,
+                sensor_features = %s::jsonb,
+                llm_raw_response = %s,
+                error_message = NULL,
+                completed_at = now(),
+                updated_at = now()
+            WHERE session_id = %s
+            """,
+            (
+                score,
+                reason,
+                settings.llm_model,
+                json.dumps(features),
+                llm_raw,
+                job.session_id,
+            ),
+        )
+        connection.commit()
+        logger.info("concentration_job_done session_id=%s score=%s", job.session_id, score)
+        return True
+
+    except Exception as exc:
+        if connection:
+            connection.rollback()
+        logger.exception("concentration_job_failed session_id=%s", getattr(job, "session_id", None))
+
+        # Attempt to mark failed using a new connection to avoid leaked tx state.
+        if job is not None:
+            fail_connection = None
+            fail_cursor = None
+            try:
+                fail_connection = get_connection()
+                fail_cursor = fail_connection.cursor()
+                ensure_concentration_schema(fail_cursor)
+                fail_cursor.execute(
+                    """
+                    UPDATE session_concentration_analysis
+                    SET status = 'failed',
+                        error_message = %s,
+                        completed_at = now(),
+                        updated_at = now()
+                    WHERE session_id = %s
+                    """,
+                    (str(exc), job.session_id),
+                )
+                fail_connection.commit()
+            except Exception:
+                if fail_connection:
+                    fail_connection.rollback()
+                logger.exception("concentration_job_fail_mark_failed session_id=%s", job.session_id)
+            finally:
+                if fail_cursor:
+                    fail_cursor.close()
+                if fail_connection:
+                    release_connection(fail_connection)
+        return False
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
+
+
+class ConcentrationWorker:
+    def __init__(self, poll_interval_seconds: float = 2.0):
+        self._poll_interval_seconds = poll_interval_seconds
+        self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+
+    def start(self) -> None:
+        if self._thread and self._thread.is_alive():
+            return
+        self._stop_event.clear()
+        self._thread = threading.Thread(target=self._run, name="concentration-worker", daemon=True)
+        self._thread.start()
+        logger.info("concentration_worker_started")
+
+    def stop(self) -> None:
+        self._stop_event.set()
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=5)
+        logger.info("concentration_worker_stopped")
+
+    def _run(self) -> None:
+        while not self._stop_event.is_set():
+            did_work = process_next_pending_job()
+            if did_work:
+                continue
+            time.sleep(self._poll_interval_seconds)
+
+
+def bootstrap_concentration_schema() -> None:
+    connection = None
+    cursor = None
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+        ensure_concentration_schema(cursor)
+        connection.commit()
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)

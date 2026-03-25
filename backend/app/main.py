@@ -5,12 +5,14 @@ from pathlib import Path
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from .concentration import ConcentrationWorker, bootstrap_concentration_schema
 from .config import get_cors_origins, settings
 from .db import close_pool, get_connection, init_pool, release_connection
 from .ingest import ingest_batch
 from .models import Batch
 
 app = FastAPI(title="LAMP Ingestion API")
+_concentration_worker = ConcentrationWorker()
 
 _repo_root = Path(__file__).resolve().parents[2]
 _log_dir = _repo_root / "logs"
@@ -27,10 +29,13 @@ if not http_logger.handlers:
 @app.on_event("startup")
 def startup() -> None:
     init_pool()
+    bootstrap_concentration_schema()
+    _concentration_worker.start()
 
 
 @app.on_event("shutdown")
 def shutdown() -> None:
+    _concentration_worker.stop()
     close_pool()
 
 cors_origins = get_cors_origins()
@@ -94,4 +99,37 @@ async def health():
         if connection:
             release_connection(connection)
 
+
+@app.get("/sessions/{session_id}/concentration")
+async def get_session_concentration(session_id: int):
+    connection = None
+    cursor = None
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT session_id, status, score, reason, model, error_message, triggered_at, processing_started_at, completed_at "
+            "FROM session_concentration_analysis WHERE session_id = %s",
+            (session_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="No concentration analysis found for this session")
+
+        return {
+            "session_id": row[0],
+            "status": row[1],
+            "score": row[2],
+            "reason": row[3],
+            "model": row[4],
+            "error_message": row[5],
+            "triggered_at": row[6],
+            "processing_started_at": row[7],
+            "completed_at": row[8],
+        }
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
 
