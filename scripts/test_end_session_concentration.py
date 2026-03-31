@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 repo_root = Path(__file__).resolve().parents[1]
-ccot_output_dir = repo_root / "llm" / "CCoT" / "output"
+ccot_output_dir = repo_root / "scripts" / "output"
 
 
 def load_env(env_path: Path) -> None:

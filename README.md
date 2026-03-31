@@ -133,7 +133,11 @@ python3 scripts/test_end_session_concentration.py
 
 Dummy test output:
 
-- `llm/CCoT/output/dummy_concentration_result_session_<session_id>.json`
+- `scripts/output/dummy_concentration_result_session_<session_id>.json`
+
+Backend latest-result output (written/overwritten when a session ends):
+
+- `llm/CCoT/output/concentration_analysis_results.json`
 
 ## Supported Payload
 

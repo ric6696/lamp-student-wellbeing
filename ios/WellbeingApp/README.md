@@ -52,4 +52,25 @@ open WellbeingApp.xcodeproj
 
 CI: ensure `Configs/Local.xcconfig` is provided during CI runs (or set the `USER_ID` env var before running `xcodegen`).
 
+## Running on a physical iPhone (backend upload + CCoT output)
+
+When running on a real iPhone, the app cannot upload to `localhost`. You must point it at your Mac.
+
+1. Set your Mac host in `Configs/Local.xcconfig`:
+   - Update `API_BASE_URL` to your Mac's mDNS hostname, e.g.
+     - `API_BASE_URL = http://<Your-Mac>.local:8000/ingest`
+   - You can find `<Your-Mac>` via `scutil --get LocalHostName`.
+
+2. Start the backend so it is reachable from your phone:
+   - Run: `uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload`
+   - Ensure your iPhone and Mac are on the same Wi-Fi network.
+   - Optional quick check from the iPhone browser: `http://<Your-Mac>.local:8000/health`
+
+3. After pressing "End Session & Upload":
+   - The backend queues and processes a concentration analysis job.
+    - The backend writes/overwrites a single latest-result JSON file at:
+       - `llm/CCoT/output/concentration_analysis_results.json`
+
+    The file contains `concentration_score` (1–10) and `reason`.
+
 Runtime identity note: the canonical backend `user_id` is generated automatically by the app and stored in Keychain so it is more likely to survive reinstalls than a `UserDefaults`-backed identifier. Phone and watch samples keep distinct `device_id` values, and the phone uploader preserves watch-originated `device_id` values on individual readings.

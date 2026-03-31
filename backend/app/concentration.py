@@ -18,6 +18,10 @@ _repo_root = Path(__file__).resolve().parents[2]
 _log_dir = _repo_root / "logs"
 _log_dir.mkdir(parents=True, exist_ok=True)
 _ccot_output_dir = _repo_root / "llm" / "CCoT" / "output"
+_ccot_output_path = _ccot_output_dir / "concentration_analysis_results.json"
+_legacy_output_paths = [
+    _ccot_output_dir / "concentration_result.json",
+]
 
 logger = logging.getLogger("concentration")
 if not logger.handlers:
@@ -593,17 +597,31 @@ def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
     tmp_path.replace(path)
 
 
-def _emit_ccot_output_artifacts(session_id: int, payload: dict[str, Any]) -> None:
-    """Write analysis artifacts to llm/CCoT/output for easy inspection.
+def _emit_ccot_output(session_id: int, payload: dict[str, Any]) -> None:
+    """Write the latest concentration result to llm/CCoT/output.
 
-    - concentration_analysis_results.json: overwritten with latest run (used by StudySessionAnalyst)
-    - concentration_result_session_<id>.json: immutable per-session artifact
+    This intentionally overwrites the same single file each time so that
+    consumers only need to look in one place.
     """
-    latest_path = _ccot_output_dir / "concentration_analysis_results.json"
-    per_session_path = _ccot_output_dir / f"concentration_result_session_{session_id}.json"
+    _atomic_write_json(_ccot_output_path, payload)
 
-    _atomic_write_json(latest_path, payload)
-    _atomic_write_json(per_session_path, payload)
+    # Best-effort cleanup of legacy artifacts so the output directory contains
+    # only a single "latest" JSON file.
+    for legacy_path in _legacy_output_paths:
+        try:
+            if legacy_path.exists():
+                legacy_path.unlink()
+        except Exception:
+            logger.exception("ccot_output_cleanup_failed path=%s", legacy_path)
+
+    try:
+        for legacy_per_session_path in _ccot_output_dir.glob("concentration_result_session_*.json"):
+            try:
+                legacy_per_session_path.unlink()
+            except Exception:
+                logger.exception("ccot_output_cleanup_failed path=%s", legacy_per_session_path)
+    except Exception:
+        logger.exception("ccot_output_cleanup_glob_failed")
 
 
 def process_next_pending_job() -> bool:
@@ -656,21 +674,10 @@ def process_next_pending_job() -> bool:
 
         try:
             payload: dict[str, Any] = {
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "status": "done",
-                "session_id": job.session_id,
-                "user_id": job.user_id,
-                "device_id": job.device_id,
-                "provider": (settings.llm_provider or "openai").strip().lower(),
-                "model": settings.llm_model,
-                "sensor_features": features,
-                "llm_raw_response": llm_raw,
+                "concentration_score": int(score),
+                "reason": str(reason),
             }
-            payload.update(llm_parsed)
-            payload["score"] = int(score)
-            payload["reason"] = str(reason)
-            payload["concentration_score"] = int(score)
-            _emit_ccot_output_artifacts(job.session_id, payload)
+            _emit_ccot_output(job.session_id, payload)
         except Exception:
             logger.exception("concentration_output_write_failed session_id=%s", job.session_id)
 
@@ -713,18 +720,9 @@ def process_next_pending_job() -> bool:
 
             try:
                 payload: dict[str, Any] = {
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
-                    "status": "failed",
-                    "session_id": job.session_id,
-                    "user_id": job.user_id,
-                    "device_id": job.device_id,
-                    "provider": (settings.llm_provider or "openai").strip().lower(),
-                    "model": settings.llm_model,
                     "error_message": str(exc),
                 }
-                if features is not None:
-                    payload["sensor_features"] = features
-                _emit_ccot_output_artifacts(job.session_id, payload)
+                _emit_ccot_output(job.session_id, payload)
             except Exception:
                 logger.exception("concentration_output_write_failed session_id=%s", job.session_id)
         return False
