@@ -5,17 +5,6 @@ final class HealthKitManager {
     static let shared = HealthKitManager()
     private let store = HKHealthStore()
     private let liveVitalsBuffer = LiveVitalsBuffer()
-    private lazy var workoutCoordinator: AnyObject? = {
-        if #available(iOS 26.0, *) {
-            let coordinator = WorkoutLifecycleCoordinator()
-            coordinator.onLiveVitals = { [weak self] items in
-                guard let self = self else { return }
-                Task { await self.liveVitalsBuffer.append(items) }
-            }
-            return coordinator
-        }
-        return nil
-    }()
     
     private init() {}
 
@@ -43,17 +32,12 @@ final class HealthKitManager {
     }
 
     func startActiveSensingSession() async throws {
-        if #available(iOS 26.0, *),
-           let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
-            try await coordinator.startIfNeeded(on: store)
-        }
+        // HKWorkoutSession / HKLiveWorkoutBuilder are not available on iOS.
+        // On iPhone we rely on periodic queries + any externally appended vitals.
     }
 
     func stopActiveSensingSession() async throws {
-        if #available(iOS 26.0, *),
-           let coordinator = workoutCoordinator as? WorkoutLifecycleCoordinator {
-            try await coordinator.stopIfNeeded()
-        }
+        // No-op on iOS.
     }
 
     func fetchRecentVitals(since: Date) async throws -> [BatchItem] {
@@ -168,178 +152,6 @@ final class HealthKitManager {
             }
             store.execute(q)
         }
-    }
-}
-
-@available(iOS 26.0, *)
-final class WorkoutLifecycleCoordinator: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
-    private var session: HKWorkoutSession?
-    private var builder: HKLiveWorkoutBuilder?
-    private var isStarting = false
-    private var isStopping = false
-    private var isFinalizing = false
-    private var stopContinuation: CheckedContinuation<Void, Error>?
-    var onLiveVitals: (([BatchItem]) -> Void)?
-
-    func startIfNeeded(on healthStore: HKHealthStore) async throws {
-        guard session == nil, builder == nil, !isStarting else {
-            print("Workout start ignored: session already starting/running")
-            return
-        }
-
-        isStarting = true
-        defer { isStarting = false }
-
-        do {
-            let configuration = HKWorkoutConfiguration()
-            configuration.activityType = .other
-            configuration.locationType = .indoor
-
-            let session = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
-            let builder = session.associatedWorkoutBuilder()
-            session.delegate = self
-            builder.delegate = self
-            builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
-
-            self.session = session
-            self.builder = builder
-
-            session.prepare()
-
-            let startDate = Date()
-            session.startActivity(with: startDate)
-            try await builder.beginCollection(at: startDate)
-            print("Workout live collection started")
-        } catch {
-            print("Workout start failed: \(error)")
-            cleanupAndReset()
-            throw error
-        }
-    }
-
-    func stopIfNeeded() async throws {
-        guard let session = session else {
-            return
-        }
-        guard !isStopping else {
-            print("Workout stop ignored: already stopping")
-            return
-        }
-
-        isStopping = true
-        isFinalizing = false
-        session.stopActivity(with: Date())
-
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            stopContinuation = continuation
-        }
-    }
-
-    func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
-        print("WorkoutSession failed: \(error)")
-        completeStop(error: error)
-        cleanupAndReset()
-    }
-
-    func workoutSession(_ workoutSession: HKWorkoutSession,
-                        didChangeTo toState: HKWorkoutSessionState,
-                        from fromState: HKWorkoutSessionState,
-                        date: Date) {
-        if toState == .stopped || toState == .ended {
-            finalizeStopFlow(endDate: date)
-        }
-    }
-
-    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
-
-    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
-        let liveMappings: [(HKQuantityTypeIdentifier, Int)] = [
-            (.heartRate, 1),
-            (.heartRateVariabilitySDNN, 2),
-            (.environmentalAudioExposure, 10),
-            (.stepCount, 20),
-            (.distanceWalkingRunning, 21),
-        ]
-
-        var items: [BatchItem] = []
-        for (identifier, code) in liveMappings {
-            guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else { continue }
-            guard collectedTypes.contains(quantityType) else { continue }
-            guard let stats = workoutBuilder.statistics(for: quantityType),
-                  let quantity = stats.mostRecentQuantity() else { continue }
-
-            let value = quantity.doubleValue(for: unit(for: identifier))
-            if value < 0 { continue }
-            items.append(BatchItem(type: .vital, t: Date(), code: code, val: value))
-        }
-
-        if !items.isEmpty {
-            onLiveVitals?(items)
-        }
-    }
-
-    private func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
-        switch id {
-        case .heartRate: return HKUnit.count().unitDivided(by: .minute())
-        case .heartRateVariabilitySDNN: return .secondUnit(with: .milli)
-        case .environmentalAudioExposure: return .decibelAWeightedSoundPressureLevel()
-        case .distanceWalkingRunning: return .meter()
-        default: return .count()
-        }
-    }
-
-    private func finalizeStopFlow(endDate: Date) {
-        guard !isFinalizing else { return }
-        isFinalizing = true
-
-        guard let builder = builder, let session = session else {
-            completeStop(error: nil)
-            cleanupAndReset()
-            return
-        }
-
-        builder.endCollection(withEnd: endDate) { [weak self] _, endError in
-            guard let self = self else { return }
-            if let endError {
-                print("endCollection error: \(endError)")
-                self.completeStop(error: endError)
-                self.cleanupAndReset()
-                return
-            }
-
-            builder.finishWorkout { _, finishError in
-                if let finishError {
-                    print("finishWorkout error: \(finishError)")
-                }
-                session.end()
-                self.completeStop(error: finishError)
-                self.cleanupAndReset()
-            }
-        }
-    }
-
-    private func completeStop(error: Error?) {
-        guard let continuation = stopContinuation else {
-            isStopping = false
-            return
-        }
-        stopContinuation = nil
-        isStopping = false
-
-        if let error {
-            continuation.resume(throwing: error)
-        } else {
-            continuation.resume()
-        }
-    }
-
-    private func cleanupAndReset() {
-        session = nil
-        builder = nil
-        stopContinuation = nil
-        isStarting = false
-        isStopping = false
-        isFinalizing = false
     }
 }
 

@@ -17,6 +17,7 @@ from .db import get_connection, release_connection
 _repo_root = Path(__file__).resolve().parents[2]
 _log_dir = _repo_root / "logs"
 _log_dir.mkdir(parents=True, exist_ok=True)
+_ccot_output_dir = _repo_root / "llm" / "CCoT" / "output"
 
 logger = logging.getLogger("concentration")
 if not logger.handlers:
@@ -585,10 +586,31 @@ def _parse_model_json(text: str) -> dict[str, Any]:
     return parsed
 
 
+def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp_path.replace(path)
+
+
+def _emit_ccot_output_artifacts(session_id: int, payload: dict[str, Any]) -> None:
+    """Write analysis artifacts to llm/CCoT/output for easy inspection.
+
+    - concentration_analysis_results.json: overwritten with latest run (used by StudySessionAnalyst)
+    - concentration_result_session_<id>.json: immutable per-session artifact
+    """
+    latest_path = _ccot_output_dir / "concentration_analysis_results.json"
+    per_session_path = _ccot_output_dir / f"concentration_result_session_{session_id}.json"
+
+    _atomic_write_json(latest_path, payload)
+    _atomic_write_json(per_session_path, payload)
+
+
 def process_next_pending_job() -> bool:
     connection = None
     cursor = None
     job = None
+    features: Optional[dict[str, Any]] = None
 
     try:
         connection = get_connection()
@@ -604,6 +626,7 @@ def process_next_pending_job() -> bool:
         features = _fetch_features(cursor, job)
         prompt = _build_prompt(features)
         score, reason, llm_raw = _call_llm(prompt)
+        llm_parsed = _parse_model_json(llm_raw)
 
         cursor.execute(
             """
@@ -630,6 +653,27 @@ def process_next_pending_job() -> bool:
         )
         connection.commit()
         logger.info("concentration_job_done session_id=%s score=%s", job.session_id, score)
+
+        try:
+            payload: dict[str, Any] = {
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "status": "done",
+                "session_id": job.session_id,
+                "user_id": job.user_id,
+                "device_id": job.device_id,
+                "provider": (settings.llm_provider or "openai").strip().lower(),
+                "model": settings.llm_model,
+                "sensor_features": features,
+                "llm_raw_response": llm_raw,
+            }
+            payload.update(llm_parsed)
+            payload["score"] = int(score)
+            payload["reason"] = str(reason)
+            payload["concentration_score"] = int(score)
+            _emit_ccot_output_artifacts(job.session_id, payload)
+        except Exception:
+            logger.exception("concentration_output_write_failed session_id=%s", job.session_id)
+
         return True
 
     except Exception as exc:
@@ -666,6 +710,23 @@ def process_next_pending_job() -> bool:
                     fail_cursor.close()
                 if fail_connection:
                     release_connection(fail_connection)
+
+            try:
+                payload: dict[str, Any] = {
+                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "status": "failed",
+                    "session_id": job.session_id,
+                    "user_id": job.user_id,
+                    "device_id": job.device_id,
+                    "provider": (settings.llm_provider or "openai").strip().lower(),
+                    "model": settings.llm_model,
+                    "error_message": str(exc),
+                }
+                if features is not None:
+                    payload["sensor_features"] = features
+                _emit_ccot_output_artifacts(job.session_id, payload)
+            except Exception:
+                logger.exception("concentration_output_write_failed session_id=%s", job.session_id)
         return False
     finally:
         if cursor:

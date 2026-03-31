@@ -11,4 +11,5 @@ USER_ID = rc
 API_BASE_URL = http:$(SLASH)$(SLASH)YOUR_MAC_LOCAL_HOSTNAME.local:8000/ingest
 
 // Optional: set your Apple Team ID here if needed for signing
-# TEAM_ID = ABCDEFG123
+// Example: TEAM_ID = ABCDEFG123
+TEAM_ID =
