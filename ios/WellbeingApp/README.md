@@ -68,9 +68,9 @@ When running on a real iPhone, the app cannot upload to `localhost`. You must po
 
 3. After pressing "End Session & Upload":
    - The backend queues and processes a concentration analysis job.
-    - The backend writes/overwrites a single latest-result JSON file at:
-       - `llm/CCoT/output/concentration_analysis_results.json`
+   - The backend writes/overwrites a single latest-result JSON file at:
+     - `llm/CCoT/output/concentration_analysis_results.json`
 
-    The file contains `concentration_score` (1–10) and `reason`.
+   The file contains `concentration_score` (1–10) and `reason`.
 
 Runtime identity note: the canonical backend `user_id` is generated automatically by the app and stored in Keychain so it is more likely to survive reinstalls than a `UserDefaults`-backed identifier. Phone and watch samples keep distinct `device_id` values, and the phone uploader preserves watch-originated `device_id` values on individual readings.
