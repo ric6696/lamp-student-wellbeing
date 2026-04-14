@@ -8,10 +8,14 @@ CREATE TABLE IF NOT EXISTS session_discrepancy_analyses (
     model_score DOUBLE PRECISION NOT NULL,
     user_score DOUBLE PRECISION NOT NULL,
     score_gap DOUBLE PRECISION NOT NULL,
+    pre_session_questions JSONB,
     discrepancy_reasoning JSONB NOT NULL,
     raw_llm_response TEXT,
     prompt_used TEXT
 );
+
+ALTER TABLE session_discrepancy_analyses
+    ADD COLUMN IF NOT EXISTS pre_session_questions JSONB;
 
 CREATE INDEX IF NOT EXISTS session_discrepancy_analyses_user_created_idx
     ON session_discrepancy_analyses (user_id, created_at DESC);
