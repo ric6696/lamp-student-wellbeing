@@ -170,22 +170,38 @@ final class BatchScheduler: ObservableObject {
         resume()
     }
 
-    func endStudySession() {
+    func endStudySession(activityContext: String, environmentContext: String, mentalContext: String) {
         guard isSessionActive else { return }
         print("BatchScheduler: endStudySession requested")
 
         // 1. End visible session state immediately so UI switches right away.
         let endTime = Date()
+        let contextMetadata = StudySessionContext.stamp(metadata: [
+            "activity_context": .string(activityContext),
+            "environment_context": .string(environmentContext),
+            "mental_readiness": .string(mentalContext)
+        ])
+
+        let contextEvent = BatchItem(
+            type: .event,
+            t: endTime,
+            label: "pre_session_context",
+            val_text: nil,
+            metadata: contextMetadata
+        )
+
         let endEvent = BatchItem(
             type: .event,
             t: endTime,
             label: "session_marker",
             val_text: "END",
-            metadata: StudySessionContext.stamp(metadata: nil)
+            metadata: contextMetadata
         )
+        try? LocalStore.shared.append(contextEvent)
         try? LocalStore.shared.append(endEvent)
 
         var completedItems = sessionBuffer
+        completedItems.append(contextEvent)
         completedItems.append(endEvent)
         SensorCollector.shared.markSessionEnding(at: endTime)
         LocationManager.shared.endSession(at: endTime)

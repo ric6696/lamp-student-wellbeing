@@ -142,7 +142,11 @@ struct ContentView: View {
                                 prevActivityContext = activityContext
                                 prevEnvironmentContext = environmentContext
                                 prevMentalContext = mentalContext
-                                scheduler.endStudySession()
+                                scheduler.endStudySession(
+                                    activityContext: activityContext,
+                                    environmentContext: environmentContext,
+                                    mentalContext: mentalContext
+                                )
                                 activityContext = ""
                                 environmentContext = ""
                                 mentalContext = ""
