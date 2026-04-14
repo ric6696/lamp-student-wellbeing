@@ -493,7 +493,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--concentration",
         type=str,
-        default="CCoT/output/concentration_analysis_results.json",
+        default="CCoT/output/concentration_result_session_7.json",
         help="Path to concentration analysis JSON",
     )
     parser.add_argument(

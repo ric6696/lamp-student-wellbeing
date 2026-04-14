@@ -31,7 +31,9 @@ targets:
       - sdk: AVFoundation.framework
       - sdk: SoundAnalysis.framework
       - sdk: WatchConnectivity.framework
-      - target: WellbeingWatchApp
+      # NOTE: Watch targets are built/run separately. Keeping them as an explicit
+      # dependency breaks iOS Simulator builds (watch product types aren't
+      # available for iphonesimulator).
 
   WellbeingWatchApp:
     type: application.watchapp2

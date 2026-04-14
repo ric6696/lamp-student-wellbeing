@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-25T11:54:14.011482+00:00",
-  "total_runs": 10,
+  "generated_at": "2026-04-14T08:54:41.644326+00:00",
+  "total_runs": 12,
   "runs": [
     {
       "timestamp": "2026-03-25T11:31:09.146896+00:00",
@@ -972,6 +972,228 @@
       },
       "raw_llm_response": "{\n  \"discrepancy_overview\": {\n    \"model_score\": 7.0,\n    \"user_score\": 7.5,\n    \"score_gap\": 0.5,\n    \"gap_interpretation\": \"LOW\",\n    \"one_sentence_summary\": \"Minor 0.5-point discrepancy likely due to model interpreting anxiety-driven movement as distraction while user maintained cognitive engagement despite physical restlessness\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\n      \"Model interpreted fidgeting as concentration loss while user maintained cognitive focus\",\n      \"Pre-exam anxiety manifesting as physical restlessness but not mental distraction\",\n      \"Short session length (4 min) and familiar material offsetting anxiety effects\"\n    ],\n    \"model_side_explanation\": [\n      \"Movement metrics suggest restlessness that typically correlates with reduced focus\",\n      \"Audio levels indicate some environmental noise that could impact concentration\"\n    ],\n    \"user_side_explanation\": [\n      \"Anxiety-driven movement was separate from actual cognitive engagement\",\n      \"Task familiarity and short duration enabled maintained focus despite physical restlessness\"\n    ],\n    \"uncertainties\": [\n      \"Exact relationship between physical restlessness and cognitive focus in anxiety contexts\",\n      \"Whether brief session length affected measurement accuracy\"\n    ]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"MEDIUM\",\n    \"user_report_reliability\": \"HIGH\",\n    \"confidence_in_assessment\": \"HIGH\",\n    \"why\": \"User provides detailed context about anxiety and task factors while showing good awareness of their state; model may oversimplify movement-focus relationship\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\n      \"Practice anxiety management techniques before study sessions\",\n      \"Keep leveraging short, focused review sessions\",\n      \"Consider standing desk or fidget tools to channel physical energy\"\n    ],\n    \"next_session_data_collect\": [\n      \"Anxiety levels before and during session\",\n      \"Correlation between movement patterns and self-reported focus at shorter intervals\"\n    ],\n    \"follow_up_questions_for_student\": [\n      \"What specific anxiety management techniques work best for you?\",\n      \"How does your focus vary between familiar vs new material?\"\n    ]\n  }\n}",
       "prompt_used": "You are an educational analytics reasoning assistant.\nYour task is to explain discrepancy between:\n- model-derived concentration assessment, and\n- user self-reported study experience.\n\nIMPORTANT REASONING PRINCIPLES:\n1) Be evidence-grounded: only use facts from provided inputs.\n2) Be balanced: avoid assuming model is always right or user is always right.\n3) Address both observable signals (physiology/environment/movement) and subjective factors (mental fatigue, cognitive load, motivation, emotional state).\n4) Distinguish plausible inference from certainty; explicitly state uncertainty where needed.\n5) Produce practical, student-centered recommendations.\n6) Do not include chain-of-thought. Provide concise conclusions only.\n\nInput A - Concentration Analysis (already summarized, no raw sensor sequence):\n{\n  \"timestamp\": \"2026-03-25T11:17:01.778921Z\",\n  \"model\": \"claude-sonnet-4-5\",\n  \"concentration_score\": 7.0,\n  \"concentration_level\": null,\n  \"reasoning\": \"The 48.6 dB audio level indicates an acceptable but not ideal study environment, while the heart rate of 80.2 bpm suggests a calm yet alert state. The minor movement indicated by 15.6 steps/min shows some restlessness, but the absence of major location changes or disruptive audio events supports maintained focus during the 4-minute window.\",\n  \"sensor_statistics\": {\n    \"avg_heart_rate\": 80.2,\n    \"avg_noise_level\": 48.6,\n    \"avg_steps\": 15.6,\n    \"num_readings\": 10\n  }\n}\n\nInput B - User Response:\n{\n  \"self_focus_score\": 7.5,\n  \"overall_experience\": \"The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.\",\n  \"self_report_confidence\": 0.75,\n  \"compared_to_model\": \"slightly_higher\",\n  \"session_trajectory\": \"maintained_focus\",\n  \"major_disruptions\": [\n    \"Slight anxiety about upcoming exam\"\n  ],\n  \"perceived_challenges\": {\n    \"environment\": \"moderately_quiet\",\n    \"task_difficulty\": \"easy\",\n    \"noise_level_estimated_db\": 50\n  },\n  \"what_hurt_focus\": [\n    \"Pre-exam anxiety\"\n  ],\n  \"what_helped_focus\": [\n    \"Very short session (easier to maintain focus)\",\n    \"Familiar material (quick review)\",\n    \"Morning time\"\n  ],\n  \"mental_fatigue_experienced\": \"none\",\n  \"stress_level_peak\": 5.0,\n  \"mind_wandering\": \"none\",\n  \"time_of_day\": \"morning\",\n  \"session_length_minutes\": 4,\n  \"was_interrupted\": false\n}\n\nDeliverables:\n- Quantify disagreement in an interpretable way.\n- Explain likely discrepancy drivers from multiple angles:\n  a) measurement limitations,\n  b) model blind spots,\n  c) subjective perception effects,\n  d) context factors not fully captured.\n- Provide follow-up questions that would reduce uncertainty next time.\n- Provide concrete next-step actions for both data collection and study habit improvement.\n\nReturn STRICT JSON only (no markdown, no extra text) using this exact schema:\n{\n  \"discrepancy_overview\": {\n    \"model_score\": number,\n    \"user_score\": number,\n    \"score_gap\": number,\n    \"gap_interpretation\": \"LOW|MODERATE|HIGH\",\n    \"one_sentence_summary\": \"...\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\"...\", \"...\", \"...\"],\n    \"model_side_explanation\": [\"...\", \"...\"],\n    \"user_side_explanation\": [\"...\", \"...\"],\n    \"uncertainties\": [\"...\", \"...\"]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"user_report_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"confidence_in_assessment\": \"LOW|MEDIUM|HIGH\",\n    \"why\": \"...\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\"...\", \"...\", \"...\"],\n    \"next_session_data_to_collect\": [\"...\", \"...\"],\n    \"follow_up_questions_for_student\": [\"...\", \"...\"]\n  }\n}\n"
+    },
+    {
+      "timestamp": "2026-04-14T08:47:04.688115+00:00",
+      "agent": "StudySessionDiscrepancyReasoningLLMOnly_SingleOutput",
+      "model": "claude-sonnet-4-5",
+      "input": {
+        "concentration_path": "CCoT/output/concentration_result_session_7.json",
+        "user_response_path": "StudySessionAnalyst/user_response_to_concentration.json",
+        "concentration_context": {
+          "timestamp": "2026-03-31T11:03:30.725527Z",
+          "model": "claude-3-5-sonnet",
+          "concentration_score": 5.0,
+          "concentration_level": null,
+          "reasoning": "The moderate noise level (-52dB) with detected speech events indicates some verbal distractions, while GPS shows mostly stationary behavior with minor movements. The very short duration (0.92 min) and lack of vitals data makes it difficult to establish sustained concentration patterns, though the limited movement suggests attempt at focused behavior.",
+          "sensor_statistics": {
+            "avg_heart_rate": null,
+            "avg_noise_level": -52.08322525024414,
+            "avg_steps": null,
+            "num_readings": 6
+          }
+        },
+        "user_response": {
+          "self_focus_score": 7.5,
+          "overall_experience": "The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.",
+          "self_report_confidence": 0.75,
+          "compared_to_model": "slightly_higher",
+          "session_trajectory": "maintained_focus",
+          "major_disruptions": [
+            "Slight anxiety about upcoming exam"
+          ],
+          "perceived_challenges": {
+            "environment": "moderately_quiet",
+            "task_difficulty": "easy",
+            "noise_level_estimated_db": 50
+          },
+          "what_hurt_focus": [
+            "Pre-exam anxiety"
+          ],
+          "what_helped_focus": [
+            "Very short session (easier to maintain focus)",
+            "Familiar material (quick review)",
+            "Morning time"
+          ],
+          "mental_fatigue_experienced": "none",
+          "stress_level_peak": 5.0,
+          "mind_wandering": "none",
+          "time_of_day": "morning",
+          "session_length_minutes": 4,
+          "was_interrupted": false
+        }
+      },
+      "discrepancy_reasoning": {
+        "discrepancy_overview": {
+          "model_score": 5.0,
+          "user_score": 7.5,
+          "score_gap": 2.5,
+          "gap_interpretation": "MODERATE",
+          "one_sentence_summary": "User reports 50% higher concentration than model assessment, attributing anxiety-driven fidgeting to exam stress rather than poor focus during a brief morning review session."
+        },
+        "reasoning": {
+          "most_likely_causes": [
+            "Model interpreted physical restlessness (minor GPS movements) as distraction indicator, while user correctly identifies anxiety-driven fidgeting that coexisted with maintained cognitive focus",
+            "Very short session duration (0.92 min recorded vs 4 min reported) prevented model from establishing reliable concentration patterns, leading to conservative scoring",
+            "Missing heart rate variability data that could have distinguished anxious-but-focused state from distracted state, forcing model to rely on incomplete environmental signals"
+          ],
+          "model_side_explanation": [
+            "Extremely limited data window (6 readings over <1 minute) insufficient for robust concentration assessment, model explicitly noted difficulty establishing sustained patterns",
+            "Speech detection and moderate noise level (-52dB) weighted as distraction without context that this was brief, controlled review of familiar material",
+            "Absence of physiological data (heart rate, HRV) removed key indicators that could differentiate productive anxiety from disruptive distraction"
+          ],
+          "user_side_explanation": [
+            "User demonstrates high metacognitive awareness by distinguishing somatic anxiety symptoms from actual cognitive engagement quality",
+            "Self-report aligns with known concentration facilitators: short duration sessions, morning timing, easy/familiar material, and no interruptions",
+            "Moderate confidence (0.75) and specific contextual details (pre-exam anxiety, 4-minute review) suggest thoughtful rather than inflated self-assessment"
+          ],
+          "uncertainties": [
+            "Timing discrepancy between recorded duration (0.92 min) and reported duration (4 min) unclear—possible sensor dropout, delayed start/stop, or recall error",
+            "Cannot verify whether anxiety level (stress peak 5.0/10) actually enhanced focus through arousal or created subtle cognitive interference not consciously perceived",
+            "Speech events detected in audio may indicate self-talk/rehearsal (focus-enhancing) or external conversation (focus-disrupting)—context unavailable"
+          ]
+        },
+        "reliability_judgment": {
+          "model_reliability": "LOW",
+          "user_report_reliability": "HIGH",
+          "confidence_in_assessment": "MEDIUM",
+          "why": "Model reliability severely compromised by insufficient data duration and missing physiological signals, explicitly acknowledged in its own reasoning. User report shows strong internal consistency (anxiety mentioned in multiple fields, contextual factors align logically) and appropriate confidence calibration. However, timing discrepancy and inability to validate physiological arousal state prevent high confidence in final assessment."
+        },
+        "recommendations": {
+          "immediate_actions": [
+            "Accept user's higher self-assessment (7.5) as more accurate for this session given strong contextual evidence and model's acknowledged data limitations",
+            "Recognize anxiety-driven fidgeting as distinct from distraction—student demonstrated ability to maintain focus despite physical restlessness, a valuable skill",
+            "Validate that brief, focused review sessions with familiar material are effective study strategy for this student, especially pre-exam"
+          ],
+          "next_session_data_to_collect": [
+            "Ensure minimum 5-10 minute recording windows to establish reliable concentration patterns",
+            "Prioritize heart rate and HRV data collection to distinguish anxiety states from distraction states",
+            "Add session start/end timestamps and app-level activity tracking to resolve duration discrepancies",
+            "Capture task type metadata (review vs new learning, material difficulty) to contextualize physiological signals"
+          ],
+          "follow_up_questions_for_student": [
+            "During the session, were you speaking aloud (self-explaining, rehearsing) or was someone else talking nearby?",
+            "How does your physical restlessness during anxious-but-focused sessions compare to times when you're genuinely distracted?",
+            "What specific review activities were you doing in those 4 minutes that helped maintain focus despite exam anxiety?",
+            "Do you find short pre-exam review bursts (under 5 minutes) more or less effective than longer study blocks for retention?"
+          ]
+        }
+      },
+      "raw_llm_response": "```json\n{\n  \"discrepancy_overview\": {\n    \"model_score\": 5.0,\n    \"user_score\": 7.5,\n    \"score_gap\": 2.5,\n    \"gap_interpretation\": \"MODERATE\",\n    \"one_sentence_summary\": \"User reports 50% higher concentration than model assessment, attributing anxiety-driven fidgeting to exam stress rather than poor focus during a brief morning review session.\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\n      \"Model interpreted physical restlessness (minor GPS movements) as distraction indicator, while user correctly identifies anxiety-driven fidgeting that coexisted with maintained cognitive focus\",\n      \"Very short session duration (0.92 min recorded vs 4 min reported) prevented model from establishing reliable concentration patterns, leading to conservative scoring\",\n      \"Missing heart rate variability data that could have distinguished anxious-but-focused state from distracted state, forcing model to rely on incomplete environmental signals\"\n    ],\n    \"model_side_explanation\": [\n      \"Extremely limited data window (6 readings over <1 minute) insufficient for robust concentration assessment, model explicitly noted difficulty establishing sustained patterns\",\n      \"Speech detection and moderate noise level (-52dB) weighted as distraction without context that this was brief, controlled review of familiar material\",\n      \"Absence of physiological data (heart rate, HRV) removed key indicators that could differentiate productive anxiety from disruptive distraction\"\n    ],\n    \"user_side_explanation\": [\n      \"User demonstrates high metacognitive awareness by distinguishing somatic anxiety symptoms from actual cognitive engagement quality\",\n      \"Self-report aligns with known concentration facilitators: short duration sessions, morning timing, easy/familiar material, and no interruptions\",\n      \"Moderate confidence (0.75) and specific contextual details (pre-exam anxiety, 4-minute review) suggest thoughtful rather than inflated self-assessment\"\n    ],\n    \"uncertainties\": [\n      \"Timing discrepancy between recorded duration (0.92 min) and reported duration (4 min) unclear—possible sensor dropout, delayed start/stop, or recall error\",\n      \"Cannot verify whether anxiety level (stress peak 5.0/10) actually enhanced focus through arousal or created subtle cognitive interference not consciously perceived\",\n      \"Speech events detected in audio may indicate self-talk/rehearsal (focus-enhancing) or external conversation (focus-disrupting)—context unavailable\"\n    ]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"LOW\",\n    \"user_report_reliability\": \"HIGH\",\n    \"confidence_in_assessment\": \"MEDIUM\",\n    \"why\": \"Model reliability severely compromised by insufficient data duration and missing physiological signals, explicitly acknowledged in its own reasoning. User report shows strong internal consistency (anxiety mentioned in multiple fields, contextual factors align logically) and appropriate confidence calibration. However, timing discrepancy and inability to validate physiological arousal state prevent high confidence in final assessment.\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\n      \"Accept user's higher self-assessment (7.5) as more accurate for this session given strong contextual evidence and model's acknowledged data limitations\",\n      \"Recognize anxiety-driven fidgeting as distinct from distraction—student demonstrated ability to maintain focus despite physical restlessness, a valuable skill\",\n      \"Validate that brief, focused review sessions with familiar material are effective study strategy for this student, especially pre-exam\"\n    ],\n    \"next_session_data_to_collect\": [\n      \"Ensure minimum 5-10 minute recording windows to establish reliable concentration patterns\",\n      \"Prioritize heart rate and HRV data collection to distinguish anxiety states from distraction states\",\n      \"Add session start/end timestamps and app-level activity tracking to resolve duration discrepancies\",\n      \"Capture task type metadata (review vs new learning, material difficulty) to contextualize physiological signals\"\n    ],\n    \"follow_up_questions_for_student\": [\n      \"During the session, were you speaking aloud (self-explaining, rehearsing) or was someone else talking nearby?\",\n      \"How does your physical restlessness during anxious-but-focused sessions compare to times when you're genuinely distracted?\",\n      \"What specific review activities were you doing in those 4 minutes that helped maintain focus despite exam anxiety?\",\n      \"Do you find short pre-exam review bursts (under 5 minutes) more or less effective than longer study blocks for retention?\"\n    ]\n  }\n}\n```",
+      "prompt_used": "You are an educational analytics reasoning assistant.\nYour task is to explain discrepancy between:\n- model-derived concentration assessment, and\n- user self-reported study experience.\n\nIMPORTANT REASONING PRINCIPLES:\n1) Be evidence-grounded: only use facts from provided inputs.\n2) Be balanced: avoid assuming model is always right or user is always right.\n3) Address both observable signals (physiology/environment/movement) and subjective factors (mental fatigue, cognitive load, motivation, emotional state).\n4) Distinguish plausible inference from certainty; explicitly state uncertainty where needed.\n5) Produce practical, student-centered recommendations.\n6) Do not include chain-of-thought. Provide concise conclusions only.\n\nInput A - Concentration Analysis (already summarized, no raw sensor sequence):\n{\n  \"timestamp\": \"2026-03-31T11:03:30.725527Z\",\n  \"model\": \"claude-3-5-sonnet\",\n  \"concentration_score\": 5.0,\n  \"concentration_level\": null,\n  \"reasoning\": \"The moderate noise level (-52dB) with detected speech events indicates some verbal distractions, while GPS shows mostly stationary behavior with minor movements. The very short duration (0.92 min) and lack of vitals data makes it difficult to establish sustained concentration patterns, though the limited movement suggests attempt at focused behavior.\",\n  \"sensor_statistics\": {\n    \"avg_heart_rate\": null,\n    \"avg_noise_level\": -52.08322525024414,\n    \"avg_steps\": null,\n    \"num_readings\": 6\n  }\n}\n\nInput B - User Response:\n{\n  \"self_focus_score\": 7.5,\n  \"overall_experience\": \"The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.\",\n  \"self_report_confidence\": 0.75,\n  \"compared_to_model\": \"slightly_higher\",\n  \"session_trajectory\": \"maintained_focus\",\n  \"major_disruptions\": [\n    \"Slight anxiety about upcoming exam\"\n  ],\n  \"perceived_challenges\": {\n    \"environment\": \"moderately_quiet\",\n    \"task_difficulty\": \"easy\",\n    \"noise_level_estimated_db\": 50\n  },\n  \"what_hurt_focus\": [\n    \"Pre-exam anxiety\"\n  ],\n  \"what_helped_focus\": [\n    \"Very short session (easier to maintain focus)\",\n    \"Familiar material (quick review)\",\n    \"Morning time\"\n  ],\n  \"mental_fatigue_experienced\": \"none\",\n  \"stress_level_peak\": 5.0,\n  \"mind_wandering\": \"none\",\n  \"time_of_day\": \"morning\",\n  \"session_length_minutes\": 4,\n  \"was_interrupted\": false\n}\n\nDeliverables:\n- Quantify disagreement in an interpretable way.\n- Explain likely discrepancy drivers from multiple angles:\n  a) measurement limitations,\n  b) model blind spots,\n  c) subjective perception effects,\n  d) context factors not fully captured.\n- Provide follow-up questions that would reduce uncertainty next time.\n- Provide concrete next-step actions for both data collection and study habit improvement.\n\nReturn STRICT JSON only (no markdown, no extra text) using this exact schema:\n{\n  \"discrepancy_overview\": {\n    \"model_score\": number,\n    \"user_score\": number,\n    \"score_gap\": number,\n    \"gap_interpretation\": \"LOW|MODERATE|HIGH\",\n    \"one_sentence_summary\": \"...\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\"...\", \"...\", \"...\"],\n    \"model_side_explanation\": [\"...\", \"...\"],\n    \"user_side_explanation\": [\"...\", \"...\"],\n    \"uncertainties\": [\"...\", \"...\"]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"user_report_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"confidence_in_assessment\": \"LOW|MEDIUM|HIGH\",\n    \"why\": \"...\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\"...\", \"...\", \"...\"],\n    \"next_session_data_to_collect\": [\"...\", \"...\"],\n    \"follow_up_questions_for_student\": [\"...\", \"...\"]\n  }\n}\n"
+    },
+    {
+      "timestamp": "2026-04-14T08:54:41.642486+00:00",
+      "agent": "StudySessionDiscrepancyReasoningLLMOnly_SingleOutput",
+      "model": "claude-sonnet-4-5",
+      "input": {
+        "concentration_path": "CCoT/output/concentration_result_session_7.json",
+        "user_response_path": "StudySessionAnalyst/user_response_to_concentration.json",
+        "concentration_context": {
+          "timestamp": "2026-03-31T11:03:30.725527Z",
+          "model": "claude-3-5-sonnet",
+          "concentration_score": 5.0,
+          "concentration_level": null,
+          "reasoning": "The moderate noise level (-52dB) with detected speech events indicates some verbal distractions, while GPS shows mostly stationary behavior with minor movements. The very short duration (0.92 min) and lack of vitals data makes it difficult to establish sustained concentration patterns, though the limited movement suggests attempt at focused behavior.",
+          "sensor_statistics": {
+            "avg_heart_rate": null,
+            "avg_noise_level": -52.08322525024414,
+            "avg_steps": null,
+            "num_readings": 6
+          }
+        },
+        "user_response": {
+          "self_focus_score": 7.5,
+          "overall_experience": "The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.",
+          "self_report_confidence": 0.75,
+          "compared_to_model": "slightly_higher",
+          "session_trajectory": "maintained_focus",
+          "major_disruptions": [
+            "Slight anxiety about upcoming exam"
+          ],
+          "perceived_challenges": {
+            "environment": "moderately_quiet",
+            "task_difficulty": "easy",
+            "noise_level_estimated_db": 50
+          },
+          "what_hurt_focus": [
+            "Pre-exam anxiety"
+          ],
+          "what_helped_focus": [
+            "Very short session (easier to maintain focus)",
+            "Familiar material (quick review)",
+            "Morning time"
+          ],
+          "mental_fatigue_experienced": "none",
+          "stress_level_peak": 5.0,
+          "mind_wandering": "none",
+          "time_of_day": "morning",
+          "session_length_minutes": 4,
+          "was_interrupted": false
+        }
+      },
+      "discrepancy_reasoning": {
+        "discrepancy_overview": {
+          "model_score": 5.0,
+          "user_score": 7.5,
+          "score_gap": 2.5,
+          "gap_interpretation": "MODERATE",
+          "one_sentence_summary": "User reports 50% higher concentration than model assessment, attributing anxiety-driven fidgeting to exam stress rather than poor focus during a brief morning review session."
+        },
+        "reasoning": {
+          "most_likely_causes": [
+            "Model interpreted physical restlessness (GPS minor movements) as distraction indicator, while user correctly identifies anxiety-driven fidgeting that coexisted with maintained cognitive focus",
+            "Extremely short session duration (0.92 min recorded vs 4 min reported) prevented model from establishing reliable concentration patterns and may have captured only the anxious startup phase",
+            "Absence of heart rate data eliminated key physiological signals that could distinguish productive arousal (exam preparation alertness) from distracted states",
+            "User's familiarity with material and morning timing created subjective sense of efficiency that may not align with objective concentration metrics"
+          ],
+          "model_side_explanation": [
+            "Model heavily weighted speech events and moderate noise (-52dB) as distraction signals without context that this was a quick review session where brief verbal processing may be normal",
+            "Severe data sparsity (only 6 readings, no vitals, 0.92 min duration vs 4 min claimed) forced model to hedge with neutral 5.0 score and acknowledge difficulty establishing patterns",
+            "Movement detection algorithms may conflate anxiety-related fidgeting with attention-shifting behaviors without physiological context to differentiate stress arousal from distraction"
+          ],
+          "user_side_explanation": [
+            "User may overestimate focus quality due to successful task completion (reviewing familiar material) conflating outcome satisfaction with process concentration",
+            "Pre-exam anxiety at moderate level (stress 5.0/10) can create subjective sense of urgency-driven focus while objectively manifesting as restless behavior",
+            "High self-report confidence (0.75) and specific contextual recall suggest genuine introspective awareness, though 4-minute sessions offer limited self-observation opportunity"
+          ],
+          "uncertainties": [
+            "Timing discrepancy between recorded 0.92 minutes and reported 4 minutes raises questions about session boundaries or data capture completeness",
+            "Without heart rate variability data, cannot distinguish physiological signatures of anxiety-with-focus versus anxiety-with-distraction",
+            "Speech events detected in noise data lack context: were these self-directed study verbalizations, external interruptions, or background conversations",
+            "Task-specific factors unknown: what constitutes 'concentration' during quick review of familiar material may differ from deep learning sessions"
+          ]
+        },
+        "reliability_judgment": {
+          "model_reliability": "LOW",
+          "user_report_reliability": "MEDIUM",
+          "confidence_in_assessment": "LOW",
+          "why": "Model reliability severely compromised by missing vitals data, extreme brevity (0.92 min), and timing mismatch with user report (4 min). User report shows good contextual awareness and reasonable confidence, but very short sessions limit both objective measurement and subjective self-observation. The 2.5-point gap likely reflects model's inability to contextualize anxiety-driven movement rather than genuine concentration difference."
+        },
+        "recommendations": {
+          "immediate_actions": [
+            "Validate session timing: investigate why system recorded 0.92 minutes when user reports 4-minute session to ensure data capture reliability",
+            "Reframe interpretation: treat physical restlessness during high-stakes review as potentially compatible with cognitive focus when accompanied by task completion and no mind-wandering",
+            "Acknowledge user's self-awareness: pre-exam anxiety is valid context that can coexist with effective short-burst studying, especially for familiar material"
+          ],
+          "next_session_data_to_collect": [
+            "Heart rate and HRV data to distinguish stress arousal patterns from distraction signatures",
+            "Screen interaction or app usage logs to objectively verify on-task behavior during movement episodes",
+            "Longer session durations (minimum 10-15 minutes) to establish reliable concentration baselines beyond startup/shutdown phases",
+            "Post-session task performance metrics (quiz scores, recall tests) to validate subjective focus claims with objective outcomes",
+            "Timestamped annotations when user feels anxiety spikes to correlate with sensor readings"
+          ],
+          "follow_up_questions_for_student": [
+            "Can you describe what specific review activities you did during those 4 minutes (reading, note-taking, mental rehearsal)?",
+            "When you fidget due to anxiety, are you still able to process and retain the material you're reviewing?",
+            "How would you compare your focus quality during this anxious 4-minute session versus a calm 4-minute session with the same material?",
+            "Did the speech events detected represent you talking through concepts aloud, or were they environmental sounds?",
+            "Would you benefit from brief anxiety-management techniques (breathing exercises) before high-stakes review sessions, or does the anxiety actually help your focus?"
+          ]
+        }
+      },
+      "raw_llm_response": "```json\n{\n  \"discrepancy_overview\": {\n    \"model_score\": 5.0,\n    \"user_score\": 7.5,\n    \"score_gap\": 2.5,\n    \"gap_interpretation\": \"MODERATE\",\n    \"one_sentence_summary\": \"User reports 50% higher concentration than model assessment, attributing anxiety-driven fidgeting to exam stress rather than poor focus during a brief morning review session.\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\n      \"Model interpreted physical restlessness (GPS minor movements) as distraction indicator, while user correctly identifies anxiety-driven fidgeting that coexisted with maintained cognitive focus\",\n      \"Extremely short session duration (0.92 min recorded vs 4 min reported) prevented model from establishing reliable concentration patterns and may have captured only the anxious startup phase\",\n      \"Absence of heart rate data eliminated key physiological signals that could distinguish productive arousal (exam preparation alertness) from distracted states\",\n      \"User's familiarity with material and morning timing created subjective sense of efficiency that may not align with objective concentration metrics\"\n    ],\n    \"model_side_explanation\": [\n      \"Model heavily weighted speech events and moderate noise (-52dB) as distraction signals without context that this was a quick review session where brief verbal processing may be normal\",\n      \"Severe data sparsity (only 6 readings, no vitals, 0.92 min duration vs 4 min claimed) forced model to hedge with neutral 5.0 score and acknowledge difficulty establishing patterns\",\n      \"Movement detection algorithms may conflate anxiety-related fidgeting with attention-shifting behaviors without physiological context to differentiate stress arousal from distraction\"\n    ],\n    \"user_side_explanation\": [\n      \"User may overestimate focus quality due to successful task completion (reviewing familiar material) conflating outcome satisfaction with process concentration\",\n      \"Pre-exam anxiety at moderate level (stress 5.0/10) can create subjective sense of urgency-driven focus while objectively manifesting as restless behavior\",\n      \"High self-report confidence (0.75) and specific contextual recall suggest genuine introspective awareness, though 4-minute sessions offer limited self-observation opportunity\"\n    ],\n    \"uncertainties\": [\n      \"Timing discrepancy between recorded 0.92 minutes and reported 4 minutes raises questions about session boundaries or data capture completeness\",\n      \"Without heart rate variability data, cannot distinguish physiological signatures of anxiety-with-focus versus anxiety-with-distraction\",\n      \"Speech events detected in noise data lack context: were these self-directed study verbalizations, external interruptions, or background conversations\",\n      \"Task-specific factors unknown: what constitutes 'concentration' during quick review of familiar material may differ from deep learning sessions\"\n    ]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"LOW\",\n    \"user_report_reliability\": \"MEDIUM\",\n    \"confidence_in_assessment\": \"LOW\",\n    \"why\": \"Model reliability severely compromised by missing vitals data, extreme brevity (0.92 min), and timing mismatch with user report (4 min). User report shows good contextual awareness and reasonable confidence, but very short sessions limit both objective measurement and subjective self-observation. The 2.5-point gap likely reflects model's inability to contextualize anxiety-driven movement rather than genuine concentration difference.\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\n      \"Validate session timing: investigate why system recorded 0.92 minutes when user reports 4-minute session to ensure data capture reliability\",\n      \"Reframe interpretation: treat physical restlessness during high-stakes review as potentially compatible with cognitive focus when accompanied by task completion and no mind-wandering\",\n      \"Acknowledge user's self-awareness: pre-exam anxiety is valid context that can coexist with effective short-burst studying, especially for familiar material\"\n    ],\n    \"next_session_data_to_collect\": [\n      \"Heart rate and HRV data to distinguish stress arousal patterns from distraction signatures\",\n      \"Screen interaction or app usage logs to objectively verify on-task behavior during movement episodes\",\n      \"Longer session durations (minimum 10-15 minutes) to establish reliable concentration baselines beyond startup/shutdown phases\",\n      \"Post-session task performance metrics (quiz scores, recall tests) to validate subjective focus claims with objective outcomes\",\n      \"Timestamped annotations when user feels anxiety spikes to correlate with sensor readings\"\n    ],\n    \"follow_up_questions_for_student\": [\n      \"Can you describe what specific review activities you did during those 4 minutes (reading, note-taking, mental rehearsal)?\",\n      \"When you fidget due to anxiety, are you still able to process and retain the material you're reviewing?\",\n      \"How would you compare your focus quality during this anxious 4-minute session versus a calm 4-minute session with the same material?\",\n      \"Did the speech events detected represent you talking through concepts aloud, or were they environmental sounds?\",\n      \"Would you benefit from brief anxiety-management techniques (breathing exercises) before high-stakes review sessions, or does the anxiety actually help your focus?\"\n    ]\n  }\n}\n```",
+      "prompt_used": "You are an educational analytics reasoning assistant.\nYour task is to explain discrepancy between:\n- model-derived concentration assessment, and\n- user self-reported study experience.\n\nIMPORTANT REASONING PRINCIPLES:\n1) Be evidence-grounded: only use facts from provided inputs.\n2) Be balanced: avoid assuming model is always right or user is always right.\n3) Address both observable signals (physiology/environment/movement) and subjective factors (mental fatigue, cognitive load, motivation, emotional state).\n4) Distinguish plausible inference from certainty; explicitly state uncertainty where needed.\n5) Produce practical, student-centered recommendations.\n6) Do not include chain-of-thought. Provide concise conclusions only.\n\nInput A - Concentration Analysis (already summarized, no raw sensor sequence):\n{\n  \"timestamp\": \"2026-03-31T11:03:30.725527Z\",\n  \"model\": \"claude-3-5-sonnet\",\n  \"concentration_score\": 5.0,\n  \"concentration_level\": null,\n  \"reasoning\": \"The moderate noise level (-52dB) with detected speech events indicates some verbal distractions, while GPS shows mostly stationary behavior with minor movements. The very short duration (0.92 min) and lack of vitals data makes it difficult to establish sustained concentration patterns, though the limited movement suggests attempt at focused behavior.\",\n  \"sensor_statistics\": {\n    \"avg_heart_rate\": null,\n    \"avg_noise_level\": -52.08322525024414,\n    \"avg_steps\": null,\n    \"num_readings\": 6\n  }\n}\n\nInput B - User Response:\n{\n  \"self_focus_score\": 7.5,\n  \"overall_experience\": \"The analysis is mostly accurate. I was trying to stay focused during this quick 4-minute review session before my class. The fidgeting was because I was a bit anxious about the upcoming exam, not really a sign of poor concentration. I'd say I was actually more focused than the score suggests, despite the restlessness.\",\n  \"self_report_confidence\": 0.75,\n  \"compared_to_model\": \"slightly_higher\",\n  \"session_trajectory\": \"maintained_focus\",\n  \"major_disruptions\": [\n    \"Slight anxiety about upcoming exam\"\n  ],\n  \"perceived_challenges\": {\n    \"environment\": \"moderately_quiet\",\n    \"task_difficulty\": \"easy\",\n    \"noise_level_estimated_db\": 50\n  },\n  \"what_hurt_focus\": [\n    \"Pre-exam anxiety\"\n  ],\n  \"what_helped_focus\": [\n    \"Very short session (easier to maintain focus)\",\n    \"Familiar material (quick review)\",\n    \"Morning time\"\n  ],\n  \"mental_fatigue_experienced\": \"none\",\n  \"stress_level_peak\": 5.0,\n  \"mind_wandering\": \"none\",\n  \"time_of_day\": \"morning\",\n  \"session_length_minutes\": 4,\n  \"was_interrupted\": false\n}\n\nDeliverables:\n- Quantify disagreement in an interpretable way.\n- Explain likely discrepancy drivers from multiple angles:\n  a) measurement limitations,\n  b) model blind spots,\n  c) subjective perception effects,\n  d) context factors not fully captured.\n- Provide follow-up questions that would reduce uncertainty next time.\n- Provide concrete next-step actions for both data collection and study habit improvement.\n\nReturn STRICT JSON only (no markdown, no extra text) using this exact schema:\n{\n  \"discrepancy_overview\": {\n    \"model_score\": number,\n    \"user_score\": number,\n    \"score_gap\": number,\n    \"gap_interpretation\": \"LOW|MODERATE|HIGH\",\n    \"one_sentence_summary\": \"...\"\n  },\n  \"reasoning\": {\n    \"most_likely_causes\": [\"...\", \"...\", \"...\"],\n    \"model_side_explanation\": [\"...\", \"...\"],\n    \"user_side_explanation\": [\"...\", \"...\"],\n    \"uncertainties\": [\"...\", \"...\"]\n  },\n  \"reliability_judgment\": {\n    \"model_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"user_report_reliability\": \"LOW|MEDIUM|HIGH\",\n    \"confidence_in_assessment\": \"LOW|MEDIUM|HIGH\",\n    \"why\": \"...\"\n  },\n  \"recommendations\": {\n    \"immediate_actions\": [\"...\", \"...\", \"...\"],\n    \"next_session_data_to_collect\": [\"...\", \"...\"],\n    \"follow_up_questions_for_student\": [\"...\", \"...\"]\n  }\n}\n"
     }
   ]
 }
