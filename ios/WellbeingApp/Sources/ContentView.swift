@@ -37,11 +37,21 @@ struct ContentView: View {
 
     @State private var showPostSessionSheet: Bool = false
     @State private var prevConcentration: Int? = nil
-    @State private var prevDistraction: String? = nil
+    @State private var prevDistractions: [String]? = nil
 
     private let activities = ["Study", "Lecture", "Group Meeting", "Reading", "Writing / Report Work"]
     private let environments = ["Library", "Classroom", "Cafe", "Home", "Outdoor"]
     private let mentalStates = ["Very Low", "Low", "Neutral", "High", "Very High"]
+    private let distractionOptions = [
+        "Environmental Noise / Speech",
+        "Movement / Restlessness",
+        "Location Change / Transition",
+        "Physiological Strain (stress, fatigue, discomfort)",
+        "Internal Cognitive Drift (mind wandering, low motivation)",
+        "Task Challenge (difficulty, frustration)",
+        "No Major Distraction",
+        "Others"
+    ]
     private let watchSteps = ["DOWNLOADED", "REACHABLE", "CONNECTED"]
 
     var body: some View {
@@ -209,8 +219,8 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        if let conc = prevConcentration, let dist = prevDistraction {
-                            Text("Concentration: \(conc)/10 • Distracted by: \(dist)")
+                        if let conc = prevConcentration, let dist = prevDistractions, !dist.isEmpty {
+                            Text("Concentration: \(conc)/10 • Distracted by: \(dist.joined(separator: ", "))")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -269,9 +279,10 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showPostSessionSheet) {
-                PostSessionEvaluationView(isPresented: $showPostSessionSheet) { rating, distraction in
+                PostSessionEvaluationView(isPresented: $showPostSessionSheet, distractions: distractionOptions) { rating, distractions in
                     prevConcentration = rating
-                    prevDistraction = distraction
+                    prevDistractions = distractions
+                    saveUserResponseToConcentration(rating: rating, distractions: distractions)
                 }
                 .interactiveDismissDisabled(true)
             }
@@ -427,21 +438,11 @@ struct ContentView: View {
 
 struct PostSessionEvaluationView: View {
     @Binding var isPresented: Bool
-    let onSubmit: (Int, String) -> Void
+    let distractions: [String]
+    let onSubmit: (Int, [String]) -> Void
     
     @State private var concentrationRating: Double = 5.0
     @State private var selectedDistractions: Set<String> = []
-    
-    let distractions = [
-        "Noise / Conversations",
-        "Phone / Device",
-        "People Around Me",
-        "My Thoughts / Mind Wandering",
-        "Fatigue / Sleepiness",
-        "Physical Discomfort",
-        "No Major Distractions",
-        "Other"
-    ]
     
     var concentrationColor: Color {
         switch concentrationRating {
@@ -487,7 +488,7 @@ struct PostSessionEvaluationView: View {
                 ) {
                     ForEach(distractions, id: \.self) { option in
                         Button(action: {
-                            if option == "No Major Distractions" {
+                            if option == "No Major Distraction" {
                                 if selectedDistractions.contains(option) {
                                     selectedDistractions.remove(option)
                                 } else {
@@ -498,7 +499,7 @@ struct PostSessionEvaluationView: View {
                                 if selectedDistractions.contains(option) {
                                     selectedDistractions.remove(option)
                                 } else {
-                                    selectedDistractions.remove("No Major Distractions")
+                                    selectedDistractions.remove("No Major Distraction")
                                     selectedDistractions.insert(option)
                                 }
                             }
@@ -519,7 +520,7 @@ struct PostSessionEvaluationView: View {
             .navigationTitle("Session Review")
             .navigationBarItems(
                 trailing: Button("Submit") {
-                    let formattedDistractions = Array(selectedDistractions).sorted().joined(separator: ", ")
+                    let formattedDistractions = Array(selectedDistractions).sorted()
                     onSubmit(Int(concentrationRating), formattedDistractions)
                     isPresented = false
                 }
@@ -527,6 +528,104 @@ struct PostSessionEvaluationView: View {
                 .disabled(selectedDistractions.isEmpty)
             )
         }
+    }
+}
+
+private struct UserResponseToConcentrationFile: Codable {
+    let user_response: [UserResponseQuestionAnswer]
+}
+
+private struct UserResponseQuestionAnswer: Codable {
+    let question: String
+    let answer: UserResponseValue
+}
+
+private enum UserResponseValue: Codable {
+    case int(Int)
+    case string(String)
+    case strings([String])
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let value = try? container.decode(Int.self) {
+            self = .int(value)
+        } else if let value = try? container.decode([String].self) {
+            self = .strings(value)
+        } else {
+            self = .string(try container.decode(String.self))
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .int(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        case .strings(let value):
+            try container.encode(value)
+        }
+    }
+}
+
+private extension ContentView {
+    func saveUserResponseToConcentration(rating: Int, distractions: [String]) {
+        let payload = UserResponseToConcentrationFile(
+            user_response: [
+                UserResponseQuestionAnswer(
+                    question: "How focused were you during this study session?",
+                    answer: .int(rating)
+                ),
+                UserResponseQuestionAnswer(
+                    question: "What most affected your concentration during this session?",
+                    answer: .strings(distractions)
+                )
+            ]
+        )
+
+        Task {
+            await submitUserResponseToBackend(payload)
+        }
+    }
+
+    func submitUserResponseToBackend(_ payload: UserResponseToConcentrationFile) async {
+        let url = resolveSessionReviewURL()
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("dev_key", forHTTPHeaderField: "X-API-Key")
+
+        do {
+            request.httpBody = try JSONCoding.encoder.encode(payload)
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) {
+                print("Saved session review JSON to backend path: \(url.absoluteString)")
+            } else if let http = response as? HTTPURLResponse {
+                print("Failed to save session review JSON. HTTP status=\(http.statusCode)")
+            }
+        } catch {
+            print("Failed to send session review JSON: \(error)")
+        }
+    }
+
+    func resolveSessionReviewURL() -> URL {
+        let configured = (Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let configured,
+           !configured.isEmpty,
+           !configured.contains("$("),
+           !configured.contains("YOUR_MAC_LOCAL_HOSTNAME"),
+           let base = URL(string: configured) {
+            return base.deletingLastPathComponent().appendingPathComponent("session-review")
+        }
+
+#if targetEnvironment(simulator)
+        return URL(string: "http://localhost:8000/session-review")!
+#else
+        return URL(string: "http://YOUR_MAC_LOCAL_HOSTNAME.local:8000/session-review")!
+#endif
     }
 }
 

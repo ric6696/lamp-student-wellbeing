@@ -1,12 +1,15 @@
 {
-	"user_response": [
-		{
-			"question": "How focused were you during this study session?",
-			"answer": 2
-		},
-		{
-			"question": "What most affected your concentration during this session?",
-			"answer": "Environmental Noise / Speech"
-		}
-	]
+  "user_response": [
+    {
+      "answer": 7,
+      "question": "How focused were you during this study session?"
+    },
+    {
+      "answer": [
+        "Environmental Noise / Speech",
+        "Internal Cognitive Drift (mind wandering, low motivation)"
+      ],
+      "question": "What most affected your concentration during this session?"
+    }
+  ]
 }

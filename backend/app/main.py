@@ -1,6 +1,8 @@
+import json
 import logging
 import time
 from pathlib import Path
+from typing import Any
 
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +19,7 @@ _concentration_worker = ConcentrationWorker()
 _repo_root = Path(__file__).resolve().parents[2]
 _log_dir = _repo_root / "logs"
 _log_dir.mkdir(parents=True, exist_ok=True)
+_user_response_path = _repo_root / "llm" / "StudySessionAnalyst" / "user_response_to_concentration.json"
 
 http_logger = logging.getLogger("ingest.http")
 if not http_logger.handlers:
@@ -76,10 +79,23 @@ def require_api_key(x_api_key: str = Header(None)) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+def _atomic_write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp_path.replace(path)
+
+
 @app.post("/ingest")
 async def ingest(payload: Batch, background_tasks: BackgroundTasks, _: None = Depends(require_api_key)):
     background_tasks.add_task(ingest_batch, payload)
     return {"status": "accepted", "records": len(payload.data)}
+
+
+@app.post("/session-review")
+async def save_session_review(payload: dict[str, Any], _: None = Depends(require_api_key)):
+    _atomic_write_json(_user_response_path, payload)
+    return {"status": "saved", "path": str(_user_response_path)}
 
 
 @app.get("/health")
