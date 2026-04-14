@@ -31,6 +31,10 @@ struct ContentView: View {
     @State private var environmentContext: String = ""
     @State private var mentalContext: String = ""
 
+    @State private var prevActivityContext: String = ""
+    @State private var prevEnvironmentContext: String = ""
+    @State private var prevMentalContext: String = ""
+
     private let activities = ["Study", "Lecture", "Group Meeting", "Reading", "Writing / Report Work"]
     private let environments = ["Library", "Classroom", "Cafe", "Home", "Outdoor"]
     private let mentalStates = ["Very Low", "Low", "Neutral", "High", "Very High"]
@@ -129,7 +133,15 @@ struct ContentView: View {
                                     .foregroundColor(.red)
                             }
 
-                            Button(action: { scheduler.endStudySession() }) {
+                            Button(action: {
+                                prevActivityContext = activityContext
+                                prevEnvironmentContext = environmentContext
+                                prevMentalContext = mentalContext
+                                scheduler.endStudySession()
+                                activityContext = ""
+                                environmentContext = ""
+                                mentalContext = ""
+                            }) {
                                 HStack {
                                     Image(systemName: "stop.circle.fill")
                                     Text("End Session & Upload")
@@ -169,14 +181,21 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                    } else {
-                        if let start = scheduler.previousSessionStartTime {
-                            Text("Started: \(Self.hktFormatter.string(from: start))")
+                        if !activityContext.isEmpty {
+                            Text("\(activityContext) • \(environmentContext) • \(mentalContext)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        if let end = scheduler.previousSessionEndTime {
-                            Text("Ended: \(Self.hktFormatter.string(from: end))")
+                    } else {
+                        if let start = scheduler.previousSessionStartTime {
+                            let startStr = Self.hktFormatter.string(from: start)
+                            let endStr = scheduler.previousSessionEndTime != nil ? Self.hktFormatter.string(from: scheduler.previousSessionEndTime!) : "?"
+                            Text("Started: \(startStr)   Ended: \(endStr)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        if !prevActivityContext.isEmpty {
+                            Text("\(prevActivityContext) • \(prevEnvironmentContext) • \(prevMentalContext)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
