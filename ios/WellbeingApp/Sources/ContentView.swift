@@ -11,15 +11,9 @@ struct ContentView: View {
 
     fileprivate static let sensorDefinitions: [SensorDisplayType] = [
         .init(id: "vital_1", title: "Heart Rate", description: "Beats per minute from the live workout", kind: .vital(1), source: .watch),
-        .init(id: "vital_2", title: "HRV (SDNN)", description: "Heart rate variability from the watch", kind: .vital(2), source: .watch),
         .init(id: "vital_45", title: "Motion Context", description: "Motion classifier from Apple Watch", kind: .vital(45), source: .watch),
         .init(id: "vital_20", title: "Steps", description: "Step counts from watch workout", kind: .vital(20), source: .watch),
         .init(id: "vital_21", title: "Distance", description: "Distance walked or run", kind: .vital(21), source: .watch),
-        .init(id: "vital_40", title: "Accel Mean", description: "Mean accel magnitude window", kind: .vital(40), source: .watch),
-        .init(id: "vital_41", title: "Accel StdDev", description: "Accel variability", kind: .vital(41), source: .watch),
-        .init(id: "vital_42", title: "Gyro X Mean", description: "Rotation rate X axis", kind: .vital(42), source: .watch),
-        .init(id: "vital_43", title: "Gyro Y Mean", description: "Rotation rate Y axis", kind: .vital(43), source: .watch),
-        .init(id: "vital_44", title: "Gyro Z Mean", description: "Rotation rate Z axis", kind: .vital(44), source: .watch),
         .init(id: "gps", title: "GPS", description: "Latitude / longitude traces", kind: .gps, source: .phone),
         .init(id: "event_motion", title: "Motion Context", description: "Motion context from the iPhone", kind: .event("motion_context"), source: .phone),
         .init(id: "event_audio", title: "Audio Context", description: "SoundAnalysis AI scenes", kind: .event("audio_context"), source: .phone),
@@ -32,57 +26,98 @@ struct ContentView: View {
     @State private var totalSamples: Int = 0
     @State private var sessionDurationMinutes: Double = 0
     @State private var latestItems: [BatchItem] = []
+    
+    @State private var activityContext: String = ""
+    @State private var environmentContext: String = ""
+    @State private var mentalContext: String = ""
+
+    private let activities = ["Study", "Lecture", "Group Meeting", "Reading", "Writing / Report Work"]
+    private let environments = ["Library", "Classroom", "Cafe", "Home", "Outdoor"]
+    private let mentalStates = ["Very Low", "Low", "Neutral", "High", "Very High"]
 
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Watch Connectivity")) {
+                Section(header: Text("Watch Data Collection"), footer: Text("Enable to collect heart rate, motion, and workout data from your Apple Watch")) {
                     HStack {
-                        Text("Connection")
+                        Text("Collect Watch Data")
                         Spacer()
-                        Text(watchBridge.connectivityText)
-                            .foregroundColor(color(for: watchBridge.connectivityColorName))
+                        Toggle("", isOn: $watchBridge.enableWatchDataCollection)
+                            .labelsHidden()
                     }
-                    HStack {
-                        Text("Workout State")
-                        Spacer()
-                        Text(scheduler.watchWorkoutState)
-                            .foregroundColor(.secondary)
+                }
+                
+                if watchBridge.enableWatchDataCollection {
+                    Section {
+                        WatchConnectionStepsView(watchBridge: watchBridge)
                     }
                 }
 
-                Section(header: Text("Sensor Sources")) {
-                    SensorSourceCard(
-                        title: "iPhone Sensors",
-                        subtitle: scheduler.isSessionActive ? "Streaming ambient audio, GPS, motion" : "Idle until the next session",
-                        iconName: "iphone.gen3",
-                        isActive: scheduler.isSessionActive
-                    )
-                    SensorSourceCard(
-                        title: "Apple Watch",
-                        subtitle: watchBridge.connectivityText,
-                        iconName: "applewatch",
-                        isActive: watchBridge.isReachable
-                    )
+                Section(header: Text("Pre-Session Context")) {
+                    HStack {
+                        Image(systemName: activityContext.isEmpty ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                            .foregroundColor(activityContext.isEmpty ? .orange : .green)
+                        Picker("Activity", selection: $activityContext) {
+                            Text("Select...").tag("")
+                            ForEach(activities, id: \.self) { Text($0).tag($0) }
+                        }
+                    }
+                    HStack {
+                        Image(systemName: environmentContext.isEmpty ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                            .foregroundColor(environmentContext.isEmpty ? .orange : .green)
+                        Picker("Environment", selection: $environmentContext) {
+                            Text("Select...").tag("")
+                            ForEach(environments, id: \.self) { Text($0).tag($0) }
+                        }
+                    }
+                    HStack {
+                        Image(systemName: mentalContext.isEmpty ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                            .foregroundColor(mentalContext.isEmpty ? .orange : .green)
+                        Picker("Mental Preparedness", selection: $mentalContext) {
+                            Text("Select...").tag("")
+                            ForEach(mentalStates, id: \.self) { Text($0).tag($0) }
+                        }
+                    }
                 }
+                .disabled(scheduler.isSessionActive)
 
                 Section(header: Text("Session Management")) {
                     if !scheduler.isSessionActive {
-                        Button(action: { scheduler.startStudySession() }) {
+                        let isWatchReady = !watchBridge.enableWatchDataCollection || watchBridge.isReachable
+                        let isQuestionnaireComplete = !activityContext.isEmpty && !environmentContext.isEmpty && !mentalContext.isEmpty
+                        let canStart = isWatchReady && isQuestionnaireComplete
+                        
+                        Button(action: {
+                            if canStart {
+                                scheduler.startStudySession()
+                            }
+                        }) {
                             HStack {
-                                Image(systemName: "play.circle.fill")
-                                Text("Start Study Session")
+                                Image(systemName: canStart ? "play.circle.fill" : "lock.fill")
+                                Text(canStart ? "Start Study Session" : (!isWatchReady ? "Watch Not Reachable" : "Answer Questions"))
                                     .bold()
                             }
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.green)
+                            .background(canStart ? Color.green : (!isWatchReady ? Color.gray : Color.orange))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                         }
-                        Text("Starts a clean tracking session. Discards all previous ambient data.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        .disabled(!canStart)
+                        
+                        if !isWatchReady {
+                            Text("Connect to your Apple Watch to establish a connection before starting the session.")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        } else if !isQuestionnaireComplete {
+                            Text("Please complete the pre-session questions above before starting.")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        } else {
+                            Text("Starts a clean tracking session. Discards all previous ambient data.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     } else {
                         VStack(spacing: 12) {
                             HStack {
@@ -107,6 +142,23 @@ struct ContentView: View {
                                 .cornerRadius(10)
                             }
                         }
+                    }
+                }
+
+                Section(header: Text("Sensor Sources")) {
+                    SensorSourceCard(
+                        title: "iPhone",
+                        subtitle: scheduler.isSessionActive ? "Streaming ambient audio, GPS, motion" : "Idle until the next session",
+                        iconName: "iphone.gen3",
+                        isActive: scheduler.isSessionActive
+                    )
+                    if watchBridge.enableWatchDataCollection {
+                        SensorSourceCard(
+                            title: "Apple Watch",
+                            subtitle: watchBridge.connectivityText,
+                            iconName: "applewatch",
+                            isActive: scheduler.isSessionActive && watchBridge.isReachable
+                        )
                     }
                 }
 

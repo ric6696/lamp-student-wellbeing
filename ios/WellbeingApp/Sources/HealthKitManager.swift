@@ -76,8 +76,8 @@ final class HealthKitManager {
     }
 
     func fetchSleepStages(since: Date) async throws -> [BatchItem] {
-        let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
-        let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
+        // let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+        // let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
 
         return try await withCheckedThrowingContinuation { cont in
             cont.resume(returning: [])

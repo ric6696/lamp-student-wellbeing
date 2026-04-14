@@ -311,7 +311,7 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
 
     private func startMotionSamplingIfPossible() {
         // High-frequency sensor stream (Accel + Gyro via DeviceMotion)
-        startDeviceMotion()
+        // startDeviceMotion() // Disabled high-frequency accel/gyro data collection
         
         // Low-frequency context stream (Activity)
         startActivityUpdates()
@@ -440,44 +440,15 @@ final class WatchWorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorko
 
     private func consumeMotionFeatureItems() -> [[String: Any]] {
         motionLock.lock()
+        
         // Snapshot Windows
-        let accWindow = accelMagnitudeWindow
-        let gxWindow = gyroXWindow
-        let gyWindow = gyroYWindow
-        let gzWindow = gyroZWindow
         let activity = latestActivityCode // Current context
         
-        // Clear windows
-        accelMagnitudeWindow.removeAll(keepingCapacity: true)
-        gyroXWindow.removeAll(keepingCapacity: true)
-        gyroYWindow.removeAll(keepingCapacity: true)
-        gyroZWindow.removeAll(keepingCapacity: true)
         motionLock.unlock()
 
         var features: [[String: Any]] = []
-
-        // 1. Accel Features
-        if !accWindow.isEmpty {
-            let mean = accWindow.reduce(0, +) / Double(accWindow.count)
-            let variance = accWindow.reduce(0) { $0 + pow($1 - mean, 2) } / Double(accWindow.count)
-            let stddev = sqrt(variance)
-            features.append(["code": 40, "val": mean]) // Accel Mean
-            features.append(["code": 41, "val": stddev]) // Accel StdDev
-        }
         
-        // 2. Gyro Features (Mean of Rotation Rate)
-        if !gxWindow.isEmpty {
-            let meanX = gxWindow.reduce(0, +) / Double(gxWindow.count)
-            features.append(["code": 42, "val": meanX])
-        }
-        if !gyWindow.isEmpty {
-            let meanY = gyWindow.reduce(0, +) / Double(gyWindow.count)
-            features.append(["code": 43, "val": meanY])
-        }
-        if !gzWindow.isEmpty {
-            let meanZ = gzWindow.reduce(0, +) / Double(gzWindow.count)
-            features.append(["code": 44, "val": meanZ])
-        }
+        // High frequency Accel/Gyro sensors disabled
         
         // 3. Activity Context
         // Avoid sending 0 (unknown) repeatedly if not useful? Maybe just always send latest state.

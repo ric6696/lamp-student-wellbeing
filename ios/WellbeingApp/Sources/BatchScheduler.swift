@@ -157,11 +157,13 @@ final class BatchScheduler: ObservableObject {
             _ = await collectSessionData(captureSession: true)
         }
 
-        Task { [weak self] in
-            guard let self else { return }
-            let ok = await self.watchBridge.requestStartWorkout(sessionKey: sessionKey)
-            if !ok {
-                print("Watch workout start request was not acknowledged")
+        if self.watchBridge.enableWatchDataCollection {
+            Task { [weak self] in
+                guard let self else { return }
+                let ok = await self.watchBridge.requestStartWorkout(sessionKey: sessionKey)
+                if !ok {
+                    print("Watch workout start request was not acknowledged")
+                }
             }
         }
 
@@ -205,7 +207,11 @@ final class BatchScheduler: ObservableObject {
             print("BatchScheduler: endStudySession async cleanup started")
 
             print("BatchScheduler: requesting watch workout stop")
-            let watchOk = await watchBridge.requestStopWorkout()
+            let watchOk = if watchBridge.enableWatchDataCollection {
+                await watchBridge.requestStopWorkout()
+            } else {
+                true
+            }
             print("BatchScheduler: watch workout stop acknowledged = \(watchOk)")
             
             // Give a short grace period for the async WCSession event (END marker) to be received and saved to LocalStore
