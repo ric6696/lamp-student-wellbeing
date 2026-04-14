@@ -35,6 +35,10 @@ struct ContentView: View {
     @State private var prevEnvironmentContext: String = ""
     @State private var prevMentalContext: String = ""
 
+    @State private var showPostSessionSheet: Bool = false
+    @State private var prevConcentration: Int? = nil
+    @State private var prevDistraction: String? = nil
+
     private let activities = ["Study", "Lecture", "Group Meeting", "Reading", "Writing / Report Work"]
     private let environments = ["Library", "Classroom", "Cafe", "Home", "Outdoor"]
     private let mentalStates = ["Very Low", "Low", "Neutral", "High", "Very High"]
@@ -141,6 +145,7 @@ struct ContentView: View {
                                 activityContext = ""
                                 environmentContext = ""
                                 mentalContext = ""
+                                showPostSessionSheet = true
                             }) {
                                 HStack {
                                     Image(systemName: "stop.circle.fill")
@@ -160,7 +165,7 @@ struct ContentView: View {
                 Section(header: Text("Sensor Sources")) {
                     SensorSourceCard(
                         title: "iPhone",
-                        subtitle: scheduler.isSessionActive ? "Streaming ambient audio, GPS, motion" : "Idle until the next session",
+                        subtitle: scheduler.isSessionActive ? "Streaming data" : "Idle until the next session",
                         iconName: "iphone.gen3",
                         isActive: scheduler.isSessionActive
                     )
@@ -196,6 +201,11 @@ struct ContentView: View {
                         }
                         if !prevActivityContext.isEmpty {
                             Text("\(prevActivityContext) • \(prevEnvironmentContext) • \(prevMentalContext)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        if let conc = prevConcentration, let dist = prevDistraction {
+                            Text("Concentration: \(conc)/10 • Distracted by: \(dist)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -252,6 +262,13 @@ struct ContentView: View {
                 if !scheduler.isSessionActive {
                     updateStats(with: items, start: scheduler.previousSessionStartTime, end: scheduler.previousSessionEndTime)
                 }
+            }
+            .sheet(isPresented: $showPostSessionSheet) {
+                PostSessionEvaluationView(isPresented: $showPostSessionSheet) { rating, distraction in
+                    prevConcentration = rating
+                    prevDistraction = distraction
+                }
+                .interactiveDismissDisabled(true)
             }
         }
     }
@@ -324,6 +341,111 @@ struct ContentView: View {
             return .orange
         default:
             return .red
+        }
+    }
+}
+
+struct PostSessionEvaluationView: View {
+    @Binding var isPresented: Bool
+    let onSubmit: (Int, String) -> Void
+    
+    @State private var concentrationRating: Double = 5.0
+    @State private var selectedDistractions: Set<String> = []
+    
+    let distractions = [
+        "Noise / Conversations",
+        "Phone / Device",
+        "People Around Me",
+        "My Thoughts / Mind Wandering",
+        "Fatigue / Sleepiness",
+        "Physical Discomfort",
+        "No Major Distractions",
+        "Other"
+    ]
+    
+    var concentrationColor: Color {
+        switch concentrationRating {
+        case 1...3: return .red
+        case 4...6: return .orange
+        case 7...8: return .green
+        default: return .blue
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(
+                    header: Text("1. Rate your concentration during this session")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .textCase(nil),
+                    footer: Text("1 = Very Poor, 10 = Excellent")
+                ) {
+                    VStack {
+                        Text("\(Int(concentrationRating))")
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(concentrationColor)
+                            .padding(.bottom, 4)
+                        
+                        Slider(value: $concentrationRating, in: 1...10, step: 1)
+                        
+                        HStack {
+                            Text("1").font(.caption).foregroundColor(.secondary)
+                            Spacer()
+                            Text("10").font(.caption).foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                
+                Section(
+                    header: Text("2. What distracted you most during this session?")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .textCase(nil)
+                ) {
+                    ForEach(distractions, id: \.self) { option in
+                        Button(action: {
+                            if option == "No Major Distractions" {
+                                if selectedDistractions.contains(option) {
+                                    selectedDistractions.remove(option)
+                                } else {
+                                    selectedDistractions.removeAll()
+                                    selectedDistractions.insert(option)
+                                }
+                            } else {
+                                if selectedDistractions.contains(option) {
+                                    selectedDistractions.remove(option)
+                                } else {
+                                    selectedDistractions.remove("No Major Distractions")
+                                    selectedDistractions.insert(option)
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text(option)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if selectedDistractions.contains(option) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Session Review")
+            .navigationBarItems(
+                trailing: Button("Submit") {
+                    let formattedDistractions = Array(selectedDistractions).sorted().joined(separator: ", ")
+                    onSubmit(Int(concentrationRating), formattedDistractions)
+                    isPresented = false
+                }
+                .font(.headline)
+                .disabled(selectedDistractions.isEmpty)
+            )
         }
     }
 }
