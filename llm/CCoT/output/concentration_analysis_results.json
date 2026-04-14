@@ -1,4 +1,16 @@
 {
-  "concentration_score": 4,
-  "reason": "The 26-second session duration is far too brief to represent genuine study concentration, despite perfect physical stability (stationary motion, stable GPS). Critical data gaps in audio (0 confident events) and vitals (0 samples) prevent comprehensive assessment of environmental and physiological factors essential for evaluating concentration quality. The score reflects incomplete data and insufficient session length rather than poor concentration behavior."
+  "phase_1": {
+    "audio": "Audio environment is highly distracting with average exposure of 64.96 dBA, exceeding the 60 dBA threshold. All 3 audio events detected speech with confidence >50% (speech ratio 1.0), indicating continuous conversational environment rather than quiet study conditions. The increasing decibel levels from -58 to -44 dB suggest escalating noise disturbance.",
+    "vitals": "Metric code 10 values show fluctuation from 58.85 to 75.60, with a notable spike to 75.60 at 11:23:20. No heart rate, steps, or distance data available for standard vital sign assessment. The available metric shows variability that may indicate physiological response to environmental stimuli or activity.",
+    "gps_motion": "GPS shows 13.42m displacement with 18.47m total travel over 36 seconds, indicating moderate movement rather than stable seated position. Motion context transitioned from stationary (first 11 seconds) to predominantly unknown (remaining 25 seconds), suggesting loss of stable positioning. The location shift at 11:23:18 (coordinates changed significantly) confirms physical movement during the session."
+  },
+  "phase_2": {
+    "correlations": "Strong negative concentration indicators align across all modalities: continuous speech environment (100% speech ratio) correlates with transition from stationary to unknown motion contexts, while GPS displacement confirms physical movement. The spike in metric code 10 (75.60) at 11:23:20 coincides with the loudest audio event (-44.40 dB) and continued movement, suggesting active engagement in conversation or social interaction rather than focused study.",
+    "holistic_assessment": "User demonstrates unconcentrated state throughout this brief 0.6-minute session. The combination of noisy conversational environment (64.96 dBA), physical movement (13.42m displacement), and loss of stationary positioning (82% unknown motion contexts) indicates active social engagement or transition rather than study focus. The rule-based motion assessment correctly identifies unconcentrated state due to non-stationary contexts."
+  },
+  "phase_3": {
+    "recommendations": "1) Relocate to a quiet study space with ambient noise below 45 dBA to eliminate the continuous speech distraction currently present. 2) Establish a stable, stationary study position to minimize physical movement and GPS displacement, which currently indicates frequent repositioning. 3) Extend study sessions beyond brief intervals (current 0.6 min) to allow for meaningful concentration periods, aiming for at least 25-30 minute focused blocks."
+  },
+  "score": 2,
+  "reason": "The session shows severe concentration deficits across all modalities: audio environment is highly distracting at 64.96 dBA with 100% speech ratio, GPS data reveals 13.42m displacement indicating physical movement, and motion contexts shifted from stationary to 82% unknown states. The brief 0.6-minute duration combined with continuous conversational noise and active movement patterns indicate the user was engaged in social interaction or transition rather than focused study."
 }

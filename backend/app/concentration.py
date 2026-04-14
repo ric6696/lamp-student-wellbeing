@@ -183,7 +183,9 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 
     label_counts: dict[str, int] = {}
     ai_counts: dict[str, int] = {}
-    db_values: list[float] = []
+    speech_count = 0
+    silent_count = 0
+    other_count = 0
     qualified_audio_count = 0
     for t, label_val, db, confidence, ai_label in audio_rows:
         raw_audio_events.append(
@@ -206,11 +208,15 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             ai_key = str(ai_label).strip()
             ai_counts[ai_key] = ai_counts.get(ai_key, 0) + 1
 
-        dbf = _to_float(db)
-        if dbf is not None:
-            db_values.append(dbf)
-
-    avg_db = sum(db_values) / len(db_values) if db_values else None
+        ai_norm = str(ai_label).strip().lower() if ai_label else ""
+        speech_labels = {"speech", "talking", "conversation", "voice", "narration", "speaking"}
+        silent_labels = {"silence", "silent", "quiet", "still"}
+        if normalized_label in speech_labels or ai_norm in speech_labels:
+            speech_count += 1
+        elif normalized_label in silent_labels or ai_norm in silent_labels:
+            silent_count += 1
+        else:
+            other_count += 1
 
     cursor.execute(
         """
@@ -230,6 +236,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
     hr_values: list[float] = []
     steps_values: list[float] = []
     distance_values: list[float] = []
+    audio_exposure_values: list[float] = []
     for t, metric_code, value in vital_rows:
         raw_vitals.append(
             {
@@ -243,6 +250,8 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             continue
         if metric_code == 1:
             hr_values.append(val)
+        elif metric_code == 10:
+            audio_exposure_values.append(val)
         elif metric_code == 20:
             steps_values.append(val)
         elif metric_code == 21:
@@ -323,6 +332,12 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
         elif context_norm in active_labels:
             active_count += 1
 
+    non_stationary_count = len(motion_rows) - stationary_count
+    if motion_rows and stationary_count > 0 and non_stationary_count == 0:
+        motion_focus_state = "focused"
+    else:
+        motion_focus_state = "unconcentrated"
+
     duration_min = max((ended_at - started_at).total_seconds() / 60.0, 0.0)
 
     return {
@@ -349,7 +364,18 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             "motion_events": raw_motion_events,
         },
         "audio": {
-            "avg_db_conf_gt_50": avg_db,
+            "speech_events_conf_gt_50": speech_count,
+            "silent_events_conf_gt_50": silent_count,
+            "other_events_conf_gt_50": other_count,
+            "speech_ratio_conf_gt_50": (
+                round(speech_count / qualified_audio_count, 4) if qualified_audio_count else None
+            ),
+            "avg_audio_exposure_db": (
+                sum(audio_exposure_values) / len(audio_exposure_values)
+                if audio_exposure_values
+                else None
+            ),
+            "audio_exposure_samples": len(audio_exposure_values),
             "label_counts_conf_gt_50": label_counts,
             "label_counts_conf_gt_50_text": _format_counts(label_counts),
             "ai_label_counts_conf_gt_50": ai_counts,
@@ -374,6 +400,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             "counts_text": _format_counts(motion_counts),
             "stationary_count": stationary_count,
             "active_count": active_count,
+            "focus_state": motion_focus_state,
         },
     }
 
@@ -401,7 +428,10 @@ RAW SENSOR ROWS (entire session window, use these as the primary evidence):
 AGGREGATED SNAPSHOT (secondary / convenience summary):
 - Audio events total: {counts['audio_events_total']}
 - Audio events used (confidence > 50%): {counts['audio_events_conf_gt_50']}
-- Avg audio dB (confidence > 50%): {audio['avg_db_conf_gt_50']}
+- Speech events (confidence > 50%): {audio['speech_events_conf_gt_50']}
+- Silent events (confidence > 50%): {audio['silent_events_conf_gt_50']}
+- Speech ratio (confidence > 50%): {audio['speech_ratio_conf_gt_50']}
+- Avg audio exposure (dBA): {audio['avg_audio_exposure_db']} (samples={audio['audio_exposure_samples']})
 - Audio label counts (confidence > 50%): {audio['label_counts_conf_gt_50_text']}
 - Audio AI label counts (confidence > 50%): {audio['ai_label_counts_conf_gt_50_text']}
 - Avg heart rate (bpm): {vitals['avg_heart_rate']} (samples={vitals['heart_rate_samples']})
@@ -414,22 +444,23 @@ AGGREGATED SNAPSHOT (secondary / convenience summary):
 - Motion context counts: {motion['counts_text']}
 - Motion stationary count: {motion['stationary_count']}
 - Motion active count: {motion['active_count']}
+- Motion focus state (rule-based): {motion['focus_state']}
 
 NORMAL CONCENTRATION THRESHOLDS:
-1) Audio environment:
-   - Good focus: avg dB <= 45
-   - Moderate: 45 < avg dB <= 60
-   - Distracting: avg dB > 60
-   - More quiet/stationary labels support concentration; more busy/speech labels reduce concentration.
+1) Audio environment (dBA from audio exposure):
+    - Good focus: avg dBA <= 45
+    - Moderate: 45 < avg dBA <= 60
+    - Distracting: avg dBA > 60
+    - Speech vs silent labels indicate whether the environment is conversational vs quiet study.
 2) Vitals / movement:
    - Heart rate 60-85 bpm generally supports calm focus.
    - Lower steps/distance supports seated studying; higher values may indicate reduced concentration.
 3) GPS stability:
    - Stable location supports concentration.
    - Large displacement or high travel suggests context switching/interruptions.
-4) Motion events:
-   - Mostly stationary supports concentration.
-   - Frequent walking/running/active contexts reduce concentration.
+4) Motion events (hard rule):
+    - If all motion contexts are stationary/still/sitting/idle, mark user as focused.
+    - If any context is unknown or non-stationary, mark user as unconcentrated.
 
 PHASE 1: INDIVIDUAL MODALITY DECOMPOSITION
 Step 1. Analyze audio independently against thresholds and label distribution.
@@ -726,7 +757,10 @@ def process_next_pending_job() -> bool:
 
         try:
             payload: dict[str, Any] = {
-                "concentration_score": int(score),
+                "phase_1": llm_parsed.get("phase_1") or {},
+                "phase_2": llm_parsed.get("phase_2") or {},
+                "phase_3": llm_parsed.get("phase_3") or {},
+                "score": int(score),
                 "reason": str(reason),
             }
             _emit_ccot_output(job.session_id, payload)

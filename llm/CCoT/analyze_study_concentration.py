@@ -1013,7 +1013,15 @@ def process_concentration_analysis(
         print(result.get("reason", "No reason provided"))
         print("=" * 100)
 
-        output_data = {
+        strict_output = {
+            "phase_1": result.get("phase_1") or {},
+            "phase_2": result.get("phase_2") or {},
+            "phase_3": result.get("phase_3") or {},
+            "score": result.get("score"),
+            "reason": result.get("reason") or "",
+        }
+
+        debug_output = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "model": model,
             "source": source,
@@ -1031,13 +1039,19 @@ def process_concentration_analysis(
         }
 
         if "error" in result:
-            output_data["error"] = result["error"]
+            debug_output["error"] = result["error"]
+
+        debug_target = output_target.with_name(output_target.stem + "_debug.json")
 
         with open(output_target, "w", encoding="utf-8") as f:
-            json.dump(output_data, f, indent=2, ensure_ascii=False)
+            json.dump(strict_output, f, indent=2, ensure_ascii=False)
+
+        with open(debug_target, "w", encoding="utf-8") as f:
+            json.dump(debug_output, f, indent=2, ensure_ascii=False)
 
         print("\n✓ Analysis complete!")
         print(f"✓ Results saved to: {output_target}")
+        print(f"✓ Debug payload saved to: {debug_target}")
 
     finally:
         session.close()
