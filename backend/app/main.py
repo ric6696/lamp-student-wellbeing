@@ -1,5 +1,7 @@
 import json
 import logging
+import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -20,6 +22,9 @@ _repo_root = Path(__file__).resolve().parents[2]
 _log_dir = _repo_root / "logs"
 _log_dir.mkdir(parents=True, exist_ok=True)
 _user_response_path = _repo_root / "llm" / "StudySessionAnalyst" / "user_response_to_concentration.json"
+_concentration_output_path = _repo_root / "llm" / "CCoT" / "output" / "concentration_analysis_results.json"
+_pre_session_context_path = _repo_root / "llm" / "CCoT" / "output" / "pre_session_context.json"
+_analyst_script_path = _repo_root / "llm" / "StudySessionAnalyst" / "analyst.py"
 
 http_logger = logging.getLogger("ingest.http")
 if not http_logger.handlers:
@@ -27,6 +32,13 @@ if not http_logger.handlers:
     handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
     http_logger.addHandler(handler)
     http_logger.setLevel(logging.INFO)
+
+analysis_logger = logging.getLogger("ingest.analysis")
+if not analysis_logger.handlers:
+    handler = logging.FileHandler(_log_dir / "analysis_trigger.log")
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    analysis_logger.addHandler(handler)
+    analysis_logger.setLevel(logging.INFO)
 
 
 @app.on_event("startup")
@@ -86,6 +98,126 @@ def _atomic_write_json(path: Path, payload: Any) -> None:
     tmp_path.replace(path)
 
 
+def _safe_mtime(path: Path) -> float | None:
+    if not path.exists():
+        return None
+    return path.stat().st_mtime
+
+
+def _outputs_ready_for_analyst(
+    user_response_mtime: float,
+    concentration_baseline_mtime: float | None,
+    pre_session_baseline_mtime: float | None,
+) -> tuple[bool, str]:
+    if not _concentration_output_path.exists():
+        return False, f"missing_concentration_output:{_concentration_output_path}"
+    if not _pre_session_context_path.exists():
+        return False, f"missing_pre_session_context:{_pre_session_context_path}"
+
+    concentration_mtime = _concentration_output_path.stat().st_mtime
+    pre_session_mtime = _pre_session_context_path.stat().st_mtime
+
+    # Accept outputs that are close in time to the review submission (same-session window),
+    # or outputs that changed after submission (worker finished later).
+    same_session_window_seconds = 300
+
+    concentration_close = abs(concentration_mtime - user_response_mtime) <= same_session_window_seconds
+    pre_session_close = abs(pre_session_mtime - user_response_mtime) <= same_session_window_seconds
+
+    concentration_updated = (
+        concentration_baseline_mtime is not None and concentration_mtime > concentration_baseline_mtime
+    )
+    pre_session_updated = (
+        pre_session_baseline_mtime is not None and pre_session_mtime > pre_session_baseline_mtime
+    )
+
+    if not (concentration_close or concentration_updated):
+        return False, "stale_concentration_output"
+    if not (pre_session_close or pre_session_updated):
+        return False, "stale_pre_session_context"
+
+    return True, "ready"
+
+
+def _run_analyst_after_session_review(
+    user_response_mtime: float,
+    concentration_baseline_mtime: float | None,
+    pre_session_baseline_mtime: float | None,
+) -> None:
+    # Wait for concentration and pre-session context to be refreshed after user response submission.
+    max_wait_seconds = 90
+    wait_step = 3
+    waited = 0
+    last_reason = "unknown"
+
+    while waited < max_wait_seconds:
+        if not _user_response_path.exists():
+            last_reason = f"missing_user_response:{_user_response_path}"
+        else:
+            ready, reason = _outputs_ready_for_analyst(
+                user_response_mtime,
+                concentration_baseline_mtime,
+                pre_session_baseline_mtime,
+            )
+            last_reason = reason
+            if ready:
+                break
+
+        time.sleep(wait_step)
+        waited += wait_step
+
+    ready, reason = _outputs_ready_for_analyst(
+        user_response_mtime,
+        concentration_baseline_mtime,
+        pre_session_baseline_mtime,
+    )
+    if not ready:
+        analysis_logger.warning(
+            "skip_analyst_run reason=%s waited_seconds=%s user_response_mtime=%s concentration_exists=%s pre_session_exists=%s",
+            reason if reason else last_reason,
+            waited,
+            user_response_mtime,
+            _concentration_output_path.exists(),
+            _pre_session_context_path.exists(),
+        )
+        return
+
+    if not _user_response_path.exists():
+        analysis_logger.warning("skip_analyst_run reason=missing_user_response path=%s", _user_response_path)
+        return
+
+    cmd = [
+        sys.executable,
+        str(_analyst_script_path),
+        "--concentration",
+        "CCoT/output/concentration_analysis_results.json",
+        "--user-response",
+        "StudySessionAnalyst/user_response_to_concentration.json",
+        "--pre-session-questions",
+        "CCoT/output/pre_session_context.json",
+        "--output",
+        "StudySessionAnalyst/discrepancy_analysis_results.json",
+    ]
+
+    try:
+        completed = subprocess.run(
+            cmd,
+            cwd=str(_repo_root / "llm"),
+            capture_output=True,
+            text=True,
+            timeout=240,
+            check=False,
+        )
+        analysis_logger.info(
+            "analyst_run_finished returncode=%s stdout=%s stderr=%s",
+            completed.returncode,
+            (completed.stdout or "").strip(),
+            (completed.stderr or "").strip(),
+        )
+    except Exception as exc:
+        analysis_logger.exception("analyst_run_exception error=%s", exc)
+
+
 @app.post("/ingest")
 async def ingest(payload: Batch, background_tasks: BackgroundTasks, _: None = Depends(require_api_key)):
     background_tasks.add_task(ingest_batch, payload)
@@ -93,8 +225,22 @@ async def ingest(payload: Batch, background_tasks: BackgroundTasks, _: None = De
 
 
 @app.post("/session-review")
-async def save_session_review(payload: dict[str, Any], _: None = Depends(require_api_key)):
+async def save_session_review(
+    payload: dict[str, Any],
+    background_tasks: BackgroundTasks,
+    _: None = Depends(require_api_key),
+):
+    concentration_baseline_mtime = _safe_mtime(_concentration_output_path)
+    pre_session_baseline_mtime = _safe_mtime(_pre_session_context_path)
+
     _atomic_write_json(_user_response_path, payload)
+    user_response_mtime = _user_response_path.stat().st_mtime
+    background_tasks.add_task(
+        _run_analyst_after_session_review,
+        user_response_mtime,
+        concentration_baseline_mtime,
+        pre_session_baseline_mtime,
+    )
     return {"status": "saved", "path": str(_user_response_path)}
 
 

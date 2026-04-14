@@ -1,10 +1,19 @@
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+	sys.path.insert(0, str(PROJECT_ROOT))
+
 from dotenv import load_dotenv
 from snowflake.snowpark import Session
+from llm.PersonalizationAgent.context_averages import (
+	build_context_average_concentration_scores,
+)
 
 try:
 	import psycopg2
@@ -13,24 +22,7 @@ except ImportError:  # pragma: no cover
 	psycopg2 = None
 
 
-# Static policy guidance is kept deterministic; LLM fills interpretation.
-SENSOR_RULES = {
-	"heart_rate": {
-		"guidance": "Use heart rate as supporting context only. Avoid strong conclusions from HR alone because stress/arousal can be unrelated to focus.",
-	},
-	"noise_level": {
-		"guidance": "Use noise as a primary environment signal. Evaluate both average dB and disruptive spikes/labels.",
-	},
-	"steps_movement": {
-		"guidance": "Interpret movement relative to task type. Penalize sustained movement during seated tasks more than brief posture changes.",
-	},
-	"gps_location": {
-		"guidance": "Use location stability as secondary evidence. Large travel usually reduces focus reliability for session-level interpretation.",
-	},
-}
-
-SENSOR_KEYS = tuple(SENSOR_RULES.keys())
-SCRIPT_DIR = Path(__file__).resolve().parent
+SENSOR_KEYS = ("vitals", "gps", "motion", "audio")
 DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "user_profile_summary.json"
 
 def _to_float(value):
@@ -128,6 +120,31 @@ def fetch_latest_discrepancy_row(connection, user_id):
 		return cursor.fetchone()
 
 
+def fetch_recent_discrepancy_rows(connection, user_id, limit=3):
+	query = """
+		SELECT
+			id,
+			created_at,
+			user_id,
+			model_name,
+			session_id,
+			device_id,
+			model_score,
+			user_score,
+			score_gap,
+			pre_session_questions,
+			discrepancy_reasoning
+		FROM session_discrepancy_analyses
+		WHERE user_id = %s
+		ORDER BY created_at DESC
+		LIMIT %s
+	"""
+
+	with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+		cursor.execute(query, (user_id.lower(), limit))
+		return cursor.fetchall()
+
+
 def run_cortex_complete(session, model, prompt):
 	# Escape single quotes for SQL string literal safety.
 	escaped_prompt = prompt.replace("'", "''")
@@ -174,12 +191,23 @@ def _normalize_level(value, allowed, default):
 def _default_sensor_guide(reason):
 	# Always return valid schema so DB upsert is resilient.
 	out = {}
-	for sensor, rule in SENSOR_RULES.items():
+	for sensor in SENSOR_KEYS:
 		out[sensor] = {
 			"importance": "LOW",
 			"confidence": "LOW",
-			"rationale": f"Fallback used: {reason}",
-			"how_to_evaluate": rule["guidance"],
+			"summary": f"Fallback used: {reason}",
+			"evidence": {
+				"sessions_seen": 0,
+				"supported_count": 0,
+				"contradicted_count": 0,
+				"unclear_count": 0,
+				"avg_gap_when_flagged": None,
+			},
+			"interpretation": {
+				"what_it_means": f"Fallback used: {reason}",
+				"risk": "History-based sensor interpretation could not be completed.",
+				"next_use": "Insufficient history to assess this sensor reliably.",
+			},
 		}
 	return out
 
@@ -194,52 +222,110 @@ def _validate_sensor_guide(parsed):
 		if not isinstance(item, dict):
 			return None
 
+		evidence = item.get("evidence")
+		if not isinstance(evidence, dict):
+			return None
+
+		interpretation = item.get("interpretation")
+		if not isinstance(interpretation, dict):
+			return None
+
 		validated[sensor] = {
 			"importance": _normalize_level(item.get("importance"), {"LOW", "MEDIUM", "HIGH"}, "LOW"),
 			"confidence": _normalize_level(item.get("confidence"), {"LOW", "MEDIUM", "HIGH"}, "LOW"),
-			"rationale": _to_text(item.get("rationale")).strip() or "No rationale provided.",
-			"how_to_evaluate": _to_text(item.get("how_to_evaluate")).strip() or SENSOR_RULES[sensor]["guidance"],
+			"summary": _to_text(item.get("summary")).strip() or "No summary provided.",
+			"evidence": {
+				"sessions_seen": int(_to_float(evidence.get("sessions_seen")) or 0),
+				"supported_count": int(_to_float(evidence.get("supported_count")) or 0),
+				"contradicted_count": int(_to_float(evidence.get("contradicted_count")) or 0),
+				"unclear_count": int(_to_float(evidence.get("unclear_count")) or 0),
+				"avg_gap_when_flagged": _to_float(evidence.get("avg_gap_when_flagged")),
+			},
+			"interpretation": {
+				"what_it_means": _to_text(interpretation.get("what_it_means")).strip()
+				or "No interpretation provided.",
+				"risk": _to_text(interpretation.get("risk")).strip() or "No risk provided.",
+				"next_use": _to_text(interpretation.get("next_use")).strip()
+				or "Insufficient history to assess this sensor reliably.",
+			},
 		}
 
 	return validated
 
 
-def build_sensor_prompt(user_id, row, model_score, user_score, score_gap):
-	# The model receives structured discrepancy context and outputs sensor evaluation JSON.
+def _serialize_discrepancy_history(rows):
+	history = []
+	for row in rows or []:
+		history.append(
+			{
+				"created_at": row.get("created_at").isoformat() if row.get("created_at") else None,
+				"model_name": row.get("model_name"),
+				"session_id": row.get("session_id"),
+				"model_score": _to_float(row.get("model_score")),
+				"user_score": _to_float(row.get("user_score")),
+				"score_gap": _to_float(row.get("score_gap")),
+				"pre_session_questions": row.get("pre_session_questions") or {},
+				"discrepancy_reasoning": row.get("discrepancy_reasoning") or {},
+			}
+		)
+	return history
+
+
+def build_sensor_prompt(user_id, rows):
 	input_payload = {
 		"user_id": user_id,
-		"model_name": row.get("model_name"),
-		"created_at": row.get("created_at").isoformat() if row.get("created_at") else None,
-		"model_score": model_score,
-		"user_score": user_score,
-		"score_gap": score_gap,
-		"discrepancy_reasoning": row.get("discrepancy_reasoning") or {},
-		"sensor_policy": {k: v["guidance"] for k, v in SENSOR_RULES.items()},
+		"sample_size": len(rows or []),
+		"discrepancy_history": _serialize_discrepancy_history(rows),
 	}
 
 	return f"""You are a learning analytics personalization assistant.
-Evaluate the usefulness of each sensor for next-session concentration interpretation.
+Analyze the user's full discrepancy history and produce a sensor profile for next-session concentration interpretation.
 
 Requirements:
-1) Use semantic reasoning from context, not keyword matching.
-2) If evidence is weak/missing, set LOW and explain uncertainty.
-3) Be conservative with heart_rate unless evidence is explicit.
-4) Return strict JSON only.
+1) Use the whole discrepancy history, not just one session.
+2) Base conclusions on recurring evidence patterns from the stored discrepancy analyses.
+3) Do not invent numeric thresholds or behavioral rules that are not supported by the history.
+4) Be conservative when evidence is sparse or mixed.
+5) Return strict JSON only.
 
 Input:
 {json.dumps(input_payload, ensure_ascii=False, indent=2)}
 
 Return exactly this shape:
 {{
-  "heart_rate": {{"importance": "LOW|MEDIUM|HIGH", "confidence": "LOW|MEDIUM|HIGH", "rationale": "...", "how_to_evaluate": "..."}},
-  "noise_level": {{"importance": "LOW|MEDIUM|HIGH", "confidence": "LOW|MEDIUM|HIGH", "rationale": "...", "how_to_evaluate": "..."}},
-  "steps_movement": {{"importance": "LOW|MEDIUM|HIGH", "confidence": "LOW|MEDIUM|HIGH", "rationale": "...", "how_to_evaluate": "..."}},
-  "gps_location": {{"importance": "LOW|MEDIUM|HIGH", "confidence": "LOW|MEDIUM|HIGH", "rationale": "...", "how_to_evaluate": "..."}}
-}}"""
+  "vitals": {{
+    "importance": "LOW|MEDIUM|HIGH",
+    "confidence": "LOW|MEDIUM|HIGH",
+    "summary": "...",
+    "evidence": {{
+      "sessions_seen": number,
+      "supported_count": number,
+      "contradicted_count": number,
+      "unclear_count": number,
+      "avg_gap_when_flagged": number | null
+    }},
+    "interpretation": {{
+      "what_it_means": "...",
+      "risk": "...",
+      "next_use": "..."
+    }}
+  }},
+  "gps": {{ "...": "same shape as vitals" }},
+  "motion": {{ "...": "same shape as vitals" }},
+  "audio": {{ "...": "same shape as vitals" }}
+}}
+
+Guidance for evidence counts:
+- `sessions_seen`: sessions in the provided history where this sensor is meaningfully discussed or used as evidence.
+- `supported_count`: sessions where the discrepancy reasoning suggests this sensor aligned well with the user's reported focus/distraction.
+- `contradicted_count`: sessions where the discrepancy reasoning suggests this sensor was misleading or over-weighted.
+- `unclear_count`: sessions where evidence was too weak or ambiguous.
+- `avg_gap_when_flagged`: average of (user_score - model_score) for sessions where this sensor was meaningfully involved; null if unavailable.
+"""
 
 
-def evaluate_sensors_with_cortex(session, model, user_id, row, model_score, user_score, score_gap):
-	prompt = build_sensor_prompt(user_id, row, model_score, user_score, score_gap)
+def evaluate_sensors_with_cortex(session, model, user_id, rows):
+	prompt = build_sensor_prompt(user_id, rows)
 	raw_response = run_cortex_complete(session=session, model=model, prompt=prompt)
 	parsed = extract_json_object(raw_response)
 	validated = _validate_sensor_guide(parsed)
@@ -248,57 +334,57 @@ def evaluate_sensors_with_cortex(session, model, user_id, row, model_score, user
 	return validated, raw_response, prompt
 
 
-def build_calibration_text(diff, score_gap):
-	# Calibration is intentionally text-only for interpretability.
-	if diff is None:
-		alignment_text = "Insufficient scoring data to determine user-model alignment."
-		why_text = (
-			"The latest discrepancy record does not include both model_score and user_score, "
-			"so direct preference direction cannot be inferred."
-		)
-		ccot_text = (
-			"Use conservative personalization. Keep model defaults and rely more on qualitative reasoning "
-			"until additional scored sessions are available."
-		)
-	elif diff > 0.3:
-		alignment_text = "User tends to rate focus higher than the model."
-		why_text = (
-			"In the latest discrepancy analysis, the user self-rating is meaningfully above the model estimate, "
-			"indicating the model may be slightly strict for this user."
-		)
-		ccot_text = (
-			"For next-session interpretation, avoid overly harsh downgrades when context is mixed. "
-			"Give more weight to stable environment signals before concluding low focus."
-		)
-	elif diff < -0.3:
-		alignment_text = "User tends to rate focus lower than the model."
-		why_text = (
-			"In the latest discrepancy analysis, the user self-rating is meaningfully below the model estimate, "
-			"indicating the model may be slightly lenient for this user."
-		)
-		ccot_text = (
-			"For next-session interpretation, be more cautious with optimistic model outputs. "
-			"Require stronger supporting evidence before concluding high focus."
-		)
-	else:
-		alignment_text = "User and model are generally aligned."
-		why_text = (
-			"In the latest discrepancy analysis, user and model scores are close, "
-			"so no strong bias direction is observed."
-		)
-		ccot_text = (
-			"Keep standard interpretation behavior. Prioritize multi-sensor consistency and uncertainty notes "
-			"instead of adding strong user-specific score bias corrections."
+def build_calibration_text(rows):
+	scored_rows = []
+	for row in rows or []:
+		model_score = _to_float(row.get("model_score"))
+		user_score = _to_float(row.get("user_score"))
+		if model_score is None or user_score is None:
+			continue
+		scored_rows.append(
+			{
+				"diff": user_score - model_score,
+				"abs_gap": abs(user_score - model_score),
+			}
 		)
 
-	if score_gap is None:
-		gap_text = "Gap size could not be assessed from the latest record."
-	elif score_gap >= 1.5:
-		gap_text = "The latest session shows a large model-user discrepancy."
-	elif score_gap >= 0.7:
-		gap_text = "The latest session shows a moderate model-user discrepancy."
+	if not scored_rows:
+		return {
+			"alignment_summary": "Insufficient scoring data to determine user-model alignment.",
+			"why": "No discrepancy rows with both model_score and user_score were available.",
+			"discrepancy_strength": "Gap size could not be summarized from the available history.",
+			"ccot_adjustment_recommendation": (
+				"Use conservative personalization and rely on sensor-specific evidence until more scored sessions are available."
+			),
+		}
+
+	positive_count = sum(1 for item in scored_rows if item["diff"] > 0)
+	negative_count = sum(1 for item in scored_rows if item["diff"] < 0)
+	zero_count = sum(1 for item in scored_rows if item["diff"] == 0)
+	avg_diff = round(sum(item["diff"] for item in scored_rows) / len(scored_rows), 3)
+	avg_abs_gap = round(sum(item["abs_gap"] for item in scored_rows) / len(scored_rows), 3)
+
+	if positive_count > negative_count:
+		alignment_text = "Across the history, the user more often rates focus higher than the model."
+		ccot_text = (
+			"For next-session interpretation, avoid overly strict downgrades and check whether strong negative signals are consistently supported by other sensors."
+		)
+	elif negative_count > positive_count:
+		alignment_text = "Across the history, the user more often rates focus lower than the model."
+		ccot_text = (
+			"For next-session interpretation, be cautious with optimistic model outputs and look for stronger confirmation before concluding high focus."
+		)
 	else:
-		gap_text = "The latest session shows a small model-user discrepancy."
+		alignment_text = "Across the history, user and model do not show a strong one-direction bias."
+		ccot_text = (
+			"For next-session interpretation, keep bias correction light and prioritize sensor-specific reliability patterns."
+		)
+
+	why_text = (
+		f"Based on {len(scored_rows)} scored sessions, average (user_score - model_score) = {avg_diff}, "
+		f"with {positive_count} positive, {negative_count} negative, and {zero_count} zero-gap directions."
+	)
+	gap_text = f"Average absolute model-user gap across scored history: {avg_abs_gap}."
 
 	return {
 		"alignment_summary": alignment_text,
@@ -306,9 +392,7 @@ def build_calibration_text(diff, score_gap):
 		"discrepancy_strength": gap_text,
 		"ccot_adjustment_recommendation": ccot_text,
 	}
-
-
-def build_profile_from_latest(user_id, row, snowflake_session=None, cortex_model=None):
+def build_profile_from_latest(user_id, row, all_rows=None, snowflake_session=None, cortex_model=None):
 	now = datetime.now(timezone.utc).isoformat()
 	if not row:
 		return {
@@ -319,97 +403,93 @@ def build_profile_from_latest(user_id, row, snowflake_session=None, cortex_model
 			"summary": "No discrepancy analysis found for this user.",
 			"source": {},
 			"calibration": {},
+			"context_average_concentration_scores": build_context_average_concentration_scores(
+				all_rows or []
+			),
 			"sensor_evaluation_guide": {},
 		}
 
-	model_score = _to_float(row.get("model_score"))
-	user_score = _to_float(row.get("user_score"))
-	score_gap = _to_float(row.get("score_gap"))
-
-	diff = None
-	if model_score is not None and user_score is not None:
-		diff = user_score - model_score
-
-	profile_confidence = 0.55
-	if score_gap is not None:
-		profile_confidence += max(0.0, 0.2 - min(score_gap, 2.0) * 0.1)
-	profile_confidence = min(0.8, round(profile_confidence, 3))
+	history_rows = all_rows or [row]
+	history_count = len(history_rows)
+	scored_history_count = sum(
+		1
+		for item in history_rows
+		if _to_float(item.get("model_score")) is not None and _to_float(item.get("user_score")) is not None
+	)
+	profile_confidence = round(scored_history_count / history_count, 3) if history_count else 0.0
 
 	model_name = cortex_model or os.getenv("PERSONALIZATION_CORTEX_MODEL", "claude-sonnet-4-5")
 	sensor_eval_source = "snowflake_cortex"
-	raw_llm_response = None
-	prompt_used = None
 
 	if snowflake_session is None:
 		sensor_guide = _default_sensor_guide("Snowflake session unavailable.")
 		sensor_eval_source = "fallback_no_snowflake"
 	else:
 		try:
-			sensor_guide, raw_llm_response, prompt_used = evaluate_sensors_with_cortex(
+			sensor_guide, _, _ = evaluate_sensors_with_cortex(
 				session=snowflake_session,
 				model=model_name,
 				user_id=user_id,
-				row=row,
-				model_score=model_score,
-				user_score=user_score,
-				score_gap=score_gap,
+				rows=history_rows,
 			)
 		except Exception as exc:
 			sensor_guide = _default_sensor_guide(f"Snowflake Cortex error: {exc}")
 			sensor_eval_source = "fallback_cortex_error"
 
-	calibration = build_calibration_text(diff=diff, score_gap=score_gap)
+	calibration = build_calibration_text(history_rows)
+	context_averages = build_context_average_concentration_scores(history_rows)
+
+	# Compute session range from discrepancy analysis IDs
+	analysis_ids = [row.get("id") for row in history_rows if row.get("id")]
+	session_range = f"Analysis {min(analysis_ids)}-{max(analysis_ids)}" if analysis_ids else "Unknown"
 
 	return {
 		"generated_at": now,
 		"user_id": user_id,
-		"sample_size": 1,
+		"sample_size": history_count,
+		"sessions_analyzed": session_range,
 		"profile_confidence": profile_confidence,
-		"summary": "Personalization profile generated from the most recent discrepancy analysis for next-session CCoT interpretation.",
-		"source": {
-			"session_discrepancy_analysis_id": row.get("id"),
-			"created_at": row.get("created_at").isoformat() if row.get("created_at") else None,
-			"model_name": row.get("model_name"),
-			"session_id": row.get("session_id"),
-			"device_id": row.get("device_id"),
-		},
 		"calibration": calibration,
-		"sensor_evaluation_source": sensor_eval_source,
-		"sensor_evaluation_model": model_name,
-		# Debug info can be useful while tuning prompts.
-		"sensor_evaluation_debug": {
-			"raw_response": raw_llm_response,
-			"prompt_used": prompt_used,
-		},
-		"sensor_evaluation_guide": sensor_guide,
+		"sensor_interpretation": sensor_guide,
 	}
 
 
-def upsert_profile_to_db(connection, user_id, payload):
+def upsert_profile_to_db(connection, user_id, payload, context_averages=None, latest_row=None):
 	query = """
 		INSERT INTO user_personalization_profiles (
 			user_id,
 			source_discrepancy_analysis_id,
 			profile_confidence,
+			mental_readiness_averages,
+			activity_context_averages,
+			environment_context_averages,
 			profile_payload,
 			updated_at
-		) VALUES (%s, %s, %s, %s::jsonb, NOW())
+		) VALUES (%s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, %s::jsonb, NOW())
 		ON CONFLICT (user_id)
 		DO UPDATE SET
 			source_discrepancy_analysis_id = EXCLUDED.source_discrepancy_analysis_id,
 			profile_confidence = EXCLUDED.profile_confidence,
+			mental_readiness_averages = EXCLUDED.mental_readiness_averages,
+			activity_context_averages = EXCLUDED.activity_context_averages,
+			environment_context_averages = EXCLUDED.environment_context_averages,
 			profile_payload = EXCLUDED.profile_payload,
 			updated_at = NOW()
 	"""
 
-	source = payload.get("source", {})
+	context_averages = context_averages or {}
+	latest_analysis_id = latest_row.get("id") if latest_row else None
+	
 	with connection.cursor() as cursor:
 		cursor.execute(
 			query,
 			(
 				user_id.lower(),
-				source.get("session_discrepancy_analysis_id"),
+				latest_analysis_id,
 				payload.get("profile_confidence"),
+				json.dumps(context_averages.get("mental_readiness", {}), ensure_ascii=False),
+				json.dumps(context_averages.get("activity_context", {}), ensure_ascii=False),
+				json.dumps(context_averages.get("environment_context", {}), ensure_ascii=False),
 				json.dumps(payload, ensure_ascii=False),
 			),
 		)
@@ -449,16 +529,22 @@ def main(
 
 	try:
 		assert_profile_table_exists(pg_connection)
-		row = fetch_latest_discrepancy_row(pg_connection, user_id)
+		all_rows = fetch_recent_discrepancy_rows(pg_connection, user_id, limit=3)
+		row = all_rows[0] if all_rows else None
 		payload = build_profile_from_latest(
 			user_id=user_id,
 			row=row,
+			all_rows=all_rows,
 			snowflake_session=sf_session,
 		)
+		
+		# Build context averages separately for DB storage
+		context_averages = build_context_average_concentration_scores(all_rows or [])
+		
 		saved_file = save_profile(output_path, payload)
 
 		if store_db:
-			upsert_profile_to_db(pg_connection, user_id, payload)
+			upsert_profile_to_db(pg_connection, user_id, payload, context_averages, row)
 	finally:
 		if sf_session is not None:
 			sf_session.close()

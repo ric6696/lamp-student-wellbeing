@@ -1,52 +1,83 @@
 {
-  "generated_at": "2026-03-25T15:38:58.222896+00:00",
+  "generated_at": "2026-04-14T21:16:01.726375+00:00",
   "user_id": "minsuk",
-  "sample_size": 1,
-  "profile_confidence": 0.7,
-  "summary": "Personalization profile generated from the most recent discrepancy analysis for next-session CCoT interpretation.",
-  "source": {
-    "session_discrepancy_analysis_id": 19,
-    "created_at": "2026-03-25T11:54:14.217357+00:00",
-    "model_name": "claude-sonnet-4-5",
-    "session_id": null,
-    "device_id": null
-  },
+  "sample_size": 3,
+  "sessions_analyzed": "Analysis 10-12",
+  "profile_confidence": 1.0,
   "calibration": {
-    "alignment_summary": "User tends to rate focus higher than the model.",
-    "why": "In the latest discrepancy analysis, the user self-rating is meaningfully above the model estimate, indicating the model may be slightly strict for this user.",
-    "discrepancy_strength": "The latest session shows a small model-user discrepancy.",
-    "ccot_adjustment_recommendation": "For next-session interpretation, avoid overly harsh downgrades when context is mixed. Give more weight to stable environment signals before concluding low focus."
+    "alignment_summary": "Across the history, the user more often rates focus lower than the model.",
+    "why": "Based on 3 scored sessions, average (user_score - model_score) = -1.333, with 1 positive, 2 negative, and 0 zero-gap directions.",
+    "discrepancy_strength": "Average absolute model-user gap across scored history: 2.667.",
+    "ccot_adjustment_recommendation": "For next-session interpretation, be cautious with optimistic model outputs and look for stronger confirmation before concluding high focus."
   },
-  "sensor_evaluation_source": "snowflake_cortex",
-  "sensor_evaluation_model": "claude-sonnet-4-5",
-  "sensor_evaluation_debug": {
-    "raw_response": "{\n  \"heart_rate\": {\n    \"importance\": \"LOW\",\n    \"confidence\": \"LOW\",\n    \"rationale\": \"While anxiety is mentioned, there's no explicit heart rate data discussed in the analysis. Given policy to use HR conservatively and anxiety's complex relationship with focus, HR would not be a reliable primary signal.\",\n    \"how_to_evaluate\": \"Use only as supplementary context alongside stronger behavioral signals, particularly when anxiety is reported. Compare to personal baseline rather than absolute values.\"\n  },\n  \"noise_level\": {\n    \"importance\": \"MEDIUM\",\n    \"confidence\": \"MEDIUM\",\n    \"rationale\": \"Model noted environmental noise impacts, but it wasn't highlighted as a major factor in the discrepancy analysis. Policy indicates noise is a primary signal, but context suggests limited relevance in this specific case.\",\n    \"how_to_evaluate\": \"Monitor both average levels and sudden disruptions, cross-reference with concentration self-reports at those moments. Focus on labeled noise events that could impact cognitive flow.\"\n  },\n  \"steps_movement\": {\n    \"importance\": \"HIGH\",\n    \"confidence\": \"HIGH\",\n    \"rationale\": \"Movement and fidgeting were central to the discrepancy between model and user scores. Clear evidence of anxiety-related physical restlessness affecting model interpretation while user maintained cognitive focus.\",\n    \"how_to_evaluate\": \"Distinguish anxiety-driven movement from focus-related disruption by analyzing movement patterns, duration, and user context. Consider task type (seated vs active) when interpreting movement impact.\"\n  },\n  \"gps_location\": {\n    \"importance\": \"LOW\",\n    \"confidence\": \"MEDIUM\",\n    \"rationale\": \"No indication of location changes or stability issues in the session. Short 4-minute duration suggests stable location, making this metric less relevant for interpretation.\",\n    \"how_to_evaluate\": \"Check for location stability during the brief session, but given short duration, only flag if unexpected movement occurs. Use as secondary validation of session context.\"\n  }\n}",
-    "prompt_used": "You are a learning analytics personalization assistant.\nEvaluate the usefulness of each sensor for next-session concentration interpretation.\n\nRequirements:\n1) Use semantic reasoning from context, not keyword matching.\n2) If evidence is weak/missing, set LOW and explain uncertainty.\n3) Be conservative with heart_rate unless evidence is explicit.\n4) Return strict JSON only.\n\nInput:\n{\n  \"user_id\": \"minsuk\",\n  \"model_name\": \"claude-sonnet-4-5\",\n  \"created_at\": \"2026-03-25T11:54:14.217357+00:00\",\n  \"model_score\": 7.0,\n  \"user_score\": 7.5,\n  \"score_gap\": 0.5,\n  \"discrepancy_reasoning\": {\n    \"reasoning\": {\n      \"uncertainties\": [\n        \"Exact relationship between physical restlessness and cognitive focus in anxiety contexts\",\n        \"Whether brief session length affected measurement accuracy\"\n      ],\n      \"most_likely_causes\": [\n        \"Model interpreted fidgeting as concentration loss while user maintained cognitive focus\",\n        \"Pre-exam anxiety manifesting as physical restlessness but not mental distraction\",\n        \"Short session length (4 min) and familiar material offsetting anxiety effects\"\n      ],\n      \"user_side_explanation\": [\n        \"Anxiety-driven movement was separate from actual cognitive engagement\",\n        \"Task familiarity and short duration enabled maintained focus despite physical restlessness\"\n      ],\n      \"model_side_explanation\": [\n        \"Movement metrics suggest restlessness that typically correlates with reduced focus\",\n        \"Audio levels indicate some environmental noise that could impact concentration\"\n      ]\n    },\n    \"recommendations\": {\n      \"immediate_actions\": [\n        \"Practice anxiety management techniques before study sessions\",\n        \"Keep leveraging short, focused review sessions\",\n        \"Consider standing desk or fidget tools to channel physical energy\"\n      ],\n      \"next_session_data_collect\": [\n        \"Anxiety levels before and during session\",\n        \"Correlation between movement patterns and self-reported focus at shorter intervals\"\n      ],\n      \"follow_up_questions_for_student\": [\n        \"What specific anxiety management techniques work best for you?\",\n        \"How does your focus vary between familiar vs new material?\"\n      ]\n    },\n    \"discrepancy_overview\": {\n      \"score_gap\": 0.5,\n      \"user_score\": 7.5,\n      \"model_score\": 7.0,\n      \"gap_interpretation\": \"LOW\",\n      \"one_sentence_summary\": \"Minor 0.5-point discrepancy likely due to model interpreting anxiety-driven movement as distraction while user maintained cognitive engagement despite physical restlessness\"\n    },\n    \"reliability_judgment\": {\n      \"why\": \"User provides detailed context about anxiety and task factors while showing good awareness of their state; model may oversimplify movement-focus relationship\",\n      \"model_reliability\": \"MEDIUM\",\n      \"user_report_reliability\": \"HIGH\",\n      \"confidence_in_assessment\": \"HIGH\"\n    }\n  },\n  \"sensor_policy\": {\n    \"heart_rate\": \"Use heart rate as supporting context only. Avoid strong conclusions from HR alone because stress/arousal can be unrelated to focus.\",\n    \"noise_level\": \"Use noise as a primary environment signal. Evaluate both average dB and disruptive spikes/labels.\",\n    \"steps_movement\": \"Interpret movement relative to task type. Penalize sustained movement during seated tasks more than brief posture changes.\",\n    \"gps_location\": \"Use location stability as secondary evidence. Large travel usually reduces focus reliability for session-level interpretation.\"\n  }\n}\n\nReturn exactly this shape:\n{\n  \"heart_rate\": {\"importance\": \"LOW|MEDIUM|HIGH\", \"confidence\": \"LOW|MEDIUM|HIGH\", \"rationale\": \"...\", \"how_to_evaluate\": \"...\"},\n  \"noise_level\": {\"importance\": \"LOW|MEDIUM|HIGH\", \"confidence\": \"LOW|MEDIUM|HIGH\", \"rationale\": \"...\", \"how_to_evaluate\": \"...\"},\n  \"steps_movement\": {\"importance\": \"LOW|MEDIUM|HIGH\", \"confidence\": \"LOW|MEDIUM|HIGH\", \"rationale\": \"...\", \"how_to_evaluate\": \"...\"},\n  \"gps_location\": {\"importance\": \"LOW|MEDIUM|HIGH\", \"confidence\": \"LOW|MEDIUM|HIGH\", \"rationale\": \"...\", \"how_to_evaluate\": \"...\"}\n}"
-  },
-  "sensor_evaluation_guide": {
-    "heart_rate": {
-      "importance": "LOW",
-      "confidence": "LOW",
-      "rationale": "While anxiety is mentioned, there's no explicit heart rate data discussed in the analysis. Given policy to use HR conservatively and anxiety's complex relationship with focus, HR would not be a reliable primary signal.",
-      "how_to_evaluate": "Use only as supplementary context alongside stronger behavioral signals, particularly when anxiety is reported. Compare to personal baseline rather than absolute values."
-    },
-    "noise_level": {
-      "importance": "MEDIUM",
-      "confidence": "MEDIUM",
-      "rationale": "Model noted environmental noise impacts, but it wasn't highlighted as a major factor in the discrepancy analysis. Policy indicates noise is a primary signal, but context suggests limited relevance in this specific case.",
-      "how_to_evaluate": "Monitor both average levels and sudden disruptions, cross-reference with concentration self-reports at those moments. Focus on labeled noise events that could impact cognitive flow."
-    },
-    "steps_movement": {
+  "sensor_interpretation": {
+    "vitals": {
       "importance": "HIGH",
-      "confidence": "HIGH",
-      "rationale": "Movement and fidgeting were central to the discrepancy between model and user scores. Clear evidence of anxiety-related physical restlessness affecting model interpretation while user maintained cognitive focus.",
-      "how_to_evaluate": "Distinguish anxiety-driven movement from focus-related disruption by analyzing movement patterns, duration, and user context. Consider task type (seated vs active) when interpreting movement impact."
+      "confidence": "LOW",
+      "summary": "Vitals data was completely absent in all 3 sessions, creating a critical measurement gap. User reported physiological factors (strain, restlessness) in 2 of 3 sessions that vitals could have detected. Missing vitals prevented validation of both high concentration claims and distraction states, contributing to model errors ranging from +5 to -2 points.",
+      "evidence": {
+        "sessions_seen": 3,
+        "supported_count": 0,
+        "contradicted_count": 0,
+        "unclear_count": 3,
+        "avg_gap_when_flagged": 1.33
+      },
+      "interpretation": {
+        "what_it_means": "Without heart rate data, the model cannot distinguish between calm focus and disengagement, or detect physiological arousal underlying restlessness and strain. Vitals absence forces over-reliance on behavioral sensors (motion, audio) that miss internal states.",
+        "risk": "High risk of misinterpreting stationary behavior as focus when user is actually disengaged or restless. Cannot validate 'No Major Distraction' claims or detect stress/fatigue. Model confidence should be capped at MEDIUM when vitals unavailable.",
+        "next_use": "Mandatory confidence downgrade when vitals missing. Do not infer physiological state from motion alone. Flag sessions without vitals as high-uncertainty. If vitals become available, prioritize for restlessness and strain detection."
+      }
     },
-    "gps_location": {
-      "importance": "LOW",
+    "gps": {
+      "importance": "MEDIUM",
+      "confidence": "HIGH",
+      "summary": "GPS consistently showed location stability across all 3 sessions (30-40m displacement, improving accuracy). Model correctly used GPS as secondary confirmatory signal for stationary state. However, GPS alone cannot measure focus quality or detect micro-transitions within same location.",
+      "evidence": {
+        "sessions_seen": 3,
+        "supported_count": 3,
+        "contradicted_count": 0,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": 1.33
+      },
+      "interpretation": {
+        "what_it_means": "GPS reliably confirms gross location stability but is insufficient for concentration assessment. Stable location is necessary but not sufficient for high focus scores. User reported 'Location Change/Transition' as factor despite stable GPS, suggesting micro-transitions (room changes, position shifts) occur below GPS sensitivity.",
+        "risk": "Low risk—GPS performs its intended role well. Risk emerges only if GPS stability is over-weighted as focus indicator without other supporting signals.",
+        "next_use": "Continue using GPS as secondary/confirmatory sensor for location stability. Combine with motion context to distinguish meaningful transitions from micro-movements. Do not use stable GPS alone to justify high concentration scores."
+      }
+    },
+    "motion": {
+      "importance": "HIGH",
       "confidence": "MEDIUM",
-      "rationale": "No indication of location changes or stability issues in the session. Short 4-minute duration suggests stable location, making this metric less relevant for interpretation.",
-      "how_to_evaluate": "Check for location stability during the brief session, but given short duration, only flag if unexpected movement occurs. Use as secondary validation of session context."
+      "summary": "Motion data was available and showed high stationary percentages (70-87%) across sessions, but interpretation was inconsistent with user experience. In session 3, model saw stationary state as focus indicator while user reported restlessness (5-point gap). In session 1, model over-penalized brief non-stationary events despite user's higher focus rating (2-point gap).",
+      "evidence": {
+        "sessions_seen": 3,
+        "supported_count": 1,
+        "contradicted_count": 2,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": 1.33
+      },
+      "interpretation": {
+        "what_it_means": "Stationary classification captures gross position stability but misses fidgeting, postural shifts, and internal restlessness. Brief non-stationary events in short sessions may reflect normal adjustments rather than distraction. Motion sensor alone cannot distinguish between settled focus and restless immobility.",
+        "risk": "High risk of false positives (inferring focus from stationary state when user is restless) and false negatives (penalizing brief movements that don't impact focus). Very short sessions (<2 min) amplify this risk by capturing transitional states.",
+        "next_use": "Do not treat stationary state as strong focus indicator without vitals corroboration. In sessions <2 minutes, apply temporal uncertainty discount—require sustained patterns (>30% non-stationary or >5 min duration) before heavily weighting motion. Distinguish between gross stability and fine-grained restlessness using vitals when available."
+      }
+    },
+    "audio": {
+      "importance": "HIGH",
+      "confidence": "MEDIUM",
+      "summary": "Audio data was consistently available (5-8 readings per session, 54-61 dBA range). Model interpretation conflicted with user experience in 2 of 3 sessions. In session 3, model rated 57.9 dBA as 'supportive' while user reported noise distraction (5-point gap). In session 1, model over-penalized 57.8 dBA average as distraction while user reported higher focus (2-point gap).",
+      "evidence": {
+        "sessions_seen": 3,
+        "supported_count": 1,
+        "contradicted_count": 2,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": 1.33
+      },
+      "interpretation": {
+        "what_it_means": "dBA averaging in the 55-60 range is ambiguous—it misses speech content, intermittent disruptions, and individual sensitivity. Same dBA level was experienced as both supportive and distracting by this user across different sessions. Model lacks audio event labels (speech detection) to assess distraction quality beyond volume.",
+        "risk": "Moderate-high risk of misclassification. Treating 55-60 dBA as universally 'supportive' or 'distracting' without context leads to errors. Short sessions may capture transient noise spikes that dBA averaging smooths over.",
+        "next_use": "Do not equate moderate dBA (55-60) with supportive environment by default. Increase sensitivity to dBA variance and spikes. Cap confidence at MEDIUM when audio event labels unavailable. Require low variance or extended quiet periods (>5 min) to claim non-distraction. Consider user-specific baseline calibration for dBA sensitivity."
+      }
     }
   }
 }

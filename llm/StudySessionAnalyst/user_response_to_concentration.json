@@ -1,15 +1,16 @@
 {
   "user_response": [
     {
-      "answer": 7,
-      "question": "How focused were you during this study session?"
+      "question": "How focused were you during this study session?",
+      "answer": 7
     },
     {
+      "question": "What most affected your concentration during this session?",
       "answer": [
-        "Environmental Noise / Speech",
-        "Internal Cognitive Drift (mind wandering, low motivation)"
-      ],
-      "question": "What most affected your concentration during this session?"
+        "Internal Cognitive Drift (mind wandering, low motivation)",
+        "Location Change / Transition",
+        "Physiological Strain (stress, fatigue, discomfort)"
+      ]
     }
   ]
 }

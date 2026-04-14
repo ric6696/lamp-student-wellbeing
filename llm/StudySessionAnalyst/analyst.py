@@ -488,7 +488,7 @@ def process_discrepancy_reasoning(
     concentration_path,
     user_response_path,
     output_path,
-    pre_session_questions_path="CCoT/output/pre_session_questions_example.json",
+    pre_session_questions_path="CCoT/output/pre_session_context.json",
     model="claude-sonnet-4-5",
     store_to_db=True,
     db_user_id=None,
@@ -758,7 +758,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--pre-session-questions",
         type=str,
-        default="CCoT/output/pre_session_questions_example.json",
+        default="CCoT/output/pre_session_context.json",
         help="Path to pre-session questions JSON",
     )
     parser.add_argument(

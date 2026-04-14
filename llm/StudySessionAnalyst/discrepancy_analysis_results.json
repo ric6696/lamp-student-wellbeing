@@ -1,43 +1,62 @@
 {
-  "timestamp": "2026-04-14T16:30:10.026381+00:00",
+  "timestamp": "2026-04-14T19:13:42.761030+00:00",
   "model": "claude-sonnet-4-5",
   "pre_session_questions": {
-    "activity_context": "Self-study",
-    "environment_context": "Quiet Library",
-    "mental_context": "High"
+    "activity_context": "Lecture",
+    "environment_context": "Classroom",
+    "mental_readiness": "Neutral"
   },
   "result": {
     "overview": {
-      "model_score": 2.0,
-      "user_score": 2.0,
-      "gap": 0.0,
-      "agreement": "ALIGNED",
-      "summary": "Perfect score alignment at 2.0. Both model and user identified severe concentration deficit driven by environmental noise/speech. Model correctly weighted audio sensor evidence and corroborated with movement/GPS data."
+      "model_score": 5.0,
+      "user_score": 7.0,
+      "gap": 2.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model underestimated concentration by 2 points. Model weighted observable environmental factors (audio noise, brief motion events) heavily, while user attributed distraction primarily to unmeasured internal cognitive drift. The 45-second session duration and missing vitals data created high uncertainty."
     },
     "selected_factors": [
-      "Environmental Noise / Speech"
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
     ],
     "factor_sensor_mappings": [
       {
-        "factor": "Environmental Noise / Speech",
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
         "mapped_observability": "DIRECT",
         "mapped_primary_sensors": [
-          "audio"
+          "gps",
+          "motion"
         ],
         "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "ALIGNED"
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
       }
     ],
-    "why_difference": "No discrepancy exists. Model accurately detected continuous speech environment (100% speech ratio, 64.96 dBA average) as primary distraction factor, matching user's self-reported primary factor. Supporting evidence from GPS displacement (13.42m) and motion context transitions validated the distraction scenario without over-weighting secondary signals.",
+    "why_difference": "Model over-penalized moderate audio levels (57.8 dBA average) and 3 non-stationary motion events in a 45-second window, interpreting them as distraction signals. User reported higher focus (7/10) despite these conditions, identifying internal cognitive drift as primary—a factor invisible to sensors. The model lacked vitals data to assess physiological strain and had no mechanism to detect mind wandering. GPS showed minimal displacement (30-40m), suggesting location transition was minor. Model applied generic thresholds without user baseline, leading to conservative scoring.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Highly reliable and correctly weighted. Speech ratio 1.0 with sustained >60 dBA levels provided strong direct evidence for environmental noise distraction. Escalating decibel trend (-58 to -44 dB) appropriately flagged increasing disturbance. Continue prioritizing audio features for noise/speech factor detection.",
-      "vitals": "Limited utility in this session. Metric code 10 fluctuations (58.85-75.60) noted but appropriately treated as secondary signal without standard HR/HRV data. Spike at 11:23:20 correlated with peak audio event but insufficient alone for causal claims. Maintain as corroborative signal only when primary sensors are ambiguous.",
-      "motion": "Correctly identified transition from stationary to unknown contexts (82% unknown). Appropriately used to confirm active engagement rather than seated study, supporting the distraction narrative. However, motion alone did not drive the score—properly treated as secondary validation for audio findings.",
-      "gps": "Displacement metrics (13.42m over 36 seconds) effectively corroborated physical movement and location instability. Coordinate shift at 11:23:18 validated transition context. Appropriately weighted as supporting evidence rather than primary driver, given the brief session duration where movement could be incidental."
+      "audio": "Audio data (5 readings, 54-61 dBA) was available and reliable but may have been over-weighted. The 57.8 dBA average is borderline moderate; model should treat 55-60 dBA range as neutral-to-mild distraction rather than strong negative signal, especially in brief sessions. Rising trend (55→61 dBA) noted but insufficient duration to confirm impact.",
+      "vitals": "Completely absent. This is a critical gap—without heart rate data, model cannot assess physiological strain (user-reported factor) or stress responses to audio/motion events. Next cycle: flag missing vitals as high-uncertainty condition and avoid strong claims about physiological state. Consider capping confidence when vitals unavailable.",
+      "motion": "Motion data showed 70% stationary contexts with 3 non-stationary events. Model interpreted brief movements as distraction signals, but user reported higher focus. Next cycle: in very short sessions (<2 minutes), weight motion events less heavily—occasional position adjustments may not indicate restlessness. Require sustained non-stationary patterns (>30% of session) before penalizing score.",
+      "gps": "GPS showed location stability (30-40m displacement, 13.8-20.3m accuracy). Model correctly identified minimal movement, but user still selected 'Location Change/Transition' as a factor. This suggests micro-transitions (e.g., moving within same room/building) may affect focus without triggering GPS thresholds. Next cycle: combine GPS with motion context—stationary motion + stable GPS = likely no meaningful transition."
     },
     "judgment_policy_next_run": [
-      "Maintain current audio sensor prioritization for Environmental Noise/Speech detection—speech ratio and dBA thresholds demonstrated high predictive validity.",
-      "Continue treating GPS and motion as corroborative signals for brief sessions (<1 min); avoid over-indexing on displacement metrics without sustained pattern evidence."
+      "Do not over-penalize moderate audio (55-60 dBA) in short sessions; treat as neutral unless sustained >5 minutes or user baseline indicates sensitivity.",
+      "Flag sessions with missing vitals as LOW confidence for physiological factors; avoid strong claims about stress/strain without heart rate data."
     ]
   }
 }
