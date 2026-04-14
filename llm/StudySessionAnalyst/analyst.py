@@ -293,7 +293,7 @@ def process_discrepancy_reasoning(
     concentration_path,
     user_response_path,
     output_path,
-    model="claude-3-5-sonnet",
+    model="claude-sonnet-4-5",
     store_to_db=True,
     db_user_id=None,
     db_device_id=None,
@@ -511,7 +511,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         type=str,
-        default="claude-3-5-sonnet",
+        default="claude-sonnet-4-5",
         help="Snowflake Cortex model name",
     )
     parser.add_argument(

@@ -1,4 +1,4 @@
 {
-  "concentration_score": 5,
-  "reason": "The extremely short 9-second duration makes it impossible to draw strong conclusions about concentration levels. While the GPS and motion data suggest good stationary positioning (6 stationary samples), the complete lack of audio and vitals data leaves major gaps in the analysis. A neutral score of 5 is assigned due to insufficient data length despite the positive stationary indicators."
+  "concentration_score": 4,
+  "reason": "The 26-second session duration is far too brief to represent genuine study concentration, despite perfect physical stability (stationary motion, stable GPS). Critical data gaps in audio (0 confident events) and vitals (0 samples) prevent comprehensive assessment of environmental and physiological factors essential for evaluating concentration quality. The score reflects incomplete data and insufficient session length rather than poor concentration behavior."
 }

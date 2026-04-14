@@ -823,7 +823,7 @@ Rules:
 - No text outside the JSON object."""
 
 
-def analyze_concentration(features, model="claude-3-5-sonnet", session=None):
+def analyze_concentration(features, model="claude-sonnet-4-5", session=None):
     """
     Use LLM with CCoT to analyze concentration from aggregated multimodal features.
 
@@ -933,7 +933,7 @@ def load_payload(data_path):
 
 def process_concentration_analysis(
     data_path=None,
-    model="claude-3-5-sonnet",
+    model="claude-sonnet-4-5",
     output_path="concentration_analysis_results.json",
     source="db",
     session_id=None,
@@ -1057,8 +1057,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         type=str,
-        default="claude-3-5-sonnet",
-        help="Model name to use (claude-3-5-sonnet, llama4-maverick, etc.)",
+        default="claude-sonnet-4-5",
+        help="Model name to use (claude-sonnet-4-5, llama4-maverick, etc.)",
     )
     parser.add_argument("--output", type=str, default="concentration_analysis_results.json", help="Output filename or absolute path")
 

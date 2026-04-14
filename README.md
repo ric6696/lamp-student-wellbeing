@@ -29,7 +29,7 @@ Set at least these values in `.env`:
 POSTGRES_PASSWORD=dev_password
 INGEST_API_KEY=dev_key
 LLM_PROVIDER=snowflake
-LLM_MODEL=claude-3-5-sonnet
+LLM_MODEL=claude-sonnet-4-5
 ```
 
 Notes:
@@ -115,7 +115,7 @@ Snowflake mode env:
 
 ```env
 LLM_PROVIDER=snowflake
-LLM_MODEL=claude-3-5-sonnet
+LLM_MODEL=claude-sonnet-4-5
 SNOWFLAKE_ACCOUNT=...
 SNOWFLAKE_USER=...
 SNOWFLAKE_USER_PASSWORD=...

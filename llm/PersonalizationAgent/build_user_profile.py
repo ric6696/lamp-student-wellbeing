@@ -335,7 +335,7 @@ def build_profile_from_latest(user_id, row, snowflake_session=None, cortex_model
 		profile_confidence += max(0.0, 0.2 - min(score_gap, 2.0) * 0.1)
 	profile_confidence = min(0.8, round(profile_confidence, 3))
 
-	model_name = cortex_model or os.getenv("PERSONALIZATION_CORTEX_MODEL", "claude-3-5-sonnet")
+	model_name = cortex_model or os.getenv("PERSONALIZATION_CORTEX_MODEL", "claude-sonnet-4-5")
 	sensor_eval_source = "snowflake_cortex"
 	raw_llm_response = None
 	prompt_used = None
