@@ -168,7 +168,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 
     cursor.execute(
         """
-        SELECT label, db, confidence, ai_label
+        SELECT time, label, db, confidence, ai_label
         FROM audio_events
         WHERE session_id = %s
           AND time >= %s
@@ -179,11 +179,22 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
     )
     audio_rows = cursor.fetchall()
 
+    raw_audio_events: list[dict[str, Any]] = []
+
     label_counts: dict[str, int] = {}
     ai_counts: dict[str, int] = {}
     db_values: list[float] = []
     qualified_audio_count = 0
-    for label_val, db, confidence, ai_label in audio_rows:
+    for t, label_val, db, confidence, ai_label in audio_rows:
+        raw_audio_events.append(
+            {
+                "time": t.isoformat() if hasattr(t, "isoformat") else str(t),
+                "label": label_val,
+                "db": db,
+                "confidence": confidence,
+                "ai_label": ai_label,
+            }
+        )
         conf = _normalize_confidence(confidence)
         if conf is None or conf <= 0.5:
             continue
@@ -203,7 +214,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 
     cursor.execute(
         """
-        SELECT metric_code, value
+        SELECT time, metric_code, value
         FROM vitals
         WHERE session_id = %s
           AND time >= %s
@@ -214,10 +225,19 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
     )
     vital_rows = cursor.fetchall()
 
+    raw_vitals: list[dict[str, Any]] = []
+
     hr_values: list[float] = []
     steps_values: list[float] = []
     distance_values: list[float] = []
-    for metric_code, value in vital_rows:
+    for t, metric_code, value in vital_rows:
+        raw_vitals.append(
+            {
+                "time": t.isoformat() if hasattr(t, "isoformat") else str(t),
+                "metric_code": metric_code,
+                "value": value,
+            }
+        )
         val = _to_float(value)
         if val is None:
             continue
@@ -230,7 +250,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 
     cursor.execute(
         """
-        SELECT lat, lon
+        SELECT time, lat, lon, acc
         FROM gps
         WHERE session_id = %s
           AND time >= %s
@@ -243,16 +263,27 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
     )
     gps_rows = cursor.fetchall()
 
+    raw_gps: list[dict[str, Any]] = []
+    for t, lat, lon, acc in gps_rows:
+        raw_gps.append(
+            {
+                "time": t.isoformat() if hasattr(t, "isoformat") else str(t),
+                "lat": lat,
+                "lon": lon,
+                "acc": acc,
+            }
+        )
+
     displacement_m = None
     total_travel_m = None
     if len(gps_rows) >= 2:
-        start_lat, start_lon = gps_rows[0]
-        end_lat, end_lon = gps_rows[-1]
+        _, start_lat, start_lon, _ = gps_rows[0]
+        _, end_lat, end_lon, _ = gps_rows[-1]
         displacement_m = _haversine_m(start_lat, start_lon, end_lat, end_lon)
         travel = 0.0
         for i in range(1, len(gps_rows)):
-            lat1, lon1 = gps_rows[i - 1]
-            lat2, lon2 = gps_rows[i]
+            _, lat1, lon1, _ = gps_rows[i - 1]
+            _, lat2, lon2, _ = gps_rows[i]
             travel += _haversine_m(lat1, lon1, lat2, lon2)
         total_travel_m = travel
 
@@ -262,7 +293,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 
     cursor.execute(
         """
-        SELECT context
+        SELECT time, context
         FROM motion_events
         WHERE session_id = %s
           AND time >= %s
@@ -272,12 +303,19 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
         (job.session_id, started_at, ended_at),
     )
     motion_rows = cursor.fetchall()
+    raw_motion_events: list[dict[str, Any]] = []
     motion_counts: dict[str, int] = {}
     stationary_labels = {"stationary", "still", "sitting", "idle"}
     active_labels = {"walking", "running", "cycling", "automotive", "moving"}
     stationary_count = 0
     active_count = 0
-    for (context,) in motion_rows:
+    for t, context in motion_rows:
+        raw_motion_events.append(
+            {
+                "time": t.isoformat() if hasattr(t, "isoformat") else str(t),
+                "context": context,
+            }
+        )
         context_norm = str(context or "unknown").strip().lower()
         motion_counts[context_norm] = motion_counts.get(context_norm, 0) + 1
         if context_norm in stationary_labels:
@@ -303,6 +341,12 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             "vitals_rows": len(vital_rows),
             "gps_points": len(gps_rows),
             "motion_events": len(motion_rows),
+        },
+        "raw": {
+            "audio_events": raw_audio_events,
+            "vitals": raw_vitals,
+            "gps": raw_gps,
+            "motion_events": raw_motion_events,
         },
         "audio": {
             "avg_db_conf_gt_50": avg_db,
@@ -341,6 +385,7 @@ def _build_prompt(features: dict[str, Any]) -> str:
     vitals = features["vitals"]
     gps = features["gps"]
     motion = features["motion"]
+    raw = features.get("raw") or {}
 
     return f"""You are an expert study concentration analyst. Use Compositional Chain-of-Thought (CCoT) with explicit 3-phase reasoning.
 
@@ -350,7 +395,10 @@ SESSION WINDOW:
 - ended_at: {session['ended_at']}
 - duration_min: {session['duration_min']}
 
-MULTIMODAL SNAPSHOT (already aggregated from started_at to ended_at):
+RAW SENSOR ROWS (entire session window, use these as the primary evidence):
+{json.dumps(raw, ensure_ascii=False)}
+
+AGGREGATED SNAPSHOT (secondary / convenience summary):
 - Audio events total: {counts['audio_events_total']}
 - Audio events used (confidence > 50%): {counts['audio_events_conf_gt_50']}
 - Avg audio dB (confidence > 50%): {audio['avg_db_conf_gt_50']}
@@ -646,6 +694,10 @@ def process_next_pending_job() -> bool:
         score, reason, llm_raw = _call_llm(prompt)
         llm_parsed = _parse_model_json(llm_raw)
 
+        # Keep DB storage small: store the aggregated snapshot, not the full raw time series.
+        features_for_storage = dict(features)
+        features_for_storage.pop("raw", None)
+
         cursor.execute(
             """
             UPDATE session_concentration_analysis
@@ -664,7 +716,7 @@ def process_next_pending_job() -> bool:
                 score,
                 reason,
                 settings.llm_model,
-                json.dumps(features),
+                json.dumps(features_for_storage),
                 llm_raw,
                 job.session_id,
             ),
