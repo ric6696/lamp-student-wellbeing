@@ -355,6 +355,8 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
             )
             hr_values.append(val)
         elif metric_code == 10:
+            if val < 0:
+                continue
             raw_audio_exposure.append(
                 {
                     "time": t.isoformat() if hasattr(t, "isoformat") else str(t),
