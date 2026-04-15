@@ -333,14 +333,6 @@ def extract_json_object(text):
     return None
 
 
-def score_gap_label(gap):
-    if gap >= 3.0:
-        return "HIGH"
-    if gap >= 1.5:
-        return "MODERATE"
-    return "LOW"
-
-
 def _score_direction(model_score, user_score):
     if model_score > user_score:
         return "MODEL_HIGHER"
@@ -474,7 +466,7 @@ def analyze_with_llm_only(session, model, concentration_ctx, user_response):
         }
 
     clean_result = sanitize_structured_result(parsed, concentration_ctx, user_response)
-    return clean_result, raw_response, prompt
+    return clean_result
 
 
 def append_output_history(output_file: Path, output_payload: dict):
@@ -539,7 +531,7 @@ def process_discrepancy_reasoning(
     print("✓ Connected")
 
     try:
-        structured_result, raw_response, prompt_used = analyze_with_llm_only(
+        structured_result = analyze_with_llm_only(
             session=session,
             model=model,
             concentration_ctx=concentration_ctx,

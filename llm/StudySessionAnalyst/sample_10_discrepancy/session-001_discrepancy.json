@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T22:34:06.377909Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-001",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Home",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored session as severely impaired (2/10) due to mobility, noise, and location instability. User rated moderate concentration (5/10) acknowledging same distraction factors. Gap suggests model over-penalized observable disruptions or user maintained partial focus despite environmental challenges."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model and user agree on distraction factors but disagree on severity impact. Model interpreted 838m travel, 3 walking events, 63.9dB busy audio, and elevated HR as incompatible with any meaningful concentration, yielding score=2. User acknowledged identical disruptions but rated 5/10, suggesting partial task engagement or cognitive adaptation despite physical mobility. Model may lack nuance for mobile study contexts (e.g., audio learning while commuting, reviewing notes while walking). User's self-assessment implies concentration exists on a spectrum even under suboptimal conditions, whereas model applied binary 'stationary study' assumptions.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly detected noisy environment (63.9dB, 4 busy events, 3 Speech labels). Reliable indicator of distraction presence but may not fully capture user's ability to filter or adapt to ambient noise. Next: maintain detection threshold but reduce penalty weight if user reports partial focus under similar audio profiles.",
+      "vitals": "HR 86.9bpm and 36.25 steps/sample accurately reflect active state. However, elevated HR and movement do not preclude all concentration (e.g., active recall, pacing while memorizing). Next: treat as context modifier rather than absolute disqualifier; correlate with task type metadata if available.",
+      "motion": "3 walking vs 1 stationary event strongly supports mobility. Accurate detection but model assumed walking = zero focus. Next: allow for 'mobile study' scenarios; reduce score penalty if audio/vitals suggest controlled activity rather than chaotic movement.",
+      "gps": "838m travel and 331m displacement correctly flagged drastic location change. High confidence in instability detection. Next: confirm whether travel was purposeful transition (commute with study audio) vs erratic wandering; consider temporal clustering of GPS points to distinguish study-during-transit from pure mobility."
+    },
+    "judgment_policy_next_run": [
+      "Reduce absolute score penalty for mobility when audio/vitals suggest controlled, purposeful activity rather than chaotic disruption.",
+      "Introduce 'mobile study' context detection: if motion is walking but audio shows educational content or low variability, cap penalty rather than floor score at 2."
+    ]
+  },
+  "db_row_id": 30
+}

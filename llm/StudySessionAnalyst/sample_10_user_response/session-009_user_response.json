@@ -1,0 +1,16 @@
+{
+  "user_response": [
+    {
+      "question": "How focused were you during this study session?",
+      "answer": 6
+    },
+    {
+      "question": "What most affected your concentration during this session?",
+      "answer": [
+        "Movement / Restlessness",
+        "Location Change / Transition",
+        "Physiological Strain (stress, fatigue, discomfort)"
+      ]
+    }
+  ]
+}

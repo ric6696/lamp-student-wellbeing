@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T22:34:44.135890Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-002",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized location changes heavily; user acknowledged transitions but reported stronger focus than sensors suggested, citing internal cognitive drift as primary distraction—an unmeasured factor the model cannot directly assess."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS travel (1995m) as concentration penalty, interpreting transitions as lost focus time. User's primary distraction was internal cognitive drift (unmeasured), meaning subjective focus loss occurred independently of observable sensor disruptions. User acknowledged location changes but still rated focus higher, suggesting transitions were planned and did not fragment concentration as severely as model inferred. Two of three user-reported factors are unmeasured, creating a blind spot for the model.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Performed well: 43.69 dB and 4 quiet/Silence labels correctly identified supportive acoustic environment. No recalibration needed; audio reliably indicates environmental distraction absence.",
+      "vitals": "Performed well: 73.65 bpm and 6.3 avg steps correctly identified low physiological activity consistent with seated focus. However, vitals cannot distinguish internal cognitive drift from genuine focus. Maintain current weighting but acknowledge limitation for unmeasured cognitive states.",
+      "motion": "Correctly identified 5 stationary contexts, supporting focus during non-travel periods. Contradiction with GPS was appropriately noted. Motion data reliable for physical restlessness detection but cannot infer cognitive engagement quality.",
+      "gps": "Accurately detected drastic location change (586m displacement, 1995m travel). However, model over-penalized this factor. GPS indicates transitions occurred but cannot measure whether transitions were disruptive or planned. Next cycle: reduce penalty weight for location changes when motion shows stationary periods and audio/vitals remain stable, suggesting intentional multi-location study strategy rather than distracted wandering."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS travel distance penalty when motion contexts show stationary dominance and audio/vitals indicate stable focus conditions—interpret as planned multi-location study rather than fragmented distraction.",
+      "Acknowledge unmeasured factors explicitly: when audio, vitals, motion, and GPS all show favorable or neutral signals but user reports lower focus, flag internal cognitive drift or task challenge as likely unobservable contributors."
+    ]
+  },
+  "db_row_id": 31
+}

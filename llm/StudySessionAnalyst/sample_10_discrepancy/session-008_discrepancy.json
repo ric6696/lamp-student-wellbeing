@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T22:39:15.226464Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-008",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model penalized concentration more heavily for GPS displacement (2064m) than user experienced. User attributes poor focus primarily to internal cognitive drift (unmeasured), which model cannot directly observe. Model over-weighted location change impact; user felt it was secondary to internal factors."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 4.0 based on observable GPS disruption (2km+ travel) as primary detractor despite favorable audio/vitals. User reported score 5.0 with primary factor being internal cognitive drift (unmeasured by sensors), treating location change as secondary. Model over-indexed on measurable GPS signal while user's actual experience was dominated by latent cognitive factors the model cannot detect. The 1-point gap reflects model's excessive penalty for location change when user context may have involved intentional, non-disruptive relocation (e.g., library to home) with cognitive drift being the true limiter.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable signal. 44.79 dB with 4 quiet/3 busy labels correctly identified supportive environment. No adjustment needed; audio performed as expected and aligned with user's non-selection of noise as primary factor.",
+      "vitals": "Reliable but insufficient for cognitive state inference. 74.53 bpm indicates calm physiology, but cannot distinguish between focused work and mind-wandering. Do not use stable vitals alone to infer high concentration when unmeasured cognitive factors may dominate.",
+      "motion": "Reliable for physical activity detection. 4 stationary/1 walking with 4.5 avg steps correctly identified seated behavior. However, low motion does not guarantee cognitive engagement. Treat as necessary but not sufficient condition for focus.",
+      "gps": "Reliable for location tracking but impact severity requires context calibration. 2064m displacement is objectively large, but model over-penalized without knowing transition purpose or user adaptation. Reduce GPS displacement weight when other sensors (audio, vitals, motion) remain favorable during stationary segments. Consider displacement as session-structure indicator rather than automatic concentration penalty."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty weight when audio/vitals/motion remain stable during stationary periods; treat location change as context shift rather than automatic distraction.",
+      "Do not infer high concentration solely from favorable sensor readings (low noise, calm vitals, minimal motion) when session structure suggests potential for unmeasured cognitive factors."
+    ]
+  },
+  "db_row_id": 37
+}

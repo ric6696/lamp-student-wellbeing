@@ -507,7 +507,7 @@ def save_profile(output_path, payload):
 
 
 def main(
-	user_id="minsuk",
+	user_id="kevin",
 	output_path=str(DEFAULT_OUTPUT_PATH),
 	store_db=True,
 ):
@@ -529,7 +529,7 @@ def main(
 
 	try:
 		assert_profile_table_exists(pg_connection)
-		all_rows = fetch_recent_discrepancy_rows(pg_connection, user_id, limit=3)
+		all_rows = fetch_recent_discrepancy_rows(pg_connection, user_id, limit=10)
 		row = all_rows[0] if all_rows else None
 		payload = build_profile_from_latest(
 			user_id=user_id,

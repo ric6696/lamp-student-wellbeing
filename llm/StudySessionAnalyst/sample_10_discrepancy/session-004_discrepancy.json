@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T22:36:11.270356Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-004",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized for GPS-detected transit (757m displacement, 1975m travel), while user acknowledged location change but reported better subjective focus. User attributed distraction primarily to internal cognitive drift (unmeasured) rather than transit itself."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS transit signal (drastic location change) as concentration penalty despite all other sensors showing ideal conditions. User confirmed location change occurred but rated focus higher, citing unmeasured factors (cognitive drift, task difficulty) as primary distractors. The contradiction suggests: (1) transit study can support moderate-to-good focus when immediate environment is controlled, (2) model lacks visibility into cognitive/task factors that user felt were more impactful, (3) GPS displacement may be necessary but insufficient predictor when audio/vitals/motion are optimal.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. 38.68 dB average with 5/5 'quiet'/'Silence' labels strongly supports low environmental distraction. No adjustment needed; continue using <45 dB threshold and label consistency as positive signal.",
+      "vitals": "Reliable and well-calibrated. 66.43 bpm in optimal 60-85 range, minimal steps (7.25 avg) confirm calm, seated state. No physiological strain detected. Vitals correctly supported concentration-positive assessment; maintain current weighting.",
+      "motion": "Reliable for physical state. 4/4 stationary readings confirm seated posture during transit. Correctly disambiguated GPS travel from personal movement. No recalibration needed; stationary+low-steps pattern is valid concentration indicator even during transit.",
+      "gps": "Over-weighted in this context. 757m displacement and 1975m travel triggered 'drastic location change' penalty, but user maintained focus during controlled transit environment. Recommendation: reduce GPS penalty weight when motion=stationary AND audio=quiet AND vitals=calm. GPS should flag context instability but not override strong positive signals from other modalities. Consider transit-study as distinct scenario with separate scoring logic."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when all other sensors (audio, vitals, motion) indicate stable, optimal conditions. Transit study is a valid use case that requires conditional logic.",
+      "Do not claim to measure 'Internal Cognitive Drift' or 'Task Challenge' factors. When user selects these, acknowledge model blind spot and cap confidence accordingly."
+    ]
+  },
+  "db_row_id": 33
+}

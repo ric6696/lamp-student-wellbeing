@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T22:40:47.314212Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-010",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned minimal concentration (1.0) interpreting session as transit/errand period. User reported low-moderate concentration (4.0) acknowledging distractions but indicating some study activity occurred. Large 3-point gap suggests model over-weighted mobility signals and failed to detect any study behavior."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "User confirmed all three distraction factors model detected, yet reported 4.0 concentration suggesting partial study success despite adverse conditions. Model interpreted extreme mobility (3,841m travel, drastic GPS changes, 3 walking vs 2 stationary) as complete absence of study, assigning floor score 1.0. Gap indicates model lacks nuance for 'studying while mobile' scenarios (e.g., library commute, study breaks with walking, group study in busy cafe). User may have maintained cognitive engagement intermittently despite environmental/mobility challenges. Model binary logic (mobile + noisy = zero concentration) missed gradations.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified high distraction: 63.2 dB, all 'busy' labels, 6 Speech events. Audio signal reliable and user-confirmed as primary factor. However, noisy environment does not always preclude all concentration—some users adapt. Next: maintain audio weight but allow non-zero scores when other stability signals present.",
+      "vitals": "Elevated HR (93.2 bpm) and high steps (29.8) accurately flagged movement/restlessness. User confirmed this factor. However, elevated vitals during 91-min session may include brief active breaks within longer study period. Next: distinguish sustained elevation vs. episodic spikes; consider temporal distribution within session.",
+      "motion": "3 walking vs 2 stationary events and high step counts correctly identified mobility. User confirmed location change factor. However, motion events are sparse (5 total over 91 min); may not capture full stationary study intervals. Next: weight motion context by duration and density, not just event counts. Investigate if stationary periods clustered.",
+      "gps": "Drastic location change (564m displacement, 3,841m travel) strongly indicated transit. User confirmed factor. However, 3 GPS points over 91 min is low resolution—cannot rule out extended stationary study periods between points. Next: treat sparse GPS with caution; require denser sampling or corroborate with motion/vitals stability windows before concluding zero study time."
+    },
+    "judgment_policy_next_run": [
+      "Do not assign floor score (1.0) solely on mobility signals when session duration >60 min and GPS sampling is sparse (<5 points). Allow for mixed-mode sessions with study intervals.",
+      "Introduce temporal segmentation: partition long sessions into windows and score concentration per window. High travel in one segment does not negate focus in another."
+    ]
+  },
+  "db_row_id": 39
+}

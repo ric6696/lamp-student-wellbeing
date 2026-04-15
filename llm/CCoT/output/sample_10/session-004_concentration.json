@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-04-15T22:35:46.395077Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-004",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-02-18T00:33:17.903108+00:00",
+    "ended_at": "2026-02-18T01:46:17.903108+00:00",
+    "duration_min": 73.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-004",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-02-18T00:33:17.903108+00:00",
+      "ended_at": "2026-02-18T01:46:17.903108+00:00",
+      "duration_min": 73.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 5,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 3,
+      "motion_events": 4,
+      "vitals_rows": 24
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 38.68,
+      "label_counts_conf_gt_50": {
+        "quiet": 5
+      },
+      "label_counts_conf_gt_50_text": "5 quiet",
+      "ai_label_counts_conf_gt_50": {
+        "Silence": 5
+      },
+      "ai_label_counts_conf_gt_50_text": "5 Silence"
+    },
+    "vitals": {
+      "avg_heart_rate": 66.425,
+      "avg_steps": 7.25,
+      "avg_distance_m": 5.92625,
+      "heart_rate_samples": 8,
+      "steps_samples": 8,
+      "distance_samples": 8
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 757.5988372036303,
+      "total_travel_m": 1974.7866820741501,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 4
+      },
+      "counts_text": "4 stationary",
+      "stationary_count": 4,
+      "active_count": 0
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment is excellent for concentration with avg 38.68 dB (well below 45 dB threshold). All 5 confidence-filtered events labeled as 'quiet' and AI-detected 'Silence', indicating a consistently calm acoustic environment throughout the 73-minute session.",
+    "vitals": "Heart rate avg 66.43 bpm falls within the optimal 60-85 bpm range for calm focus. Steps (7.25 avg) and distance (5.93m avg) are very low, indicating minimal physical movement consistent with seated study behavior.",
+    "gps_motion": "GPS shows drastic location instability with 757.6m displacement and 1974.8m total travel distance (far exceeding 200m threshold). However, motion context shows 4 stationary readings with 0 active contexts, creating a contradiction that suggests transportation while stationary (vehicle/transit)."
+  },
+  "phase_2": {
+    "correlations": "Strong contradiction exists between GPS data (significant travel) and other modalities (quiet audio, low steps, stationary motion context, calm heart rate). The pattern strongly suggests studying during transportation - likely in a vehicle, train, or bus where the user remains physically stationary while the GPS records movement. Audio remains quiet (possibly headphones or quiet cabin), vitals stay calm, and motion sensors detect stationary posture despite location changes.",
+    "holistic_assessment": "This session represents mobile studying during transit. While the immediate sensory environment (audio, physical stillness, heart rate) supports concentration, the location instability indicates environmental context changes that typically fragment deep focus. The user maintained good local conditions but was in a transitional state rather than a stable study environment. Concentration was likely moderate - better than active movement but compromised compared to a fixed location."
+  },
+  "phase_3": {
+    "recommendations": "1) While studying during transit can work for review tasks, reserve deep focus work (complex problem-solving, writing) for stable locations to maximize retention. 2) If transit study is necessary, use noise-canceling headphones and focus on passive learning (reading, flashcards) rather than active production. 3) Establish a dedicated stationary study space for your primary study sessions to build consistent environmental cues for deep concentration."
+  },
+  "personalization_basis": null,
+  "score": 6,
+  "reason": "Audio environment was excellent (38.68 dB, all quiet labels) and vitals were optimal (66.43 bpm, minimal steps). However, the drastic GPS displacement of 757.6m and total travel of 1974.8m indicates studying during transportation, which inherently limits deep concentration despite good immediate conditions. The stationary motion context confirms seated position during transit rather than stable study location.",
+  "error": null
+}
