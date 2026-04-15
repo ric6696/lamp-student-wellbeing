@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     llm_provider: str = "openai"
     llm_api_key: str = ""
     llm_model: str = "gpt-5-mini"
+    llm_temperature: float = 0.1
+    llm_top_p: float = 0.9
     llm_api_base_url: str = "https://api.openai.com/v1"
     llm_timeout_seconds: int = 60
     snowflake_account: str = ""

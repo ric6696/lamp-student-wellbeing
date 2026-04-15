@@ -743,10 +743,13 @@ def _call_llm_snowflake(prompt: str) -> tuple[int, str, str]:
 
     escaped_prompt = prompt.replace("'", "''")
     model = settings.llm_model
+    temperature = settings.llm_temperature
+    top_p = settings.llm_top_p
     query = (
         "SELECT SNOWFLAKE.CORTEX.COMPLETE("
         f"'{model}', "
-        f"'{escaped_prompt}'"
+        f"'{escaped_prompt}', "
+        f"OBJECT_CONSTRUCT('temperature', {temperature}, 'top_p', {top_p})"
         ") AS response"
     )
 
