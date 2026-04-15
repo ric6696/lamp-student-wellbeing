@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment is highly distracting with avg 65.24 dB, well above the 60 dB acceptable threshold. All 5 confidence-filtered events are labeled 'busy' with AI detecting 'Speech', indicating a noisy, conversation-filled environment unsuitable for focused study.",
+    "vitals": "Heart rate at 90.33 bpm is elevated above the calm focus range (60-85 bpm), suggesting stress or physical activity. Steps average 27.1 per sample with 21.235m distance per sample, indicating continuous movement rather than seated study behavior.",
+    "gps_motion": "GPS shows drastic location instability with 309.9m displacement and 3848.4m total travel distance, far exceeding stable study thresholds (<200m). Motion context shows 5 walking instances with 0 stationary periods, confirming continuous active movement throughout the 95-minute session."
+  },
+  "phase_2": {
+    "correlations": "All modalities strongly correlate to indicate active transit rather than study: noisy busy/speech environment aligns with walking motion context, elevated heart rate matches continuous physical movement, and extensive GPS travel confirms the user was moving through public or busy spaces. The complete absence of stationary periods coupled with high ambient noise and speech detection suggests the user was commuting, walking through crowded areas, or running errands.",
+    "holistic_assessment": "This session shows no evidence of concentration or study activity. The user was clearly in transit or engaged in active movement through noisy environments for the entire 95-minute period. All indicators (audio, physiological, location, motion) unanimously point to physical activity and environmental distraction with zero characteristics of a focused study session."
+  },
+  "phase_3": {
+    "recommendations": "1) Establish a dedicated, stationary study location with ambient noise below 45 dB to create a proper focus environment instead of studying while mobile. 2) Schedule study sessions separately from commute or errand time—this session appears to be pure transit activity. 3) Use noise-canceling headphones and find a quiet, seated space where you remain stationary (displacement <50m) to enable genuine concentration."
+  },
+  "score": 1,
+  "reason": "This session demonstrates zero concentration with all metrics indicating active transit rather than study. The 65.24 dB busy/speech environment, 90.33 bpm elevated heart rate, continuous walking motion (5 walking/0 stationary contexts), and 3848m travel distance all confirm the user was moving through noisy spaces for 95 minutes. No evidence of seated, quiet, or focused study behavior exists in any modality."
+}

@@ -866,6 +866,37 @@ def analyze_concentration(features, model="claude-sonnet-4-5", session=None):
                 parsed = None
 
         if parsed is None:
+            # 3) Try to parse the first JSON object inside markdown fences or free text.
+            raw_text = str(response_text or "")
+            candidates = [raw_text]
+
+            unescaped = raw_text
+            if unescaped.startswith('"') and unescaped.endswith('"'):
+                unescaped = unescaped[1:-1]
+            unescaped = unescaped.replace('\\n', '\n').replace('\\"', '"').replace('\\\\', '\\')
+            if unescaped != raw_text:
+                candidates.append(unescaped)
+
+            for text in candidates:
+                text = text.strip()
+                if text.startswith("```"):
+                    lines = text.splitlines()
+                    if len(lines) >= 3:
+                        text = "\n".join(lines[1:-1]).strip()
+
+                first = text.find("{")
+                last = text.rfind("}")
+                if first == -1 or last == -1 or first >= last:
+                    continue
+
+                snippet = text[first : last + 1]
+                try:
+                    parsed = json.loads(snippet)
+                    break
+                except json.JSONDecodeError:
+                    parsed = None
+
+        if parsed is None:
             return {
                 "score": None,
                 "reason": response_text,
