@@ -96,6 +96,28 @@ def assert_profile_table_exists(connection):
 		)
 
 
+def ensure_profile_tracking_columns(connection):
+	query = """
+		ALTER TABLE user_personalization_profiles
+		ADD COLUMN IF NOT EXISTS data_fed_count INTEGER NOT NULL DEFAULT 0,
+		ADD COLUMN IF NOT EXISTS profile_update_count INTEGER NOT NULL DEFAULT 0
+	"""
+	with connection.cursor() as cursor:
+		cursor.execute(query)
+	connection.commit()
+
+
+def fetch_existing_profile_state(connection, user_id):
+	query = """
+		SELECT profile_update_count, data_fed_count
+		FROM user_personalization_profiles
+		WHERE user_id = %s
+	"""
+	with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+		cursor.execute(query, (user_id.lower(),))
+		return cursor.fetchone() or {}
+
+
 def fetch_latest_discrepancy_row(connection, user_id):
 	query = """
 		SELECT
@@ -120,7 +142,8 @@ def fetch_latest_discrepancy_row(connection, user_id):
 		return cursor.fetchone()
 
 
-def fetch_recent_discrepancy_rows(connection, user_id, limit=3):
+def fetch_recent_discrepancy_rows(connection, user_id, limit=None):
+	limit_sql = "LIMIT %s" if limit is not None else ""
 	query = """
 		SELECT
 			id,
@@ -137,11 +160,12 @@ def fetch_recent_discrepancy_rows(connection, user_id, limit=3):
 		FROM session_discrepancy_analyses
 		WHERE user_id = %s
 		ORDER BY created_at DESC
-		LIMIT %s
+		{limit_sql}
 	"""
 
 	with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
-		cursor.execute(query, (user_id.lower(), limit))
+		params = (user_id.lower(),) if limit is None else (user_id.lower(), limit)
+		cursor.execute(query.format(limit_sql=limit_sql), params)
 		return cursor.fetchall()
 
 
@@ -392,13 +416,25 @@ def build_calibration_text(rows):
 		"discrepancy_strength": gap_text,
 		"ccot_adjustment_recommendation": ccot_text,
 	}
-def build_profile_from_latest(user_id, row, all_rows=None, snowflake_session=None, cortex_model=None):
+def build_profile_from_latest(
+	user_id,
+	row,
+	all_rows=None,
+	snowflake_session=None,
+	cortex_model=None,
+	existing_profile=None,
+):
 	now = datetime.now(timezone.utc).isoformat()
+	existing_profile = existing_profile or {}
+	current_update_count = int(_to_float(existing_profile.get("profile_update_count")) or 0)
+	profile_update_count = current_update_count + 1
 	if not row:
 		return {
 			"generated_at": now,
 			"user_id": user_id,
 			"sample_size": 0,
+			"data_fed_count": 0,
+			"profile_update_count": profile_update_count,
 			"profile_confidence": 0.0,
 			"summary": "No discrepancy analysis found for this user.",
 			"source": {},
@@ -447,6 +483,8 @@ def build_profile_from_latest(user_id, row, all_rows=None, snowflake_session=Non
 		"generated_at": now,
 		"user_id": user_id,
 		"sample_size": history_count,
+		"data_fed_count": history_count,
+		"profile_update_count": profile_update_count,
 		"sessions_analyzed": session_range,
 		"profile_confidence": profile_confidence,
 		"calibration": calibration,
@@ -460,16 +498,20 @@ def upsert_profile_to_db(connection, user_id, payload, context_averages=None, la
 			user_id,
 			source_discrepancy_analysis_id,
 			profile_confidence,
+			data_fed_count,
+			profile_update_count,
 			mental_readiness_averages,
 			activity_context_averages,
 			environment_context_averages,
 			profile_payload,
 			updated_at
-		) VALUES (%s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, %s::jsonb, NOW())
+		) VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, %s::jsonb, NOW())
 		ON CONFLICT (user_id)
 		DO UPDATE SET
 			source_discrepancy_analysis_id = EXCLUDED.source_discrepancy_analysis_id,
 			profile_confidence = EXCLUDED.profile_confidence,
+			data_fed_count = EXCLUDED.data_fed_count,
+			profile_update_count = EXCLUDED.profile_update_count,
 			mental_readiness_averages = EXCLUDED.mental_readiness_averages,
 			activity_context_averages = EXCLUDED.activity_context_averages,
 			environment_context_averages = EXCLUDED.environment_context_averages,
@@ -487,6 +529,8 @@ def upsert_profile_to_db(connection, user_id, payload, context_averages=None, la
 				user_id.lower(),
 				latest_analysis_id,
 				payload.get("profile_confidence"),
+				payload.get("data_fed_count"),
+				payload.get("profile_update_count"),
 				json.dumps(context_averages.get("mental_readiness", {}), ensure_ascii=False),
 				json.dumps(context_averages.get("activity_context", {}), ensure_ascii=False),
 				json.dumps(context_averages.get("environment_context", {}), ensure_ascii=False),
@@ -494,6 +538,31 @@ def upsert_profile_to_db(connection, user_id, payload, context_averages=None, la
 			),
 		)
 	connection.commit()
+
+
+def refresh_user_profile(connection, user_id, output_path=DEFAULT_OUTPUT_PATH, snowflake_session=None, store_db=True):
+	assert_profile_table_exists(connection)
+	ensure_profile_tracking_columns(connection)
+	all_rows = fetch_recent_discrepancy_rows(connection, user_id, limit=None)
+	row = all_rows[0] if all_rows else None
+	existing_profile = fetch_existing_profile_state(connection, user_id)
+	payload = build_profile_from_latest(
+		user_id=user_id,
+		row=row,
+		all_rows=all_rows,
+		snowflake_session=snowflake_session,
+		existing_profile=existing_profile,
+	)
+
+	# Build context averages separately for DB storage
+	context_averages = build_context_average_concentration_scores(all_rows or [])
+
+	saved_file = save_profile(output_path, payload)
+
+	if store_db:
+		upsert_profile_to_db(connection, user_id, payload, context_averages, row)
+
+	return saved_file, payload
 
 
 def save_profile(output_path, payload):
@@ -528,23 +597,13 @@ def main(
 		print(f"Snowflake unavailable. Using fallback sensor evaluation: {exc}")
 
 	try:
-		assert_profile_table_exists(pg_connection)
-		all_rows = fetch_recent_discrepancy_rows(pg_connection, user_id, limit=10)
-		row = all_rows[0] if all_rows else None
-		payload = build_profile_from_latest(
+		saved_file, payload = refresh_user_profile(
+			connection=pg_connection,
 			user_id=user_id,
-			row=row,
-			all_rows=all_rows,
+			output_path=output_path,
 			snowflake_session=sf_session,
+			store_db=store_db,
 		)
-		
-		# Build context averages separately for DB storage
-		context_averages = build_context_average_concentration_scores(all_rows or [])
-		
-		saved_file = save_profile(output_path, payload)
-
-		if store_db:
-			upsert_profile_to_db(pg_connection, user_id, payload, context_averages, row)
 	finally:
 		if sf_session is not None:
 			sf_session.close()

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T05:40:38.872980+00:00",
+  "timestamp": "2026-04-15T23:08:43.529087+00:00",
   "model": "claude-sonnet-4-5",
   "pre_session_questions": {
     "activity_context": "Lecture",
@@ -8,11 +8,11 @@
   },
   "result": {
     "overview": {
-      "model_score": 1.0,
+      "model_score": 5.0,
       "user_score": 7.0,
-      "gap": 6.0,
+      "gap": 2.0,
       "agreement": "USER_HIGHER",
-      "summary": "Severe discrepancy: model detected zero concentration (active transit scenario) while user reported moderate-high focus (7/10). Model interpreted observable physical activity and environmental noise as incompatible with study; user attributed distraction primarily to unmeasured internal cognitive factors despite being mobile."
+      "summary": "Model underestimated concentration by 2 points. User reported moderate-good focus (7/10) despite internal cognitive drift, location transition, and physiological strain. Model penalized environmental noise (57.8 dBA avg, rising to 61 dBA) and brief motion events, but user's primary distraction factor (cognitive drift) is unmeasured by sensors. The 45-second session duration limits pattern establishment."
     },
     "selected_factors": [
       "Internal Cognitive Drift (mind wandering, low motivation)",
@@ -35,7 +35,7 @@
           "motion"
         ],
         "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "ALIGNED"
+        "alignment_with_session_sensors": "PARTIAL"
       },
       {
         "factor": "Physiological Strain (stress, fatigue, discomfort)",
@@ -44,19 +44,19 @@
           "vitals"
         ],
         "confidence_cap": "MEDIUM",
-        "alignment_with_session_sensors": "PARTIAL"
+        "alignment_with_session_sensors": "UNSUPPORTED"
       }
     ],
-    "why_difference": "Model over-weighted observable physical activity signals (3848m travel, continuous walking, 65dB noise) and applied a binary 'no study possible while mobile' heuristic, yielding score=1. User's primary factor (Internal Cognitive Drift) is UNMEASURED by sensors, suggesting they were attempting to study during transit (e.g., reviewing notes while commuting, audio learning) and self-assessed based on subjective mental engagement rather than environmental conditions. Model lacked context that mobile study was intentional and conflated movement/noise with zero concentration. User acknowledged Location Change and Physiological Strain as secondary factors, confirming environmental challenges existed but did not eliminate all focus.",
+    "why_difference": "Model over-weighted audio noise (57.8→61 dBA) and motion variability (3 non-stationary events) as concentration detractors, applying generic distraction thresholds. User's primary distraction—internal cognitive drift—is sensor-invisible, and their self-assessment suggests they maintained focus despite environmental factors. Missing vitals data prevented physiological strain detection. The extremely short 45-second duration amplified model uncertainty, causing conservative scoring. User may have higher noise tolerance or was engaged in a task resilient to moderate ambient sound.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Correctly detected high noise (65.24dB) and speech events indicating busy environment. However, audio alone cannot determine if user was passively exposed or actively filtering noise during intentional mobile study. Next: flag high noise as distraction risk but do not auto-assign score=1 without corroborating lack of study intent.",
-      "vitals": "Elevated HR (90.33bpm) and movement detected, but model conflated physical activity with zero cognitive engagement. Elevated vitals during walking are normal and do not preclude audio-based learning or review tasks. Next: distinguish between 'physiological incompatibility' (extreme fatigue/stress) vs. 'activity-related elevation' (walking HR). Weight vitals as secondary indicator, not primary disqualifier.",
-      "motion": "Accurately captured continuous walking (5 walking contexts, 0 stationary). Model assumed walking = no study, but user may have been doing mobile study (podcasts, flashcards, audio review). Next: treat sustained walking as moderate distraction factor rather than absolute study negation. Require additional context (e.g., screen interaction, app usage) to confirm study abandonment.",
-      "gps": "Correctly identified large displacement (309.9m) and travel distance (3848m), confirming location instability. Model applied strict stationary threshold, but mobile study is a valid use case. Next: use GPS to flag 'Location Change/Transition' distraction but cap penalty—do not force score to 1 solely on mobility. Combine with other intent signals."
+      "audio": "Over-weighted in absence of user baseline. 57.8 dBA average is moderate, not severe. Rising trend (55→61 dBA) flagged as distraction, but user tolerance unknown. Next: reduce penalty weight for 55-65 dBA range without speech events or user history of noise sensitivity. Require longer observation window before penalizing gradual increases.",
+      "vitals": "Completely absent—critical gap. User reported physiological strain but no HR/HRV data to validate. Next: flag missing vitals as high-uncertainty condition; avoid confident scoring without this stream. If unavailable, explicitly cap confidence and widen score uncertainty range.",
+      "motion": "70% stationary readings support focus, but model over-penalized 3 brief non-stationary events in 45 seconds. User confirmed location transition, suggesting intentional movement, not restlessness. Next: distinguish purposeful transitions (GPS-correlated, brief duration) from sustained restlessness (repeated, prolonged). Weight stationary dominance more heavily in short sessions.",
+      "gps": "Minimal displacement (30-40m) with 13.8-20.3m accuracy—indicates location stability, correctly interpreted. However, model did not sufficiently credit this stability against audio/motion variability. Next: increase GPS stability weight as anchor signal when other sensors show mixed patterns, especially in ultra-short sessions."
     },
     "judgment_policy_next_run": [
-      "Do not apply binary 'mobile = no study' rule. Introduce graduated penalty: sustained walking + high noise → moderate distraction (score 4-6 range) unless additional signals confirm study abandonment.",
-      "Recognize that user's primary factor (Internal Cognitive Drift) is UNMEASURED. When user self-score is significantly higher than model and primary factor is unmeasured, increase model uncertainty and avoid overconfident low scores based solely on environmental/physical sensors."
+      "Do not over-penalize moderate audio (55-65 dBA) without user-specific noise sensitivity baseline or speech detection. Apply conservative penalty only if sustained >5 minutes or >70 dBA.",
+      "Flag sessions with missing vitals as LOW confidence. When user reports physiological strain but vitals absent, acknowledge blind spot explicitly in scoring rationale and widen uncertainty bounds."
     ]
   }
 }

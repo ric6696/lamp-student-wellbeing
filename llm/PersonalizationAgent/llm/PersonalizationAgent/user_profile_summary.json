@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-04-15T23:08:43.661423+00:00",
+  "user_id": "minsuk",
+  "sample_size": 11,
+  "data_fed_count": 11,
+  "profile_update_count": 1,
+  "sessions_analyzed": "Analysis 20-40",
+  "profile_confidence": 1.0,
+  "calibration": {
+    "alignment_summary": "Across the history, the user more often rates focus higher than the model.",
+    "why": "Based on 11 scored sessions, average (user_score - model_score) = 2.0, with 9 positive, 2 negative, and 0 zero-gap directions.",
+    "discrepancy_strength": "Average absolute model-user gap across scored history: 2.364.",
+    "ccot_adjustment_recommendation": "For next-session interpretation, avoid overly strict downgrades and check whether strong negative signals are consistently supported by other sensors."
+  },
+  "sensor_interpretation": {
+    "vitals": {
+      "importance": "LOW",
+      "confidence": "LOW",
+      "summary": "Fallback used: Snowflake session unavailable.",
+      "evidence": {
+        "sessions_seen": 0,
+        "supported_count": 0,
+        "contradicted_count": 0,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": null
+      },
+      "interpretation": {
+        "what_it_means": "Fallback used: Snowflake session unavailable.",
+        "risk": "History-based sensor interpretation could not be completed.",
+        "next_use": "Insufficient history to assess this sensor reliably."
+      }
+    },
+    "gps": {
+      "importance": "LOW",
+      "confidence": "LOW",
+      "summary": "Fallback used: Snowflake session unavailable.",
+      "evidence": {
+        "sessions_seen": 0,
+        "supported_count": 0,
+        "contradicted_count": 0,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": null
+      },
+      "interpretation": {
+        "what_it_means": "Fallback used: Snowflake session unavailable.",
+        "risk": "History-based sensor interpretation could not be completed.",
+        "next_use": "Insufficient history to assess this sensor reliably."
+      }
+    },
+    "motion": {
+      "importance": "LOW",
+      "confidence": "LOW",
+      "summary": "Fallback used: Snowflake session unavailable.",
+      "evidence": {
+        "sessions_seen": 0,
+        "supported_count": 0,
+        "contradicted_count": 0,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": null
+      },
+      "interpretation": {
+        "what_it_means": "Fallback used: Snowflake session unavailable.",
+        "risk": "History-based sensor interpretation could not be completed.",
+        "next_use": "Insufficient history to assess this sensor reliably."
+      }
+    },
+    "audio": {
+      "importance": "LOW",
+      "confidence": "LOW",
+      "summary": "Fallback used: Snowflake session unavailable.",
+      "evidence": {
+        "sessions_seen": 0,
+        "supported_count": 0,
+        "contradicted_count": 0,
+        "unclear_count": 0,
+        "avg_gap_when_flagged": null
+      },
+      "interpretation": {
+        "what_it_means": "Fallback used: Snowflake session unavailable.",
+        "risk": "History-based sensor interpretation could not be completed.",
+        "next_use": "Insufficient history to assess this sensor reliably."
+      }
+    }
+  }
+}

@@ -9,11 +9,19 @@ thoughtful discrepancy reasoning and actionable follow-ups.
 import argparse
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from dotenv import load_dotenv
 from snowflake.snowpark import Session
+
+from llm.PersonalizationAgent.build_user_profile import refresh_user_profile
 
 try:
     import psycopg2
@@ -672,6 +680,15 @@ def save_discrepancy_to_postgres(output_payload, user_id, device_id=None, sessio
                     )
                 row = cursor.fetchone()
                 discrepancy_id = row[0]
+
+                refresh_user_profile(
+                    connection=connection,
+                    user_id=user_id,
+                    output_path="llm/PersonalizationAgent/user_profile_summary.json",
+                    snowflake_session=None,
+                    store_db=True,
+                )
+
                 return discrepancy_id
     finally:
         connection.close()
