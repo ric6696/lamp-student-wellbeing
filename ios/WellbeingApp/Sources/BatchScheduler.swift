@@ -176,11 +176,17 @@ final class BatchScheduler: ObservableObject {
 
         // 1. End visible session state immediately so UI switches right away.
         let endTime = Date()
-        let contextMetadata = StudySessionContext.stamp(metadata: [
-            "activity_context": .string(activityContext),
-            "environment_context": .string(environmentContext),
-            "mental_readiness": .string(mentalContext)
-        ])
+        var contextFields: [String: JSONValue] = [:]
+        if !activityContext.isEmpty {
+            contextFields["activity_context"] = .string(activityContext)
+        }
+        if !environmentContext.isEmpty {
+            contextFields["environment_context"] = .string(environmentContext)
+        }
+        if !mentalContext.isEmpty {
+            contextFields["mental_readiness"] = .string(mentalContext)
+        }
+        let contextMetadata = StudySessionContext.stamp(metadata: contextFields)
 
         let contextEvent = BatchItem(
             type: .event,

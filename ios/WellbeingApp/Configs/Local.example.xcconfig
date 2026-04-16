@@ -10,6 +10,17 @@ USER_ID = rc
 // Example: http://Your-MacBook-Pro.local:8000/ingest
 API_BASE_URL = http:$(SLASH)$(SLASH)YOUR_MAC_LOCAL_HOSTNAME.local:8000/ingest
 
+// Optional explicit API routes (recommended for EC2/reverse proxy setups)
+// Example:
+// API_SESSION_REVIEW_URL = https:$(SLASH)$(SLASH)api.yourdomain.com/session-review
+// API_CONCENTRATION_REPORT_URL = https:$(SLASH)$(SLASH)api.yourdomain.com/latest-concentration-report
+// API_CONCENTRATION_BY_SESSION_KEY_TEMPLATE = https:$(SLASH)$(SLASH)api.yourdomain.com/sessions/by-key/{session_key}/concentration-report
+// API_LATEST_USER_CONCENTRATION_TEMPLATE = https:$(SLASH)$(SLASH)api.yourdomain.com/users/{user_id}/sessions/latest/concentration
+API_SESSION_REVIEW_URL =
+API_CONCENTRATION_REPORT_URL =
+API_CONCENTRATION_BY_SESSION_KEY_TEMPLATE =
+API_LATEST_USER_CONCENTRATION_TEMPLATE =
+
 // Optional: set your Apple Team ID here if needed for signing
 // Example: TEAM_ID = ABCDEFG123
 TEAM_ID =

@@ -4,6 +4,14 @@
 <dict>
 	<key>APIBaseURL</key>
 	<string>$(API_BASE_URL)</string>
+	<key>APISessionReviewURL</key>
+	<string>$(API_SESSION_REVIEW_URL)</string>
+	<key>APIConcentrationReportURL</key>
+	<string>$(API_CONCENTRATION_REPORT_URL)</string>
+	<key>APIConcentrationBySessionKeyTemplate</key>
+	<string>$(API_CONCENTRATION_BY_SESSION_KEY_TEMPLATE)</string>
+	<key>APILatestUserConcentrationTemplate</key>
+	<string>$(API_LATEST_USER_CONCENTRATION_TEMPLATE)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

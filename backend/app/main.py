@@ -120,6 +120,29 @@ def _json_file_ready(path: Path, required_keys: tuple[str, ...] = ()) -> tuple[b
     return True, "ready"
 
 
+def _parse_json_object(text: str | None) -> dict[str, Any] | None:
+    if not text:
+        return None
+
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except Exception:
+        pass
+
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        return None
+
+    try:
+        parsed = json.loads(text[start : end + 1])
+        return parsed if isinstance(parsed, dict) else None
+    except Exception:
+        return None
+
+
 def _outputs_ready_for_analyst(
     user_response_mtime: float,
     concentration_baseline_mtime: float | None,
@@ -249,6 +272,19 @@ async def save_session_review(
     return {"status": "saved", "path": str(_user_response_path)}
 
 
+@app.get("/latest-concentration-report")
+async def latest_concentration_report(_: None = Depends(require_api_key)):
+    if not _concentration_output_path.exists():
+        raise HTTPException(status_code=404, detail="No concentration report available yet")
+
+    try:
+        payload = json.loads(_concentration_output_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to read concentration report: {exc}")
+
+    return payload
+
+
 @app.get("/health")
 async def health():
     connection = None
@@ -275,7 +311,7 @@ async def get_session_concentration(session_id: int):
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT session_id, status, score, reason, model, error_message, triggered_at, processing_started_at, completed_at "
+            "SELECT session_id, status, score, reason, model, llm_raw_response, error_message, triggered_at, processing_started_at, completed_at "
             "FROM session_concentration_analysis WHERE session_id = %s",
             (session_id,),
         )
@@ -283,17 +319,265 @@ async def get_session_concentration(session_id: int):
         if not row:
             raise HTTPException(status_code=404, detail="No concentration analysis found for this session")
 
-        return {
+        llm_parsed = _parse_json_object(row[5])
+        payload: dict[str, Any] = {
             "session_id": row[0],
             "status": row[1],
             "score": row[2],
             "reason": row[3],
             "model": row[4],
-            "error_message": row[5],
-            "triggered_at": row[6],
-            "processing_started_at": row[7],
-            "completed_at": row[8],
+            "error_message": row[6],
+            "triggered_at": row[7],
+            "processing_started_at": row[8],
+            "completed_at": row[9],
         }
+
+        if llm_parsed:
+            payload["phase_1"] = llm_parsed.get("phase_1")
+            payload["phase_2"] = llm_parsed.get("phase_2")
+            payload["phase_3"] = llm_parsed.get("phase_3")
+            if payload.get("score") is None:
+                payload["score"] = llm_parsed.get("score")
+            if not payload.get("reason"):
+                payload["reason"] = llm_parsed.get("reason")
+
+        return payload
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
+
+
+@app.get("/users/{user_id}/sessions/latest/concentration")
+async def get_latest_user_session_concentration(user_id: str, _: None = Depends(require_api_key)):
+    connection = None
+    cursor = None
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT s.id, s.started_at, s.ended_at,
+                   a.status, a.score, a.reason, a.model,
+                   a.llm_raw_response, a.error_message,
+                   a.triggered_at, a.processing_started_at, a.completed_at
+            FROM sessions s
+            LEFT JOIN session_concentration_analysis a
+              ON a.session_id = s.id
+            WHERE s.user_id = %s
+              AND s.ended_at IS NOT NULL
+            ORDER BY s.ended_at DESC
+            LIMIT 1
+            """,
+            (user_id.lower(),),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="No completed sessions found for this user")
+
+        llm_parsed = _parse_json_object(row[7])
+        payload: dict[str, Any] = {
+            "session_id": row[0],
+            "started_at": row[1],
+            "ended_at": row[2],
+            "status": row[3] or "pending",
+            "score": row[4],
+            "reason": row[5],
+            "model": row[6],
+            "error_message": row[8],
+            "triggered_at": row[9],
+            "processing_started_at": row[10],
+            "completed_at": row[11],
+        }
+
+        if llm_parsed:
+            payload["phase_1"] = llm_parsed.get("phase_1")
+            payload["phase_2"] = llm_parsed.get("phase_2")
+            payload["phase_3"] = llm_parsed.get("phase_3")
+            if payload.get("score") is None:
+                payload["score"] = llm_parsed.get("score")
+            if not payload.get("reason"):
+                payload["reason"] = llm_parsed.get("reason")
+
+        return payload
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
+
+
+@app.get("/sessions/by-key/{session_key}/concentration-report")
+async def get_concentration_report_by_session_key(session_key: str, _: None = Depends(require_api_key)):
+    connection = None
+    cursor = None
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT EXISTS ("
+            "  SELECT 1 FROM information_schema.columns "
+            "  WHERE table_schema = 'public' "
+            "    AND table_name = 'sessions' "
+            "    AND column_name = 'session_key'"
+            ")"
+        )
+        supports_session_key = bool(cursor.fetchone()[0])
+        if not supports_session_key:
+            raise HTTPException(status_code=400, detail="Session-key lookup is unavailable on this database schema")
+
+        cursor.execute(
+            "SELECT id, started_at, ended_at FROM sessions "
+            "WHERE session_key = %s "
+            "ORDER BY started_at DESC LIMIT 1",
+            (session_key.lower(),),
+        )
+        session_row = cursor.fetchone()
+        if not session_row:
+            raise HTTPException(status_code=404, detail="No session found for this session_key")
+
+        matched_session_id, started_at, ended_at = session_row
+
+        cursor.execute(
+            "SELECT session_id, status, score, reason, model, llm_raw_response, error_message, triggered_at, processing_started_at, completed_at "
+            "FROM session_concentration_analysis WHERE session_id = %s",
+            (matched_session_id,),
+        )
+        analysis_row = cursor.fetchone()
+
+        if not analysis_row:
+            return {
+                "session_id": matched_session_id,
+                "session_key": session_key.lower(),
+                "started_at": started_at,
+                "ended_at": ended_at,
+                "status": "pending",
+            }
+
+        llm_parsed = _parse_json_object(analysis_row[5])
+        response: dict[str, Any] = {
+            "session_id": analysis_row[0],
+            "session_key": session_key.lower(),
+            "status": analysis_row[1],
+            "score": analysis_row[2],
+            "reason": analysis_row[3],
+            "model": analysis_row[4],
+            "error_message": analysis_row[6],
+            "triggered_at": analysis_row[7],
+            "processing_started_at": analysis_row[8],
+            "completed_at": analysis_row[9],
+            "started_at": started_at,
+            "ended_at": ended_at,
+        }
+
+        if llm_parsed:
+            response["phase_1"] = llm_parsed.get("phase_1")
+            response["phase_2"] = llm_parsed.get("phase_2")
+            response["phase_3"] = llm_parsed.get("phase_3")
+            if response.get("score") is None:
+                response["score"] = llm_parsed.get("score")
+            if not response.get("reason"):
+                response["reason"] = llm_parsed.get("reason")
+
+        return response
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
+
+
+@app.get("/users/{user_id}/sessions")
+async def list_user_sessions(user_id: str, limit: int = 50, _: None = Depends(require_api_key)):
+    if limit < 1 or limit > 200:
+        raise HTTPException(status_code=400, detail="limit must be between 1 and 200")
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT EXISTS ("
+            "  SELECT 1 FROM information_schema.columns "
+            "  WHERE table_schema = 'public' "
+            "    AND table_name = 'sessions' "
+            "    AND column_name = 'session_key'"
+            ")"
+        )
+        supports_session_key = bool(cursor.fetchone()[0])
+
+        if supports_session_key:
+            cursor.execute(
+                """
+                SELECT s.id, s.session_key, s.started_at, s.ended_at,
+                       a.status, a.score, a.reason, a.model,
+                       a.llm_raw_response, a.error_message,
+                       a.triggered_at, a.processing_started_at, a.completed_at
+                FROM sessions s
+                LEFT JOIN session_concentration_analysis a
+                  ON a.session_id = s.id
+                WHERE s.user_id = %s
+                  AND s.ended_at IS NOT NULL
+                ORDER BY s.ended_at DESC, s.started_at DESC
+                LIMIT %s
+                """,
+                (user_id.lower(), limit),
+            )
+        else:
+            cursor.execute(
+                """
+                SELECT s.id, NULL AS session_key, s.started_at, s.ended_at,
+                       a.status, a.score, a.reason, a.model,
+                       a.llm_raw_response, a.error_message,
+                       a.triggered_at, a.processing_started_at, a.completed_at
+                FROM sessions s
+                LEFT JOIN session_concentration_analysis a
+                  ON a.session_id = s.id
+                WHERE s.user_id = %s
+                  AND s.ended_at IS NOT NULL
+                ORDER BY s.ended_at DESC, s.started_at DESC
+                LIMIT %s
+                """,
+                (user_id.lower(), limit),
+            )
+
+        rows = cursor.fetchall()
+        items: list[dict[str, Any]] = []
+
+        for row in rows:
+            llm_parsed = _parse_json_object(row[8])
+            item: dict[str, Any] = {
+                "session_id": row[0],
+                "session_key": row[1].lower() if isinstance(row[1], str) else None,
+                "started_at": row[2],
+                "ended_at": row[3],
+                "status": row[4] or "pending",
+                "score": row[5],
+                "reason": row[6],
+                "model": row[7],
+                "error_message": row[9],
+                "triggered_at": row[10],
+                "processing_started_at": row[11],
+                "completed_at": row[12],
+            }
+
+            if llm_parsed:
+                item["phase_1"] = llm_parsed.get("phase_1")
+                item["phase_2"] = llm_parsed.get("phase_2")
+                item["phase_3"] = llm_parsed.get("phase_3")
+                if item.get("score") is None:
+                    item["score"] = llm_parsed.get("score")
+                if not item.get("reason"):
+                    item["reason"] = llm_parsed.get("reason")
+
+            items.append(item)
+
+        return {"items": items, "count": len(items)}
     finally:
         if cursor:
             cursor.close()
