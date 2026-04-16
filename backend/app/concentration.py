@@ -615,13 +615,18 @@ def _build_prompt(features: dict[str, Any]) -> str:
         if not sensor:
             return f"{label}:\n  Weight: UNKNOWN (no profile data)\n  Guidance: use generic thresholds."
         tier = _sensor_weight_tier(sensor)
-        importance = sensor.get("importance") or "unknown"
+        importance = (sensor.get("importance") or "").upper()
         confidence = sensor.get("confidence") or "unknown"
         next_use = sensor.get("next_use") or "none"
+        guidance_line = (
+            f"  Guidance: {next_use}"
+            if importance in ("HIGH", "MEDIUM")
+            else f"  Guidance: {next_use} (low importance — use generic thresholds unless corroborated)"
+        )
         return (
             f"{label}:\n"
             f"  Weight: {tier} (importance={importance}, confidence={confidence})\n"
-            f"  Guidance: {next_use}"
+            f"{guidance_line}"
         )
 
     # Extract calibration text only (small, high-value subset of profile_payload)
@@ -768,6 +773,8 @@ def _call_llm_openai(prompt: str) -> tuple[int, str, str]:
             }
         ],
         "text": {"format": {"type": "json_object"}},
+        "temperature": settings.llm_temperature,
+        "top_p": settings.llm_top_p,
     }
 
     payload = json.dumps(body).encode("utf-8")
@@ -848,10 +855,12 @@ def _call_llm_snowflake(prompt: str) -> tuple[int, str, str]:
     model = settings.llm_model
     temperature = settings.llm_temperature
     top_p = settings.llm_top_p
+    options = json.dumps({"temperature": temperature, "top_p": top_p})
     query = (
         "SELECT SNOWFLAKE.CORTEX.COMPLETE("
         f"'{model}', "
-        f"'{escaped_prompt}'"
+        f"'{escaped_prompt}', "
+        f"parse_json('{options}')"
         ") AS response"
     )
 
