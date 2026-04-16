@@ -750,8 +750,7 @@ def _call_llm_snowflake(prompt: str) -> tuple[int, str, str]:
     query = (
         "SELECT SNOWFLAKE.CORTEX.COMPLETE("
         f"'{model}', "
-        f"'{escaped_prompt}', "
-        f"OBJECT_CONSTRUCT('temperature', {temperature}, 'top_p', {top_p})"
+        f"'{escaped_prompt}'"
         ") AS response"
     )
 
