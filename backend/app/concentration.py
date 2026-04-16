@@ -167,7 +167,10 @@ def _fetch_user_personalization_profile(cursor, user_id: str) -> Optional[dict[s
 
     cursor.execute(
         """
-        SELECT user_id, profile_payload, updated_at
+        SELECT user_id, profile_payload, updated_at,
+               activity_context_averages,
+               environment_context_averages,
+               mental_readiness_averages
         FROM user_personalization_profiles
         WHERE user_id = %s
         ORDER BY updated_at DESC
@@ -179,11 +182,14 @@ def _fetch_user_personalization_profile(cursor, user_id: str) -> Optional[dict[s
     if not row:
         return None
 
-    profile_user_id, profile_payload, updated_at = row
+    profile_user_id, profile_payload, updated_at, activity_context_averages, environment_context_averages, mental_readiness_averages = row
     return {
         "user_id": profile_user_id,
         "profile_payload": profile_payload,
         "updated_at": updated_at.isoformat() if updated_at else None,
+        "activity_context_averages": activity_context_averages,
+        "environment_context_averages": environment_context_averages,
+        "mental_readiness_averages": mental_readiness_averages,
     }
 
 
@@ -203,7 +209,7 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
     if ended_at is None:
         raise RuntimeError(f"Session {job.session_id} has no ended_at yet")
 
-    user_profile = _fetch_user_personalization_profile(cursor, job.user_id)
+    user_profile = _fetch_user_personalization_profile(cursor, "minsuk")
 
     cursor.execute(
         """
@@ -543,13 +549,82 @@ def _fetch_features(cursor, job: AnalysisJob) -> dict[str, Any]:
 def _build_prompt(features: dict[str, Any]) -> str:
     session = features["session"]
     raw = features.get("raw") or {}
+    pre_session_context = features.get("pre_session_context") or {}
     user_profile = features.get("user_personalization_profile")
-    user_profile_text = None
-    if user_profile and user_profile.get("profile_payload") is not None:
-        if isinstance(user_profile["profile_payload"], str):
-            user_profile_text = user_profile["profile_payload"]
-        else:
-            user_profile_text = json.dumps(user_profile["profile_payload"], ensure_ascii=False)
+    print(f"concentration_user_profile session_id={session['id']} user_id={session['user_id']} profile={user_profile}")
+    activity_context_averages = user_profile.get("activity_context_averages") if user_profile else None
+    environment_context_averages = user_profile.get("environment_context_averages") if user_profile else None
+    mental_readiness_averages = user_profile.get("mental_readiness_averages") if user_profile else None
+
+    def _extract_sensor(sensor_interpretation: Any, key: str) -> Optional[dict]:
+        if not isinstance(sensor_interpretation, dict):
+            return None
+        s = sensor_interpretation.get(key)
+        if not isinstance(s, dict):
+            return None
+        interpretation = s.get("interpretation")
+        return {
+            "importance": s.get("importance"),
+            "confidence": s.get("confidence"),
+            "next_use": interpretation.get("next_use") if isinstance(interpretation, dict) else None,
+        }
+
+    _sensor_interpretation = None
+    if user_profile:
+        payload = user_profile.get("profile_payload")
+        if isinstance(payload, str):
+            try:
+                payload = json.loads(payload)
+            except Exception:
+                payload = None
+        if isinstance(payload, dict):
+            _sensor_interpretation = payload.get("sensor_interpretation")
+
+    sensor_gps = _extract_sensor(_sensor_interpretation, "gps")
+    sensor_audio = _extract_sensor(_sensor_interpretation, "audio")
+    sensor_motion = _extract_sensor(_sensor_interpretation, "motion")
+    sensor_vitals = _extract_sensor(_sensor_interpretation, "vitals")
+
+    def _fmt_averages(val: Any) -> str:
+        if val is None:
+            return "(none)"
+        if isinstance(val, str):
+            try:
+                val = json.loads(val)
+            except Exception:
+                return val
+        if isinstance(val, dict):
+            items = [f"{k}: {v}" for k, v in val.items() if v != "-"]
+            return ", ".join(items) if items else "(none)"
+        return str(val)
+
+    def _fmt_sensor(sensor: Optional[dict]) -> str:
+        if not sensor:
+            return "(none)"
+        return (
+            f"importance={sensor.get('importance') or 'unknown'}, "
+            f"confidence={sensor.get('confidence') or 'unknown'}, "
+            f"next_use: {sensor.get('next_use') or 'none'}"
+        )
+
+    # Extract calibration text only (small, high-value subset of profile_payload)
+    _calibration_text = "(none)"
+    if user_profile:
+        payload = user_profile.get("profile_payload")
+        if isinstance(payload, str):
+            try:
+                payload = json.loads(payload)
+            except Exception:
+                payload = None
+        if isinstance(payload, dict) and payload.get("calibration"):
+            _calibration_text = json.dumps(payload["calibration"], ensure_ascii=False)
+
+    logger.info(
+        "concentration_user_profile session_id=%s user_id=%s calibration=%s",
+        session["id"],
+        session["user_id"],
+        _calibration_text,
+    )
 
     return f"""You are an expert study concentration analyst. Use Compositional Chain-of-Thought (CCoT) with explicit 3-phase reasoning.
 
@@ -559,33 +634,50 @@ SESSION WINDOW:
 - ended_at: {session['ended_at']}
 - duration_min: {session['duration_min']}
 
+PRE-SESSION CONTEXT (user-reported before this session):
+- activity_context: {pre_session_context.get('activity_context') or '(none)'}
+- environment_context: {pre_session_context.get('environment_context') or '(none)'}
+- mental_readiness: {pre_session_context.get('mental_readiness') or '(none)'}
+
 RAW SENSOR ROWS (entire session window, use these as the primary evidence):
 {json.dumps(raw, ensure_ascii=False)}
 
 NOTE: raw.vitals includes only heart rate (metric_code=1), steps (20), and distance (21). Audio exposure dBA is in raw.audio_exposure and should NOT be treated as heart rate.
 
 USER PERSONALIZATION PROFILE:
-{user_profile_text or "(none)"}
 
-PRE-SESSION CONTEXT USAGE RULE:
-- Compare the current pre-session context (activity/environment/mental readiness) with any prior contexts described in the user profile.
-- If the profile shows the user focused well in a similar context (e.g., activity=reading, environment=cafe, mental_readiness=high), treat that as positive evidence for higher concentration in this session.
-- If the profile shows poor focus in a similar context, treat it as negative evidence.
-- If there is no matching context in the profile, do not assume a benefit or penalty from context alone.
+[Score Bias Calibration]
+{_calibration_text}
 
-PERSONALIZATION PRIORITY RULES:
-1) Use the user's personal baseline as the PRIMARY reference when sufficient and reliable data exists.
-2) Use normal concentration thresholds ONLY as fallback when:
-   - a modality is missing in the personalization profile,
-   - the profile is sparse or low-confidence,
-   - or current readings deviate strongly from both the personal baseline and reasonable human ranges.
-3) If personal baseline conflicts with generic thresholds, prefer the personal baseline UNLESS the signal clearly indicates distraction or abnormal behavior.
-4) Explicitly determine whether the final assessment is based on:
-   - personal baseline,
-   - generic thresholds,
-   - or a mix of both.
-   
-NORMAL CONCENTRATION THRESHOLDS:
+[Context-Based Score Averages (user's historical concentration scores 1-10 by context)]
+Use these as personalized score thresholds when the current PRE-SESSION CONTEXT matches a known category.
+If the current context matches, treat the average as the expected baseline score for this session.
+Score meaningfully above or below the average only when sensor evidence clearly supports it.
+If a context has no history ("-"), fall back to generic thresholds.
+
+- Activity averages: {_fmt_averages(activity_context_averages)}
+  Current activity: {pre_session_context.get('activity_context') or '(none)'}
+
+- Environment averages: {_fmt_averages(environment_context_averages)}
+  Current environment: {pre_session_context.get('environment_context') or '(none)'}
+
+- Mental readiness averages: {_fmt_averages(mental_readiness_averages)}
+  Current mental readiness: {pre_session_context.get('mental_readiness') or '(none)'}
+
+[Sensor Interpretation Guide]
+For each sensor, importance and confidence (LOW/MEDIUM/HIGH) indicate how much weight to give it.
+- HIGH importance + HIGH confidence: treat this sensor as a strong primary signal.
+- HIGH importance + LOW confidence: use cautiously, require corroboration from other sensors.
+- LOW importance: treat as weak supporting evidence only; do not let it drive the score alone.
+Follow the next_use guidance to calibrate sensitivity for this specific user.
+
+Audio sensor — {_fmt_sensor(sensor_audio)}
+Vitals sensor — {_fmt_sensor(sensor_vitals)}
+GPS + Motion sensors (interpreted together as gps_motion in Phase 1):
+  GPS    — {_fmt_sensor(sensor_gps)}
+  Motion — {_fmt_sensor(sensor_motion)}
+
+NORMAL CONCENTRATION THRESHOLDS (fallback only — use when sensor profile is LOW confidence or missing):
 1) Audio environment (dBA from audio exposure):
     - Good focus: avg dBA <= 45
     - Moderate: 45 < avg dBA <= 60
@@ -605,20 +697,13 @@ PHASE 1: INDIVIDUAL MODALITY DECOMPOSITION
 Step 1 (Audio only, iPhone): use audio context labels + audio exposure (dBA) from metric_code=10. Ignore everything else.
 Step 2 (Heart rate only, Apple Watch): use heart rate metric_code=1 only. Ignore steps, distance, GPS, motion, and audio here.
 Step 3 (Movement only): use GPS (iPhone) + motion context (iPhone + Watch) + steps/distance (Apple Watch). Ignore audio and heart rate here.
-Step 4 (Strict exclusion): do NOT use any other data outside steps 1-3 (including any other metrics, metadata, or profiles).
 
 PHASE 2: CROSS-MODAL COMPOSITION
 Step 4. Identify correlations across modalities (e.g., noisy + active motion + movement in location).
-Step 5. Synthesize a holistic concentration assessment from all modalities.
+Step 5. Synthesize a holistic concentration assessment from all modalities, anchored to the user's context-based score averages where a match exists.
 
 PHASE 3: ACTIONABLE SYNTHESIS
 Step 6. Provide concise personalized recommendations tied to root causes from the composed analysis.
-
-SCORING RULE:
-- Score primarily based on deviation from the user's personal focused-state baseline.
-- Do NOT penalize differences from population averages if they align with the user's normal focused behavior.
-- Penalize strong multi-modal signals of distraction (e.g., noisy + active motion + large movement).
-- Use generic thresholds as secondary anchors when personalization is weak or missing for a modality.
 
 OUTPUT REQUIREMENTS:
 Return ONLY valid JSON with this exact structure:
