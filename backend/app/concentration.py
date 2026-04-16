@@ -598,13 +598,30 @@ def _build_prompt(features: dict[str, Any]) -> str:
             return ", ".join(items) if items else "(none)"
         return str(val)
 
-    def _fmt_sensor(sensor: Optional[dict]) -> str:
+    def _sensor_weight_tier(sensor: Optional[dict]) -> str:
         if not sensor:
-            return "(none)"
+            return "UNKNOWN"
+        importance = (sensor.get("importance") or "").upper()
+        confidence = (sensor.get("confidence") or "").upper()
+        if importance == "HIGH" and confidence == "HIGH":
+            return "STRONG PRIMARY"
+        if importance == "HIGH":
+            return "CAUTION (corroborate with other sensors)"
+        if importance == "MEDIUM":
+            return "MODERATE"
+        return "WEAK"
+
+    def _fmt_sensor(sensor: Optional[dict], label: str) -> str:
+        if not sensor:
+            return f"{label}:\n  Weight: UNKNOWN (no profile data)\n  Guidance: use generic thresholds."
+        tier = _sensor_weight_tier(sensor)
+        importance = sensor.get("importance") or "unknown"
+        confidence = sensor.get("confidence") or "unknown"
+        next_use = sensor.get("next_use") or "none"
         return (
-            f"importance={sensor.get('importance') or 'unknown'}, "
-            f"confidence={sensor.get('confidence') or 'unknown'}, "
-            f"next_use: {sensor.get('next_use') or 'none'}"
+            f"{label}:\n"
+            f"  Weight: {tier} (importance={importance}, confidence={confidence})\n"
+            f"  Guidance: {next_use}"
         )
 
     # Extract calibration text only (small, high-value subset of profile_payload)
@@ -646,9 +663,6 @@ NOTE: raw.vitals includes only heart rate (metric_code=1), steps (20), and dista
 
 USER PERSONALIZATION PROFILE:
 
-[Score Bias Calibration]
-{_calibration_text}
-
 [Context-Based Score Averages (user's historical concentration scores 1-10 by context)]
 Use these as personalized score thresholds when the current PRE-SESSION CONTEXT matches a known category.
 If the current context matches, treat the average as the expected baseline score for this session.
@@ -664,18 +678,20 @@ If a context has no history ("-"), fall back to generic thresholds.
 - Mental readiness averages: {_fmt_averages(mental_readiness_averages)}
   Current mental readiness: {pre_session_context.get('mental_readiness') or '(none)'}
 
-[Sensor Interpretation Guide]
-For each sensor, importance and confidence (LOW/MEDIUM/HIGH) indicate how much weight to give it.
-- HIGH importance + HIGH confidence: treat this sensor as a strong primary signal.
-- HIGH importance + LOW confidence: use cautiously, require corroboration from other sensors.
-- LOW importance: treat as weak supporting evidence only; do not let it drive the score alone.
-Follow the next_use guidance to calibrate sensitivity for this specific user.
 
-Audio sensor — {_fmt_sensor(sensor_audio)}
-Vitals sensor — {_fmt_sensor(sensor_vitals)}
-GPS + Motion sensors (interpreted together as gps_motion in Phase 1):
-  GPS    — {_fmt_sensor(sensor_gps)}
-  Motion — {_fmt_sensor(sensor_motion)}
+[Score Bias Calibration]
+{_calibration_text}
+
+[Sensor Interpretation Guide]
+Weight tiers: STRONG PRIMARY = drive the score; MODERATE = supporting signal; WEAK = minor evidence only; CAUTION = use only if corroborated.
+
+{_fmt_sensor(sensor_audio, "Audio")}
+
+{_fmt_sensor(sensor_vitals, "Vitals")}
+
+GPS + Motion (interpreted together as gps_motion in Phase 1):
+{_fmt_sensor(sensor_gps, "  GPS")}
+{_fmt_sensor(sensor_motion, "  Motion")}
 
 NORMAL CONCENTRATION THRESHOLDS (fallback only — use when sensor profile is LOW confidence or missing):
 1) Audio environment (dBA from audio exposure):
