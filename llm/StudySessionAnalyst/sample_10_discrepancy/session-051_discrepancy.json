@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-16T00:01:46.134273Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-051",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model underestimated concentration by 3 points. Model heavily penalized GPS displacement (1857m) as transit/commute disruption, scoring 3/10. User rated 6/10, acknowledging movement/restlessness and location change but experiencing moderate rather than severe impairment. Model over-weighted GPS displacement relative to user's subjective experience."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model interpreted 1857m GPS displacement as fundamentally incompatible with concentration (transit scenario), assigning score 3. User confirmed location change affected focus but rated 6, suggesting adaptation or tolerance during travel. Motion sensors show 3 stationary + 1 walking (minimal restlessness), but model conflated GPS travel with continuous disruption. Vitals (75.94 bpm) indicate calm state, contradicting severe impairment narrative. User reported physiological strain, but HR does not support stress hypothesis—observability gap. Model applied binary 'travel = poor focus' heuristic without nuance for seated/stable travel contexts.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified moderate distraction (47.36 dB, busy labels). Audio assessment was appropriate and aligned with mixed environment. Weight: maintain current sensitivity to 45-60 dB range, but avoid compounding with GPS penalties.",
+      "vitals": "Heart rate (75.94 bpm) correctly identified as calm/focused range. Model appropriately did not penalize vitals. However, user reported physiological strain not captured by HR alone—blind spot for fatigue/discomfort. Weight: maintain current HR thresholds but acknowledge limited strain detection.",
+      "motion": "Motion events (3 stationary, 1 walking) correctly assessed as low restlessness. Model noted 'minimal but present movement' appropriately. Discrepancy: model emphasized GPS over motion context. Weight: increase motion sensor priority when GPS and motion conflict; stationary motion during GPS travel suggests seated stability.",
+      "gps": "GPS displacement (1857m) over-weighted. Model assumed travel = severe disruption without considering seated/stable travel modes (train, car passenger). User tolerated location change better than model predicted. Weight: reduce GPS penalty magnitude when motion shows stationary dominance; introduce travel-mode context or graduated displacement thresholds (e.g., <500m minor, 500-2000m moderate, >2000m severe)."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when motion sensors show predominantly stationary contexts (seated travel scenario). Introduce tiered GPS thresholds: <500m = minor impact, 500-2000m = moderate, >2000m = severe.",
+      "Increase motion sensor weighting as moderating signal for GPS-based penalties. Stationary motion + high GPS displacement should trigger 'stable travel' interpretation, not 'chaotic movement'."
+    ]
+  },
+  "db_row_id": 91
+}

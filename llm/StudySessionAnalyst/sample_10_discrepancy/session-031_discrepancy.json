@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:46:34.861737Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-031",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Classroom",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned score 3/10 emphasizing severe mobility disruption (1.6km travel, 60% walking contexts). User reported 6/10, acknowledging movement/location issues but experiencing moderate concentration despite mobility. Model over-penalized physical movement relative to user's subjective focus capacity."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model correctly detected high mobility (1059m displacement, 3 walking vs 2 stationary) and applied severe penalty assuming mobility incompatible with concentration. User confirms movement/location factors but reports 6/10 focus, suggesting ability to maintain moderate concentration during mobile study (e.g., walking review, commute study, or intentional movement breaks). Model lacks context for intentional vs disruptive mobility. User also cited physiological strain, but vitals (73.86 bpm, calm range) do not support stress—indicating either unmeasured fatigue/discomfort or user misattribution. Model may have over-weighted GPS/motion relative to user's adaptive capacity.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified 49.8 dB as acceptable range and 'busy/Ambient' labels as moderate distraction. Audio judgment appropriate; maintain current weighting but recognize it was not user's primary concern.",
+      "vitals": "Heart rate 73.86 bpm correctly assessed as calm/focused range. However, user reported physiological strain that vitals did not capture (possible fatigue, discomfort, or cognitive load not reflected in HR). Vitals alone insufficient for strain detection; treat as partial indicator only. Steps/distance correctly identified movement but model should not assume all movement equally disruptive.",
+      "motion": "Accurately detected 60% active (3 walking, 2 stationary). Model treated this as severe impairment; user confirms it affected focus but maintained 6/10 performance. Next cycle: distinguish sustained walking (potentially adaptive, e.g., walking study) from erratic restlessness. Motion context alone cannot determine concentration ceiling without task/intent context.",
+      "gps": "Correctly flagged drastic location change (1059m displacement, 1621m travel). Model applied maximum penalty for instability. User confirms location transitions were factor but not catastrophic. GPS displacement may indicate commute-study, multi-location session, or planned transitions rather than chaotic disruption. Reduce GPS penalty weight when other sensors (vitals, audio) remain stable, or flag uncertainty about mobility intent."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS/motion penalty severity when vitals remain calm and audio stable; high mobility + calm physiology may indicate intentional mobile study rather than disruptive chaos.",
+      "Do not assume all location changes equally impair focus; 1km+ travel with 6/10 user score suggests model overfit to stationary-study assumption. Introduce mobility-tolerance threshold or flag as high-uncertainty scenario."
+    ]
+  },
+  "db_row_id": 71
+}

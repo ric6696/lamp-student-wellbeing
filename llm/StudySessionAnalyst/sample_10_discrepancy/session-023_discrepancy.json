@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:40:47.480271Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-023",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored 2/10 interpreting session as commute/transit with poor concentration. User scored 5/10 acknowledging moderate focus despite movement, location changes, and physiological strain. Model over-weighted GPS travel and misinterpreted stationary motion contexts as transit rather than restless study."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model interpreted drastic GPS displacement (1369m) and total travel (3086m) as definitive evidence of commute/transit, concluding concentration was 'nearly impossible.' User confirms location changes and movement were distracting but still achieved moderate focus (5/10). Model failed to consider that: (1) GPS travel over 107 minutes may reflect study breaks or multi-location study (e.g., library to café), not continuous transit; (2) 5 stationary motion events could indicate seated study with restlessness, not just sitting in vehicle; (3) calm heart rate (75 bpm) and low step count (6.82 avg) support intermittent movement rather than active commute. Model conflated location instability with zero concentration capability. User's physiological strain factor is not supported by vitals data (HR in calm range), suggesting subjective fatigue not captured by sensors.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable signal: 8 busy/Ambient events at 50.6 dB consistently indicate moderate distraction. Model correctly identified non-ideal audio environment. Weight: maintain current emphasis as direct distraction indicator.",
+      "vitals": "Misinterpreted: HR 75 bpm is calm/focused range, contradicting model's 'transit' hypothesis. Low steps (6.82) suggest minimal movement, not active travel. Model should treat calm vitals as evidence against severe distraction. Weight: increase as counterbalance to GPS when HR is stable. Caution: cannot directly measure physiological strain (stress/fatigue) reported by user.",
+      "motion": "Ambiguous interpretation: 5 stationary + 1 walking could mean either (a) seated study with occasional restlessness or (b) seated transit. Model assumed (b) without considering (a). Next cycle: do not default to transit interpretation when stationary dominates; cross-check with vitals and session duration. Weight: reduce confidence when stationary is majority context.",
+      "gps": "Over-weighted: Model treated 1369m displacement as disqualifying for any concentration. Over 107 minutes, this could reflect 2-3 location changes (study spots) rather than continuous travel. Drastic_location_change flag is binary and does not distinguish commute from multi-location study. Weight: reduce penalty for displacement when session is long (>90 min) and motion shows extended stationary periods. Caution: GPS alone cannot determine study vs. transit intent."
+    },
+    "judgment_policy_next_run": [
+      "GPS displacement: apply graduated penalty based on session duration. For sessions >90 min, displacement <2000m may indicate location transitions between study spots, not full commute. Do not auto-assign score <3 based on GPS alone.",
+      "Motion stationary dominance: when stationary events ≥80% of motion contexts, interpret as seated activity (study or transit). Require corroborating signals (e.g., elevated HR, high steps, continuous audio change) before concluding transit."
+    ]
+  },
+  "db_row_id": 63
+}

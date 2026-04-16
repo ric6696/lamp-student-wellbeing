@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T22:40:18.243237Z",
+  "timestamp": "2026-04-15T23:30:02.844061Z",
   "model": "claude-sonnet-4-5",
   "source": "json_batch",
   "session": {
@@ -72,14 +72,14 @@
     "gps_motion": "GPS shows drastic location instability with 564.2m displacement and 3,841m total travel distance, far exceeding stable study thresholds. Motion context confirms high activity: 3 walking instances versus only 2 stationary, indicating the user was predominantly mobile during this session."
   },
   "phase_2": {
-    "correlations": "All modalities converge on a pattern of active mobility rather than study: noisy busy environment correlates with walking motion contexts, elevated heart rate aligns with physical movement (high steps/distance), and extensive GPS travel confirms the user was commuting or moving between locations. The combination of speech-heavy audio, elevated physiological markers, and continuous location changes indicates this was a transit or errand period, not a study session.",
-    "holistic_assessment": "This session exhibits no characteristics of concentrated study. The user was in a mobile, noisy environment with continuous physical activity and location changes throughout the 91-minute window. All sensor modalities indicate active movement through busy spaces rather than stationary focused work."
+    "correlations": "All modalities strongly correlate toward active movement and environmental distraction. The busy/speech-heavy audio (63.2 dB) aligns with walking motion contexts and substantial GPS travel. Elevated heart rate (93.2 bpm) and continuous step activity (29.8 steps/sample) confirm physical exertion consistent with traveling through noisy environments rather than stationary study.",
+    "holistic_assessment": "This session represents minimal to no actual study concentration. The user was predominantly mobile, traveling nearly 4km through busy, speech-filled environments with elevated physiological indicators of activity. All sensor modalities indicate this was a transit or commute session rather than a focused study period."
   },
   "phase_3": {
-    "recommendations": "1) Avoid logging study sessions during commutes or errands—wait until you reach a stable, quiet location before starting concentration tracking. 2) Seek environments with <60 dB ambient noise and minimal speech interruptions for effective study. 3) Establish a stationary workspace where heart rate can settle to 60-85 bpm and movement is minimized to support sustained focus."
+    "recommendations": "1) Establish a dedicated, stationary study location to eliminate travel-related distractions and reduce GPS displacement to under 200m. 2) Choose quiet environments with ambient noise below 45 dB and use noise-canceling headphones to block speech distractions. 3) Schedule study sessions separate from commute/travel times when you can remain seated and stationary, allowing heart rate to settle into the 60-85 bpm focus range."
   },
   "personalization_basis": null,
-  "score": 1,
-  "reason": "This session shows zero concentration indicators across all modalities. Audio averaged 63.2 dB with all 'busy' and speech labels in a distracting environment, heart rate was elevated at 93.2 bpm with high step count (29.8) indicating continuous movement, and GPS revealed 3,841m of travel with drastic location changes. The user was clearly mobile and in transit rather than studying.",
+  "score": 2,
+  "reason": "The session shows virtually no concentration indicators, with distracting audio (63.2 dB, all 'busy' labels with speech), elevated heart rate (93.2 bpm), and extensive movement (3,841m travel, 564m displacement). Motion context confirms predominantly walking activity rather than stationary study, indicating this was a commute or transit session rather than focused study time.",
   "error": null
 }

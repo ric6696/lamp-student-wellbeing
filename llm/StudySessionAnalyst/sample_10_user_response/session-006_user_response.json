@@ -2,14 +2,14 @@
   "user_response": [
     {
       "question": "How focused were you during this study session?",
-      "answer": 6
+      "answer": 5
     },
     {
       "question": "What most affected your concentration during this session?",
       "answer": [
-        "Movement / Restlessness",
+        "Internal Cognitive Drift (mind wandering, low motivation)",
         "Location Change / Transition",
-        "Physiological Strain (stress, fatigue, discomfort)"
+        "Task Challenge (difficulty, frustration)"
       ]
     }
   ]

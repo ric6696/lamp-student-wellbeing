@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:59:41.171002Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-048",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Library",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted severe concentration impairment (2/10) while user reported moderate focus (5/10). Both agree on presence of environmental noise, movement, and location changes as distractors, but differ substantially on severity impact. Model may have over-penalized mobility patterns that user considered manageable or contextually appropriate."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model and user agree on distraction factors present but disagree on impact magnitude. Model applied strict thresholds (62.45 dB > 60, HR 89.93 > 85, 3.5km travel) and interpreted the session as 'active commuting rather than study.' User acknowledged same distractors but rated focus at midpoint (5/10), suggesting partial productivity despite suboptimal conditions. Possible explanations: (1) User adapted to mobile/noisy study context (e.g., studying on transit, walking between library locations); (2) Model thresholds too rigid for real-world study variability; (3) User may have completed meaningful work in short stationary windows (2 stationary motion events) that model underweighted; (4) 98-minute duration suggests intentional session, not incidental activity.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified noisy environment (62.45 dB, 4 'busy' labels, 3 Speech events). Threshold of 60 dB may be too strict; many students study in cafes/libraries at 60-65 dB. Recommend tiered penalty: 45-55 dB (minimal), 55-65 dB (moderate), >65 dB (severe). Speech presence is strong distractor signal but weight should consider duration and user adaptation patterns.",
+      "vitals": "Heart rate 89.93 bpm elevated but not extreme. Model assumed stress/distraction; user may have been walking between study spots or naturally higher baseline. Steps (29.9/sample) and distance (26.09m/sample) indicate movement but not continuous high-intensity activity. Recommend contextualizing vitals with motion: if walking motion aligns with elevated HR, reduce penalty; if stationary with high HR, increase stress inference weight.",
+      "motion": "Motion showed 3 walking vs 2 stationary events. Model heavily penalized mobility, but 2 stationary periods suggest some seated work occurred. Recommend weighting stationary duration over event counts, and consider that brief walking (transitions between study locations) may not fully disrupt concentration. Need temporal distribution: clustered walking at session edges vs interspersed throughout.",
+      "gps": "GPS displacement (1798m) and travel (3506m) triggered 'drastic location change' flag and dominated model penalty. However, 3 GPS points over 98 minutes is sparse sampling; user may have studied at 2-3 locations with brief transitions. Recommend: (1) Distinguish multi-location study sessions from continuous travel; (2) Weight stationary dwell time at each location; (3) Reduce penalty if location changes align with motion 'stationary' clusters; (4) Consider that some users productively study across multiple quiet locations."
+    },
+    "judgment_policy_next_run": [
+      "Implement tiered threshold penalties instead of binary cutoffs: audio 45-55-65 dB bands, HR 60-75-85-95 bpm bands, GPS displacement 0-100-500-1500m bands.",
+      "Weight stationary motion duration and clustering over event counts; prioritize temporal analysis to identify concentrated work windows within mobile sessions."
+    ]
+  },
+  "db_row_id": 88
+}

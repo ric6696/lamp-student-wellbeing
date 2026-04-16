@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T22:33:39.171366Z",
+  "timestamp": "2026-04-16T01:12:58.141902Z",
   "model": "claude-sonnet-4-5",
   "source": "json_batch",
   "session": {
@@ -69,17 +69,17 @@
   "phase_1": {
     "audio": "Audio environment is distracting with avg 63.9 dB exceeding the 60 dB acceptable threshold. All 4 confidence-filtered events labeled 'busy' with 3 Speech and 1 Ambient AI labels indicate a noisy, conversation-heavy environment unsuitable for focused study.",
     "vitals": "Heart rate at 86.9 bpm is slightly elevated above the calm focus range (60-85 bpm), suggesting mild stress or activity. Steps averaging 36.25 per sample and distance of 32.99m per sample indicate consistent movement rather than seated study behavior.",
-    "gps_motion": "GPS shows drastic location instability with 331.5m displacement and 838.6m total travel, far exceeding stable study thresholds (<200m). Motion context confirms active behavior with 3 walking instances vs only 1 stationary, indicating frequent movement throughout the session."
+    "gps_motion": "GPS shows drastic location instability with 331.5m displacement and 838.6m total travel, far exceeding stable study thresholds (<200m). Motion context confirms active behavior with 3 walking instances vs only 1 stationary, indicating the user was mobile throughout the session."
   },
   "phase_2": {
-    "correlations": "All modalities converge on a pattern of active mobility rather than concentrated study: noisy busy audio aligns with walking motion contexts, elevated heart rate correlates with continuous movement (36 steps/sample), and substantial GPS travel (838m) confirms the user was mobile throughout. The combination of speech-heavy audio, consistent walking, and location changes suggests commuting, errands, or social activity rather than stationary study.",
-    "holistic_assessment": "This 77-minute session shows minimal to no study concentration. The user was physically active and mobile in a noisy environment with frequent speech, exhibiting none of the characteristics of focused study (quiet space, stationary position, stable location, calm physiology). This appears to be a non-study activity period such as traveling, socializing, or running errands."
+    "correlations": "All modalities converge on a pattern of active mobility rather than stationary study: noisy busy audio aligns with walking motion contexts, elevated heart rate correlates with continuous movement (36 steps/sample), and substantial GPS travel (838m) confirms the user was moving between locations. The Speech-heavy audio labels suggest social interaction or public spaces during transit.",
+    "holistic_assessment": "This 77-minute session shows clear evidence of active commuting or travel rather than concentrated study. The combination of distracting noise levels, consistent physical movement, elevated heart rate, and drastic location changes across all sensor modalities indicates minimal to no focused study activity occurred during this period."
   },
   "phase_3": {
-    "recommendations": "1) Establish a dedicated, stationary study location to eliminate the 838m of travel and walking interruptions observed in this session. 2) Choose a quiet environment with <60 dB ambient noise to avoid the distracting 'busy' and speech-heavy audio detected here. 3) Schedule study sessions separately from active/mobile periods; use movement-heavy times for breaks or errands rather than concentration work."
+    "recommendations": "1) Establish a fixed, quiet study location to eliminate the 838m of travel and reduce ambient noise below 60 dB. 2) Schedule study sessions separate from commute/transit times when walking and movement are unavoidable. 3) Use noise-canceling headphones or find private spaces to avoid busy/speech-heavy environments that fragment attention."
   },
   "personalization_basis": null,
   "score": 2,
-  "reason": "The session exhibits severe concentration barriers across all modalities: distracting audio at 63.9 dB with busy/speech labels, elevated heart rate of 86.9 bpm with continuous movement (36 steps/sample), and drastic location instability (838m travel, 3 walking contexts). These indicators collectively demonstrate active mobility in a noisy environment rather than stationary, focused study behavior.",
+  "reason": "The session demonstrates very poor concentration conditions across all modalities. Audio at 63.9 dB with busy/speech labels exceeds distraction thresholds, heart rate of 86.9 bpm with 36 steps per sample indicates active movement rather than seated focus, and GPS travel of 838m with 3 walking contexts confirms the user was commuting or mobile throughout. This represents transit activity, not study concentration.",
   "error": null
 }

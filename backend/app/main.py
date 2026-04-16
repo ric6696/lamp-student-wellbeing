@@ -104,37 +104,42 @@ def _safe_mtime(path: Path) -> float | None:
     return path.stat().st_mtime
 
 
+def _json_file_ready(path: Path, required_keys: tuple[str, ...] = ()) -> tuple[bool, str]:
+    if not path.exists():
+        return False, f"missing:{path}"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return False, f"invalid_json:{path.name}:{exc}"
+
+    if required_keys and isinstance(payload, dict):
+        missing = [key for key in required_keys if key not in payload]
+        if missing:
+            return False, f"missing_keys:{path.name}:{','.join(missing)}"
+
+    return True, "ready"
+
+
 def _outputs_ready_for_analyst(
     user_response_mtime: float,
     concentration_baseline_mtime: float | None,
     pre_session_baseline_mtime: float | None,
 ) -> tuple[bool, str]:
-    if not _concentration_output_path.exists():
-        return False, f"missing_concentration_output:{_concentration_output_path}"
-    if not _pre_session_context_path.exists():
-        return False, f"missing_pre_session_context:{_pre_session_context_path}"
+    # We only need valid, readable inputs. Freshness checks caused valid runs to be skipped.
+    concentration_ok, concentration_reason = _json_file_ready(_concentration_output_path)
+    if not concentration_ok:
+        return False, concentration_reason
 
-    concentration_mtime = _concentration_output_path.stat().st_mtime
-    pre_session_mtime = _pre_session_context_path.stat().st_mtime
-
-    # Accept outputs that are close in time to the review submission (same-session window),
-    # or outputs that changed after submission (worker finished later).
-    same_session_window_seconds = 300
-
-    concentration_close = abs(concentration_mtime - user_response_mtime) <= same_session_window_seconds
-    pre_session_close = abs(pre_session_mtime - user_response_mtime) <= same_session_window_seconds
-
-    concentration_updated = (
-        concentration_baseline_mtime is not None and concentration_mtime > concentration_baseline_mtime
+    pre_session_ok, pre_session_reason = _json_file_ready(
+        _pre_session_context_path,
+        required_keys=("activity_context", "environment_context", "mental_readiness"),
     )
-    pre_session_updated = (
-        pre_session_baseline_mtime is not None and pre_session_mtime > pre_session_baseline_mtime
-    )
+    if not pre_session_ok:
+        return False, pre_session_reason
 
-    if not (concentration_close or concentration_updated):
-        return False, "stale_concentration_output"
-    if not (pre_session_close or pre_session_updated):
-        return False, "stale_pre_session_context"
+    user_response_ok, user_response_reason = _json_file_ready(_user_response_path)
+    if not user_response_ok:
+        return False, user_response_reason
 
     return True, "ready"
 

@@ -1,0 +1,16 @@
+{
+  "user_response": [
+    {
+      "question": "How focused were you during this study session?",
+      "answer": 6
+    },
+    {
+      "question": "What most affected your concentration during this session?",
+      "answer": [
+        "Internal Cognitive Drift (mind wandering, low motivation)",
+        "Location Change / Transition",
+        "Task Challenge (difficulty, frustration)"
+      ]
+    }
+  ]
+}

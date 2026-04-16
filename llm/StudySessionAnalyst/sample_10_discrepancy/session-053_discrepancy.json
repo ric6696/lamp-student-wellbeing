@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-04-16T00:03:19.812691Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-053",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "LLM response was not valid JSON."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "LLM output parsing failed.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "",
+      "vitals": "",
+      "motion": "",
+      "gps": ""
+    },
+    "judgment_policy_next_run": []
+  },
+  "db_row_id": 93
+}

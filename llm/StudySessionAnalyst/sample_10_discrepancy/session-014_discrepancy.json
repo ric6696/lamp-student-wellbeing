@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:33:28.850919Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-014",
+  "concentration_score": 5.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 5.0,
+      "user_score": 6.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized heavily for GPS travel during transit study; user acknowledged location change but rated primary distraction as internal cognitive drift (unmeasured), suggesting they achieved better focus than environmental instability would predict."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS travel (3066m total, 721m displacement) as a concentration penalty, interpreting transit study as fundamentally incompatible with focus. User confirmed location change as a factor but rated it secondary to internal cognitive drift and task challenge—both unmeasured by sensors. The favorable audio (45dB, 5 quiet labels) and calm vitals (75bpm) supported user's higher self-assessment. Model lacked visibility into cognitive state and task difficulty, leading to conservative scoring based solely on environmental instability.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. 45.13dB with 5/7 quiet/silence labels accurately indicated conducive acoustic environment. No recalibration needed; audio correctly supported concentration potential.",
+      "vitals": "Reliable for physiological calm. 75.21bpm and low steps (5.1 avg) correctly indicated relaxed state. However, vitals cannot distinguish between engaged focus and passive disengagement. Maintain current weighting but recognize limitation in detecting cognitive drift.",
+      "motion": "Partially reliable. 4/5 stationary events correctly indicated minimal physical restlessness, but motion data alone cannot assess cognitive engagement quality. Do not over-interpret stationary status as proof of deep focus.",
+      "gps": "Reliable for detecting location instability but over-weighted as concentration penalty. 3066m travel during 92min session clearly indicates transit study, but model assumed this categorically prevents moderate focus. Recalibrate: GPS travel should flag context instability but not override positive audio/vitals signals. Consider transit study as viable for score 5-7 range when other sensors are favorable."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS penalty weight when audio and vitals are both favorable. Transit study can support moderate concentration (5-7 range) if immediate environment is quiet and physiology is calm.",
+      "Flag unmeasured factors explicitly in reasoning. When user reports cognitive drift or task challenge as primary, acknowledge model blind spot and increase uncertainty bounds."
+    ]
+  },
+  "db_row_id": 54
+}

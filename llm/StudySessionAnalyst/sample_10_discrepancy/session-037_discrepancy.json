@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:50:54.604576Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-037",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point lower than model. Model emphasized location changes and audio environment as major disruptions, while user attributed poor focus primarily to internal cognitive drift (unmeasured) alongside location changes and task difficulty. The discrepancy stems from model over-weighting observable GPS displacement without accounting for unmeasured cognitive factors."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 4.0 based heavily on GPS displacement (1104m) and travel (1711m) as severe concentration disruptors, plus suboptimal audio (49dB, 5 busy labels). User's primary factor was internal cognitive drift (unmeasured by sensors), with location change as secondary. Model lacked visibility into cognitive state and task difficulty, leading to over-attribution of poor focus to observable location changes. User's self-assessment suggests internal factors dominated, which sensors cannot capture, making the session feel worse than observable metrics alone indicated.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio sensor (49dB, 5 busy/3 quiet) correctly identified suboptimal but tolerable environment. Model appropriately weighted this as moderate negative factor. Maintain current weighting but avoid over-penalizing mid-range dB (45-60) when other factors may dominate. Confidence: HIGH for detection, but impact may vary with unmeasured cognitive state.",
+      "vitals": "Heart rate (76bpm) correctly identified calm physiological state, suggesting readiness for focus. Low steps (4.45) confirmed stationary behavior. Model correctly interpreted these as non-disruptive. However, vitals cannot distinguish between calm focus and calm disengagement (mind wandering). Confidence: HIGH for physiological state, LOW for inferring actual concentration quality.",
+      "motion": "Motion sensor (6 stationary, 0 active) accurately captured seated behavior at multiple locations. Model correctly used this with GPS to infer multi-location study pattern. Maintain current interpretation. Confidence: HIGH for activity classification, but cannot measure cognitive engagement during stationary periods.",
+      "gps": "GPS displacement (1104m) and travel (1711m) were heavily weighted as major disruption. While location changes are observable (HIGH confidence), model may have over-penalized this factor. User confirmed location change as a factor but rated it secondary to cognitive drift. Reduce penalty weight for location changes when: (1) motion shows sustained stationary periods between moves, (2) vitals remain calm, (3) user reports cognitive factors. Confidence: HIGH for detecting transitions, MEDIUM for impact severity without cognitive context."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when motion shows sustained stationary periods (≥5 events) and vitals indicate calm state, as user may adapt to new locations better than model assumes.",
+      "When audio is in acceptable range (45-60dB) and vitals/motion are non-disruptive, cap concentration score penalty and flag uncertainty due to unmeasured cognitive factors."
+    ]
+  },
+  "db_row_id": 77
+}

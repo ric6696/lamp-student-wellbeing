@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-04-15T23:46:49.670998Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-032",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-14T14:55:53.345782+00:00",
+    "ended_at": "2026-03-14T16:04:53.345782+00:00",
+    "duration_min": 69.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-032",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-14T14:55:53.345782+00:00",
+      "ended_at": "2026-03-14T16:04:53.345782+00:00",
+      "duration_min": 69.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 5,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 3,
+      "motion_events": 4,
+      "vitals_rows": 21
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 65.36,
+      "label_counts_conf_gt_50": {
+        "busy": 5
+      },
+      "label_counts_conf_gt_50_text": "5 busy",
+      "ai_label_counts_conf_gt_50": {
+        "Speech": 5
+      },
+      "ai_label_counts_conf_gt_50_text": "5 Speech"
+    },
+    "vitals": {
+      "avg_heart_rate": 92.57142857142857,
+      "avg_steps": 33.57142857142857,
+      "avg_distance_m": 32.277142857142856,
+      "heart_rate_samples": 7,
+      "steps_samples": 7,
+      "distance_samples": 7
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1527.1854752829274,
+      "total_travel_m": 1784.7453894171153,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "walking": 4
+      },
+      "counts_text": "4 walking",
+      "stationary_count": 0,
+      "active_count": 4
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment is highly distracting with average 65.36 dB exceeding the 60 dB threshold. All 5 high-confidence events are labeled 'busy' with AI detecting 'Speech', indicating a noisy, conversation-filled environment incompatible with focused study.",
+    "vitals": "Heart rate averaged 92.57 bpm, significantly above the calm focus range of 60-85 bpm, suggesting stress or physical activity. Steps (33.57 avg) and distance (32.28m avg) per sample indicate continuous movement rather than seated study behavior.",
+    "gps_motion": "GPS shows drastic location instability with 1527.19m displacement and 1784.75m total travel over 69 minutes. Motion context shows 4 walking events with 0 stationary periods, confirming the user was actively moving throughout the entire session."
+  },
+  "phase_2": {
+    "correlations": "All modalities strongly correlate to indicate active transit rather than study: noisy busy/speech audio aligns with walking motion contexts, elevated heart rate matches physical movement, and substantial GPS travel confirms the user was commuting or moving between locations. No modality suggests stationary, focused study behavior.",
+    "holistic_assessment": "This session represents active travel or commuting rather than a concentration study period. The combination of distracting noise levels, continuous walking motion, elevated heart rate, and nearly 1.8km of travel indicates the user was in transit through busy environments, making focused study impossible."
+  },
+  "phase_3": {
+    "recommendations": "1) Avoid logging study sessions during commutes or travel periods; reserve session tracking for stationary study locations. 2) Find a quiet, stable environment (library, study room) where you can remain seated with minimal ambient noise below 45 dB. 3) Allow heart rate to settle to 60-85 bpm range before beginning focused work, indicating you've transitioned from physical activity to calm study mode."
+  },
+  "personalization_basis": null,
+  "score": 1,
+  "reason": "This session shows zero concentration indicators across all modalities. Audio was distracting at 65.36 dB with busy/speech labels, heart rate was elevated at 92.57 bpm, and the user traveled 1784.75 meters while walking continuously with no stationary periods. All evidence points to active commuting rather than any attempt at focused study.",
+  "error": null
+}

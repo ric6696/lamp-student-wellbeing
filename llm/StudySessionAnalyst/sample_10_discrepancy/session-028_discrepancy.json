@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:44:19.474108Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-028",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized heavily for GPS displacement (1263m), while user acknowledged location change but rated primary distraction as internal cognitive drift (unmeasured by sensors). Model over-weighted observable location instability; user experienced subjective cognitive challenges not captured by sensors."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 6.0 primarily due to GPS displacement exceeding 1200m, interpreting this as major session fragmentation. User rated 7.0 and identified primary distraction as internal cognitive drift (unmeasured), with location change as secondary. Two of three user-reported factors (cognitive drift, task challenge) have zero sensor observability. Model over-penalized the directly observable location change while missing the dominant subjective cognitive factors. User may have maintained better focus during/after relocation than sensor-based inference suggested, or experienced cognitive challenges unrelated to environmental stability.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. 39.6 dB average with 8/8 quiet/silence events directly supports low environmental distraction. No user-reported noise issues. Maintain high weight for acoustic environment assessment.",
+      "vitals": "Reliable for physiological calm (65.2 bpm optimal, minimal steps). However, vitals cannot detect cognitive drift or task frustration. Do not infer high concentration solely from calm vitals when unmeasured cognitive factors may dominate. Reduce confidence when user reports internal/task challenges.",
+      "motion": "Accurate detection of stationary (4) vs. walking (2) periods. Correctly identified low physical restlessness. However, stationary motion does not guarantee cognitive engagement. Avoid over-confidence in concentration quality from motion stability alone when cognitive factors are at play.",
+      "gps": "Accurately detected 1263m displacement and flagged drastic location change. However, model over-penalized this observable factor (reducing score to 6.0) when user rated impact as secondary to unmeasured cognitive drift. GPS displacement is a valid distraction signal but should not dominate scoring when other factors (even unmeasured) may be primary. Reduce GPS penalty weight when vitals/audio remain optimal and user reports non-environmental distractions."
+    },
+    "judgment_policy_next_run": [
+      "When GPS shows drastic location change but audio/vitals remain optimal, cap GPS penalty to 0.5-1.0 points rather than 1.5-2.0 points; user may adapt quickly or maintain focus during planned transitions.",
+      "Do not infer high concentration (7+) from sensor optimality alone; when all sensors are favorable but score is moderate, flag potential unmeasured cognitive/task factors and reduce confidence."
+    ]
+  },
+  "db_row_id": 68
+}

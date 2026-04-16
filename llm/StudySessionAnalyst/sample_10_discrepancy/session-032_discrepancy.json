@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:47:18.680811Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-032",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Cafe",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (1.0) interpreting the session as active commuting. User reported low-moderate concentration (4.0) acknowledging distractions but indicating some study attempt occurred. Large 3-point gap suggests model over-weighted mobility signals and failed to detect any study behavior."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly detected all three distraction factors but concluded zero study activity occurred, assigning minimum score. User confirms all three distractions were present yet reports score of 4, suggesting partial study engagement despite adverse conditions. Model lacked nuance to distinguish 'study session with severe distractions' from 'no study attempt at all'. The 69-minute duration and user's explicit session labeling as 'study_session' were not weighted as evidence of intent. Model may have applied binary threshold logic (stationary=study, mobile=not-study) rather than graduated impairment scoring.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified distracting environment (65.36 dB, busy/speech labels). Reliable signal for distraction presence. Next time: audio distraction does not automatically mean zero concentration—weight as impairment factor, not binary disqualifier. Consider that users may study in suboptimal audio environments intentionally or unavoidably.",
+      "vitals": "Elevated heart rate (92.57 bpm) and step count (33.57 avg) accurately detected physical activity. Reliable for movement detection. Next time: elevated vitals during long sessions may indicate restlessness during study rather than complete absence of study. Do not treat as absolute study/non-study classifier; use as distraction severity indicator within study context.",
+      "motion": "Motion events (4 walking, 0 stationary) correctly captured active movement. High confidence signal. Next time: walking events during 69-minute session may represent breaks, transitions between study spots, or restless study behavior rather than continuous non-study transit. Require sustained walking patterns or shorter session durations before concluding 'commute only'. Consider motion event density and clustering.",
+      "gps": "GPS displacement (1527m) and travel (1784m) accurately measured location instability. High confidence for mobility detection. Next time: substantial GPS travel is strong evidence against ideal study conditions but does not prove zero study occurred. User may have studied in multiple locations (library→café) or during transit (bus/train study). Weight GPS as context modifier rather than absolute veto. For sessions >60 min, evaluate whether travel was continuous or clustered at session boundaries."
+    },
+    "judgment_policy_next_run": [
+      "Implement graduated scoring: distinguish 'distracted study' (scores 2-5) from 'no study attempt' (score 1). Presence of severe distractions should lower score but not automatically floor it.",
+      "Weight session duration and user labeling as prior evidence of study intent. 69-minute sessions labeled 'study_session' suggest deliberate activity even under poor conditions."
+    ]
+  },
+  "db_row_id": 72
+}

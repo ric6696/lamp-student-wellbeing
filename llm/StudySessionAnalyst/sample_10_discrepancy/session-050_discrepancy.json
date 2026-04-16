@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-16T00:01:05.253014Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-050",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized for GPS displacement during transportation; user acknowledged location change but reported higher subjective focus, citing internal cognitive drift and task challenge as primary factors—both unmeasured by sensors."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model heavily penalized GPS displacement (1987m) as inherent distraction during transportation, reducing score to 6.0 despite optimal audio/vitals/motion. User confirmed location change but rated 7.0, indicating subjective tolerance or adaptation to mobile study. User's primary factor (cognitive drift) and task challenge are unmeasured, meaning model lacked visibility into internal mental state that may have been more impactful than environmental travel context. Model over-weighted GPS instability relative to user's lived experience.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. 39.5 dB average, all 'quiet'/'Silence' labels across 6 events strongly indicate favorable acoustic environment. No adjustment needed; audio correctly supported concentration.",
+      "vitals": "Reliable and well-calibrated. 67.1 bpm in optimal range, minimal steps (4.0 avg) confirm calm, stationary physiological state. However, vitals cannot detect cognitive drift or task frustration—acknowledge this blind spot explicitly.",
+      "motion": "Reliable for physical state. 5/5 stationary readings correctly identified no ambulatory activity. Motion data alone cannot distinguish between stationary-focused vs. stationary-distracted states; avoid over-interpreting stillness as concentration proof.",
+      "gps": "Accurate for location tracking but context-dependent for concentration inference. Drastic displacement (1987m) was correctly detected and flagged. However, model over-penalized transportation scenario when other sensors (audio, vitals, motion) remained optimal. Reduce GPS penalty weight when contradicted by stable audio/motion/vitals, especially in passenger contexts where user may adapt effectively."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when audio remains quiet (<45 dB), motion is stationary, and vitals are calm—user may concentrate effectively as passenger despite travel.",
+      "Explicitly flag unmeasured factors (cognitive drift, task challenge) as model blind spots; avoid conflating sensor-favorable conditions with guaranteed high concentration."
+    ]
+  },
+  "db_row_id": 90
+}

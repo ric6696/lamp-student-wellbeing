@@ -7,9 +7,9 @@
     {
       "question": "What most affected your concentration during this session?",
       "answer": [
-        "Internal Cognitive Drift (mind wandering, low motivation)",
         "Location Change / Transition",
-        "Task Challenge (difficulty, frustration)"
+        "No Major Distraction",
+        "Internal Cognitive Drift (mind wandering, low motivation)"
       ]
     }
   ]

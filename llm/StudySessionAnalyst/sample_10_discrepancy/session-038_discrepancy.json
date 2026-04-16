@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:51:43.043929Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-038",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Home",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (1.0) while user reported low-moderate focus (4.0). Model interpreted session as active transit with no study activity; user acknowledged distractions but reported partial focus despite mobility and noise."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly detected all three distraction factors but over-penalized by treating them as absolute concentration blockers (score=1). User confirmed these distractions existed but maintained partial focus despite them. The 3-point gap suggests the model failed to distinguish between 'distracted environment with zero study attempt' vs 'challenging environment with degraded but non-zero study effort.' Model applied binary logic (mobile + noisy = no concentration) rather than graduated impairment.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified distracting environment (61 dB, busy/speech labels). Sensor reliable and well-weighted. However, presence of noise does not guarantee zero concentration—some users study in suboptimal conditions. Next: treat audio distraction as concentration penalty (e.g., -2 to -4 points) rather than disqualifier.",
+      "vitals": "Elevated heart rate (93 bpm) accurately detected but over-interpreted as incompatible with any study activity. HR elevation may indicate stress during study or light walking while reviewing material. Next: use elevated HR as moderate penalty (-1 to -2 points) unless extreme (>110 bpm), not as binary study/non-study classifier.",
+      "motion": "Walking motion (5 events) correctly identified. Model assumed walking precludes all study, but user may have been walking between study locations, reviewing notes while moving, or studying in brief stationary intervals. Next: weight stationary ratio more carefully; 1 stationary event in 6 suggests some seated time occurred. Penalize heavy but allow for mixed-mobility study patterns.",
+      "gps": "Drastic location change (3+ km travel) correctly flagged. Model treated this as definitive proof of non-study activity. However, 111-minute session with 3 GPS points allows for extended stationary periods between points. Next: examine temporal distribution of GPS events and correlate with motion timestamps. High travel may indicate commute + study at destination rather than continuous transit. Apply strong penalty (-3 to -4 points) but not absolute floor."
+    },
+    "judgment_policy_next_run": [
+      "Shift from binary classification (study vs non-study) to graduated impairment scoring. Distraction factors should reduce score proportionally, not force floor values.",
+      "Cross-reference temporal patterns: 111-minute session with sparse GPS sampling (3 points) may contain extended stationary study intervals not captured by aggregate metrics. Examine event timestamps for clustering."
+    ]
+  },
+  "db_row_id": 78
+}

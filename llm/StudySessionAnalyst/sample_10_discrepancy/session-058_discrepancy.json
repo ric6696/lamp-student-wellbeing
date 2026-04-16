@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-16T00:07:08.201543Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-058",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Cafe",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized heavily for GPS displacement (817m, 2956m travel), while user acknowledged location changes but reported better subjective focus. User attributed distraction primarily to internal cognitive drift (unmeasured) rather than location transitions, suggesting model over-weighted GPS instability."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 6.0 primarily due to GPS showing drastic location change (817m displacement, 2956m travel), interpreting this as substantial session fragmentation. User rated 7.0 and identified internal cognitive drift as primary distraction, with location change as secondary. The discrepancy suggests: (1) GPS travel may have been vehicular commute between stable study blocks rather than disruptive transitions, (2) user maintained focus during 5 stationary periods despite location changes, (3) model lacks visibility into unmeasured cognitive factors (mind wandering, task difficulty) that user felt were more impactful than physical location changes. Audio and vitals strongly supported concentration, creating tension with GPS penalty.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable and well-aligned. 41.4 dB average, all 'quiet'/'Silence' labels across 113 minutes strongly indicate conducive environment. No evidence of acoustic distraction. Maintain high weighting for audio stability as positive concentration signal.",
+      "vitals": "Reliable and supportive. Heart rate 66 bpm in optimal range, minimal steps (3.9 avg) and distance (3.5m) confirm seated behavior. No physiological strain detected. However, vitals cannot distinguish internal cognitive drift or task difficulty. Use as baseline stability indicator but do not over-rely for unmeasured cognitive factors.",
+      "motion": "Moderately reliable. 5 stationary contexts align with study behavior, 1 walking event minimal. Motion data supports seated focus during stationary periods. However, motion alone cannot assess concentration quality during those periods. Use to confirm physical stability but recognize limitation in detecting cognitive engagement.",
+      "gps": "Requires contextual calibration. GPS detected significant displacement (817m) and travel (2956m), triggering fragmentation penalty. However, user maintained higher self-reported focus despite location changes, suggesting: (a) travel may have been planned transitions between productive study blocks, (b) GPS instability/drift may inflate travel metrics, (c) location change impact varies by individual tolerance. Reduce GPS penalty weight when other sensors (audio, vitals, motion stationary) indicate stable focus conditions. Flag for review rather than automatic score reduction."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when audio, vitals, and motion stationary contexts all indicate stable focus conditions. GPS travel may represent planned transitions rather than disruptive fragmentation.",
+      "Do not conflate physical location stability with cognitive concentration quality. User can maintain focus across multiple locations if each provides conducive environment."
+    ]
+  },
+  "db_row_id": 98
+}

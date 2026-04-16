@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:54:56.007942Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-042",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored 2/10 (poor concentration) while user reported 5/10 (moderate concentration), creating a 3-point gap. Model heavily penalized GPS displacement (1437m) as disqualifying for study, while user acknowledged location change but rated concentration as moderate, suggesting the transit context may have still permitted some focus."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model treated GPS displacement (1437m) as absolute disqualifier, assigning score=2 based on location instability alone. User acknowledged location change and movement but still rated 5/10, suggesting they experienced moderate concentration despite transit. Key discrepancy: model assumed travel=zero concentration; user experienced partial focus during commute. Motion data shows 4 stationary events (likely seated in vehicle), low step count (5.7 avg), and calm heart rate (74.52 bpm), which may have enabled passive study activities the model did not account for. User's selection of physiological strain is not supported by vitals data (HR in calm range), indicating possible subjective fatigue not captured by sensors.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for ambient assessment. 49.24 dB and 6 busy/ambient labels correctly identified moderately distracting environment. Model appropriately weighted this as suboptimal but not severe. Maintain current weighting.",
+      "vitals": "Reliable and well-interpreted. HR 74.52 bpm correctly identified as calm focus range. Low step count (5.7) and distance (5.79m) accurately reflected minimal active movement. However, model should note that calm vitals during transit may still permit moderate concentration for passive tasks. Do not assume calm vitals + travel = zero focus.",
+      "motion": "Partially reliable. 4 stationary + 1 walking event correctly suggested seated context (vehicle). Model correctly inferred transit scenario but over-penalized. Next cycle: distinguish between active walking transit (high distraction) vs. seated vehicle transit (moderate distraction, passive study possible).",
+      "gps": "Highly reliable for detecting location change (1437m displacement, 2478m travel). Model correctly flagged drastic change but applied binary penalty (travel=no concentration). Calibration needed: GPS instability should reduce score proportionally, not categorically. Consider context: seated vehicle transit with calm vitals may support score 4-6 range, not automatic 2."
+    },
+    "judgment_policy_next_run": [
+      "GPS: When drastic location change detected (>1000m), cross-reference motion context. If motion shows sustained stationary periods (≥75% stationary events) and vitals are calm (HR 60-85 bpm), apply moderate penalty (score 4-6 range) rather than severe penalty (score 1-3), as seated transit may permit passive concentration.",
+      "Motion: Differentiate stationary-in-transit (vehicle, seated) from stationary-at-desk. Use GPS velocity/displacement rate alongside motion labels. High displacement + stationary motion = vehicle context = moderate distraction, not zero concentration."
+    ]
+  },
+  "db_row_id": 82
+}

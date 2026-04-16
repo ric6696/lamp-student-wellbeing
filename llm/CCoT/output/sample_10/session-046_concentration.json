@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-04-15T23:57:30.251985Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-046",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-27T08:19:55.844751+00:00",
+    "ended_at": "2026-03-27T09:50:55.844751+00:00",
+    "duration_min": 91.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-046",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-27T08:19:55.844751+00:00",
+      "ended_at": "2026-03-27T09:50:55.844751+00:00",
+      "duration_min": 91.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 7,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 3,
+      "motion_events": 5,
+      "vitals_rows": 30
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 60.2,
+      "label_counts_conf_gt_50": {
+        "busy": 5
+      },
+      "label_counts_conf_gt_50_text": "5 busy",
+      "ai_label_counts_conf_gt_50": {
+        "Speech": 2,
+        "Ambient": 3
+      },
+      "ai_label_counts_conf_gt_50_text": "3 Ambient, 2 Speech"
+    },
+    "vitals": {
+      "avg_heart_rate": 92.21000000000001,
+      "avg_steps": 26.1,
+      "avg_distance_m": 23.134999999999998,
+      "heart_rate_samples": 10,
+      "steps_samples": 10,
+      "distance_samples": 10
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 355.8768223083873,
+      "total_travel_m": 4312.313060874148,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "walking": 4,
+        "stationary": 1
+      },
+      "counts_text": "4 walking, 1 stationary",
+      "stationary_count": 1,
+      "active_count": 4
+    }
+  },
+  "phase_1": {
+    "audio": "Average audio level of 60.2 dB falls at the upper boundary of acceptable range, bordering on distracting. All 5 confidence-filtered events labeled as 'busy' with 2 Speech and 3 Ambient AI labels indicate a moderately noisy environment with human conversation present, not ideal for deep concentration.",
+    "vitals": "Average heart rate of 92.2 bpm is elevated above the calm focus range (60-85 bpm), suggesting stress or physical activity. High average steps (26.1 per sample) and distance (23.1m per sample) indicate significant movement throughout the session rather than seated study behavior.",
+    "gps_motion": "GPS shows drastic location instability with 355.9m displacement and 4312.3m total travel distance, far exceeding stable study thresholds. Motion context confirms high activity with 4 walking periods versus only 1 stationary period, indicating the user was predominantly mobile during this session."
+  },
+  "phase_2": {
+    "correlations": "All modalities strongly correlate to indicate an active, mobile session rather than focused study. The busy audio environment aligns with the extensive GPS travel (4.3km) and predominant walking motion contexts. Elevated heart rate (92.2 bpm) corresponds with continuous movement (26.1 steps/sample), while Speech labels in audio suggest social interaction or navigation through populated areas. The single stationary period represents only 20% of motion contexts, confirming minimal seated concentration time.",
+    "holistic_assessment": "This session exhibits very poor concentration conditions across all measured dimensions. The user was primarily mobile and active, traveling over 4km with frequent walking, in a busy auditory environment with speech present, while maintaining an elevated heart rate. These factors collectively indicate this was a transit, commute, or errand session rather than a study session with any meaningful concentration opportunity."
+  },
+  "phase_3": {
+    "recommendations": "1) Establish a stable, stationary study location to eliminate the 4.3km of travel that dominated this session - seek a quiet library, study room, or home workspace where you can remain seated. 2) Choose environments with ambient noise below 50 dB and minimal speech to reduce the busy audio distractions observed here. 3) Schedule dedicated study blocks separate from transit/active periods, as the elevated heart rate and continuous walking indicate this time was spent on movement rather than focused cognitive work."
+  },
+  "personalization_basis": null,
+  "score": 2,
+  "reason": "The session shows extremely poor concentration conditions with the user traveling 4.3km and walking during 80% of motion contexts, indicating active transit rather than study. Audio environment was busy (60.2 dB) with speech present, while elevated heart rate (92.2 bpm) and high movement metrics confirm physical activity incompatible with focused study. Only 1 of 5 motion periods was stationary, and drastic location changes demonstrate no stable study environment was established.",
+  "error": null
+}

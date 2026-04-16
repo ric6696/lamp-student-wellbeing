@@ -1,42 +1,39 @@
 {
-  "timestamp": "2026-04-15T22:37:52.756645Z",
+  "timestamp": "2026-04-15T23:27:28.141799Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-006",
-  "concentration_score": 3.0,
-  "user_score": 6.0,
+  "concentration_score": 4.0,
+  "user_score": 5.0,
   "selected_factors": [
-    "Movement / Restlessness",
+    "Internal Cognitive Drift (mind wandering, low motivation)",
     "Location Change / Transition",
-    "Physiological Strain (stress, fatigue, discomfort)"
+    "Task Challenge (difficulty, frustration)"
   ],
   "pre_session_questions": {
     "activity_context": "Lecture",
-    "environment_context": "Home",
-    "mental_readiness": "Very High"
+    "environment_context": "Outdoor",
+    "mental_readiness": "High"
   },
   "result": {
     "overview": {
-      "model_score": 3.0,
-      "user_score": 6.0,
-      "gap": 3.0,
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
       "agreement": "USER_HIGHER",
-      "summary": "Model underestimated concentration by 3 points. Model heavily penalized GPS displacement (588m) and total travel (2.5km) as severe fragmentation, while user reported moderate focus (6/10) acknowledging movement/restlessness and location changes but not as catastrophic. Model over-weighted location instability relative to user's subjective experience."
+      "summary": "User reports worse concentration (5.0) than model predicted (4.0). User attributes distraction primarily to internal cognitive drift (unmeasured), location changes, and task difficulty. Model heavily weighted GPS instability and moderately busy audio, but may have under-penalized given user's subjective experience of cognitive and task-related challenges that sensors cannot directly observe."
     },
     "selected_factors": [
-      "Movement / Restlessness",
+      "Internal Cognitive Drift (mind wandering, low motivation)",
       "Location Change / Transition",
-      "Physiological Strain (stress, fatigue, discomfort)"
+      "Task Challenge (difficulty, frustration)"
     ],
     "factor_sensor_mappings": [
       {
-        "factor": "Movement / Restlessness",
-        "mapped_observability": "DIRECT",
-        "mapped_primary_sensors": [
-          "motion",
-          "vitals"
-        ],
-        "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "PARTIAL"
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
       },
       {
         "factor": "Location Change / Transition",
@@ -49,26 +46,24 @@
         "alignment_with_session_sensors": "ALIGNED"
       },
       {
-        "factor": "Physiological Strain (stress, fatigue, discomfort)",
-        "mapped_observability": "INDIRECT",
-        "mapped_primary_sensors": [
-          "vitals"
-        ],
-        "confidence_cap": "MEDIUM",
-        "alignment_with_session_sensors": "UNSUPPORTED"
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
       }
     ],
-    "why_difference": "Model interpreted GPS displacement (588m) and total travel (2.5km) as 'severe fragmentation' and 'drastic location instability,' assigning disproportionate penalty. User acknowledged location changes and movement but rated focus as moderate (6/10), suggesting these transitions were planned or manageable rather than catastrophic. Motion data shows 5 stationary periods, indicating sustained focus windows between transitions. Model failed to distinguish between disruptive fragmentation and intentional multi-location study. Physiological strain reported by user is not supported by heart rate (79.7 bpm, calm range), indicating model missed a subjective stressor unmeasurable by vitals alone. Audio environment (46.2 dB, 5 busy labels) was moderately distracting but not emphasized by user, suggesting model may have over-weighted this factor as well.",
+    "why_difference": "Model correctly identified location instability (588m displacement, 2547m travel) as a major distractor and assigned score 4.0. However, user's primary distraction was internal cognitive drift and task difficulty—both unmeasured by sensors—leading to a worse self-reported score of 5.0. The model's reliance on observable GPS/audio/motion data missed latent cognitive and task-related factors that dominated the user's subjective experience. The 1-point gap reflects the model's blind spot to internal mental states despite accurate detection of environmental disruptions.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Moderately reliable. 46.2 dB and 5 busy vs 3 quiet labels indicate sub-optimal environment, but user did not cite noise as primary factor. Reduce penalty weight when audio is borderline (45-50 dB range) and user reports other factors. Confidence: MEDIUM for distraction attribution.",
-      "vitals": "Heart rate (79.7 bpm) correctly indicated calm physiological state, but failed to detect user-reported physiological strain. Steps (5.0 avg) and distance (4.785m) show low-level movement consistent with restlessness, but model under-weighted this relative to GPS. Vitals alone cannot capture subjective strain (fatigue, discomfort). Confidence: HIGH for calm/stress detection, LOW for strain/discomfort.",
-      "motion": "5 stationary vs 1 walking event supports sustained focus windows, contradicting model's 'severe fragmentation' narrative. Model should interpret stationary dominance as evidence of focus capacity despite location changes. Motion context is reliable but must be weighted against GPS travel patterns. Confidence: HIGH for activity state, but context-dependent for concentration impact.",
-      "gps": "GPS displacement (588m) and travel (2.5km) are objectively large but model over-interpreted impact. With only 3 GPS points over 116 minutes, granularity is low—transitions may have been few and planned (e.g., library to café). Model must distinguish between frequent micro-interruptions vs. infrequent macro-transitions. Reduce catastrophic penalty when motion shows stationary dominance and user scores moderately. Confidence: HIGH for detecting change, MEDIUM for inferring disruption severity."
+      "audio": "Correctly identified moderately busy environment (46.2 dB, 5 busy vs 3 quiet labels) as suboptimal but tolerable. Audio sensor performed reliably; maintain current weighting but recognize it captures environmental distraction, not cognitive drift.",
+      "vitals": "Heart rate (79.7 bpm) and low steps (5.0 avg) accurately indicated physiological calm and seated behavior. However, vitals cannot distinguish between focused work and unfocused mind-wandering. Do not over-interpret calm vitals as proof of concentration when user reports cognitive drift.",
+      "motion": "Motion context (5 stationary, 1 walking) correctly suggested seated periods but failed to capture cognitive engagement quality. Motion is a necessary but insufficient indicator of focus. Treat as environmental context, not cognitive state proxy.",
+      "gps": "GPS data (588m displacement, 2547m travel, drastic change flag) was the strongest objective signal and correctly identified severe location instability. High confidence in this sensor for detecting environmental disruption. However, location changes may co-occur with unmeasured factors (task switching, motivation loss) that compound distraction beyond physical relocation alone."
     },
     "judgment_policy_next_run": [
-      "GPS: When displacement >200m but motion shows ≥80% stationary events, apply moderate penalty (1-2 points) rather than severe (3-4 points). Infrequent location changes with sustained stationary periods suggest planned transitions, not chaotic fragmentation.",
-      "Audio: In 45-50 dB range with mixed busy/quiet labels, apply minor penalty (0.5-1 point) unless user explicitly cites noise. Borderline audio should not compound other penalties."
+      "When GPS shows drastic instability and user reports worse concentration than model predicts, increase penalty weight for location changes by 15-20% to account for unmeasured cognitive reset costs.",
+      "Do not interpret calm vitals (60-85 bpm, low steps) as strong positive evidence of focus when motion/GPS indicate instability; treat vitals as neutral in fragmented sessions."
     ]
   },
-  "db_row_id": 35
+  "db_row_id": 46
 }

@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-04-15T23:43:10.227686Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-027",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-09T08:33:25.824862+00:00",
+    "ended_at": "2026-03-09T09:54:25.824862+00:00",
+    "duration_min": 81.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-027",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-09T08:33:25.824862+00:00",
+      "ended_at": "2026-03-09T09:54:25.824862+00:00",
+      "duration_min": 81.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 6,
+      "audio_events_conf_gt_50": 6,
+      "gps_points": 3,
+      "motion_events": 5,
+      "vitals_rows": 27
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 47.083333333333336,
+      "label_counts_conf_gt_50": {
+        "busy": 5,
+        "quiet": 1
+      },
+      "label_counts_conf_gt_50_text": "5 busy, 1 quiet",
+      "ai_label_counts_conf_gt_50": {
+        "Ambient": 5,
+        "Silence": 1
+      },
+      "ai_label_counts_conf_gt_50_text": "5 Ambient, 1 Silence"
+    },
+    "vitals": {
+      "avg_heart_rate": 72.86666666666666,
+      "avg_steps": 5.888888888888889,
+      "avg_distance_m": 5.427777777777778,
+      "heart_rate_samples": 9,
+      "steps_samples": 9,
+      "distance_samples": 9
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 139.7902630576439,
+      "total_travel_m": 3865.37499288254,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 5
+      },
+      "counts_text": "5 stationary",
+      "stationary_count": 5,
+      "active_count": 0
+    }
+  },
+  "phase_1": {
+    "audio": "Average audio level of 47.08 dB is slightly above the 'good focus' threshold of 45 dB, falling into acceptable range. However, 5 out of 6 audio events are labeled 'busy' with only 1 'quiet', and AI labels show 5 'Ambient' vs 1 'Silence', indicating a consistently active acoustic environment that may reduce concentration quality.",
+    "vitals": "Heart rate of 72.87 bpm falls within the optimal 60-85 bpm range for calm focus. Steps (5.89 avg) and distance (5.43m avg) are very low, strongly indicating seated or stationary behavior consistent with study activity. Physiological indicators support sustained concentration.",
+    "gps_motion": "GPS shows drastic location instability: 139.79m displacement with 3865.37m total travel distance, far exceeding stable study thresholds (<200m). Motion context shows 5 stationary readings with 0 active, creating a contradiction - the user appears stationary in posture but traveled significant distance, suggesting vehicular movement or commuting during the session."
+  },
+  "phase_2": {
+    "correlations": "Strong contradiction exists between motion context (stationary) and GPS data (extensive travel). Combined with low steps/distance vitals, this pattern indicates the user was likely studying while commuting (bus, train, or car passenger). The 'busy' ambient audio labels align with transit environment noise. Heart rate remains calm despite movement, suggesting passive transportation rather than active locomotion.",
+    "holistic_assessment": "This session represents mobile studying during transit rather than traditional stationary study. While physiological markers (heart rate, minimal steps) and motion sensors indicate physical stillness conducive to focus, the extensive location changes and busy ambient audio environment significantly compromise concentration quality. The 81-minute session shows attempted focus in suboptimal conditions with environmental distractions from transit noise and movement."
+  },
+  "phase_3": {
+    "recommendations": "1) Avoid studying during commutes when possible - the 3.8km travel and busy ambient noise (47 dB, 5 'busy' labels) created suboptimal conditions despite your calm physiology. 2) If transit study is necessary, use noise-canceling headphones to reduce ambient distractions and create a quieter acoustic environment. 3) Reserve deep focus work for stationary locations; use commute time for lighter review tasks like flashcards or reading that tolerate interruptions better."
+  },
+  "personalization_basis": null,
+  "score": 4,
+  "reason": "The session shows contradictory signals: excellent physiological markers (72.87 bpm heart rate, minimal movement) suggest focus readiness, but extensive GPS travel (3865m) and predominantly busy ambient audio (47 dB, 5/6 busy labels) indicate studying during transit with environmental distractions. While the user maintained physical stillness, the mobile context and acoustic environment significantly undermined concentration quality.",
+  "error": null
+}

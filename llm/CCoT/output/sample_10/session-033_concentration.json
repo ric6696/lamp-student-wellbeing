@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-04-15T23:47:33.465796Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-033",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-15T13:56:45.137401+00:00",
+    "ended_at": "2026-03-15T15:45:45.137401+00:00",
+    "duration_min": 109.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-033",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-15T13:56:45.137401+00:00",
+      "ended_at": "2026-03-15T15:45:45.137401+00:00",
+      "duration_min": 109.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 8,
+      "audio_events_conf_gt_50": 6,
+      "gps_points": 3,
+      "motion_events": 6,
+      "vitals_rows": 33
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 64.35000000000001,
+      "label_counts_conf_gt_50": {
+        "busy": 6
+      },
+      "label_counts_conf_gt_50_text": "6 busy",
+      "ai_label_counts_conf_gt_50": {
+        "Speech": 4,
+        "Ambient": 2
+      },
+      "ai_label_counts_conf_gt_50_text": "4 Speech, 2 Ambient"
+    },
+    "vitals": {
+      "avg_heart_rate": 88.88181818181819,
+      "avg_steps": 31.545454545454547,
+      "avg_distance_m": 26.728181818181817,
+      "heart_rate_samples": 11,
+      "steps_samples": 11,
+      "distance_samples": 11
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1213.5127858182782,
+      "total_travel_m": 1782.9476337907354,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "walking": 6
+      },
+      "counts_text": "6 walking",
+      "stationary_count": 0,
+      "active_count": 6
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment is highly distracting with avg dB of 64.35, well above the 60 dB threshold. All 6 confidence-filtered events are labeled 'busy' with 4 Speech and 2 Ambient AI labels, indicating a noisy, conversation-heavy environment unsuitable for focused study.",
+    "vitals": "Heart rate at 88.88 bpm exceeds the calm focus range (60-85 bpm), suggesting elevated stress or physical activity. Steps average 31.55 per sample and distance 26.73m per sample, indicating continuous moderate movement rather than seated study behavior.",
+    "gps_motion": "GPS shows drastic location instability with 1213.51m displacement and 1782.95m total travel over 109 minutes. Motion context shows 6 walking instances with 0 stationary periods, confirming the user was actively moving throughout the entire session rather than studying in a fixed location."
+  },
+  "phase_2": {
+    "correlations": "All modalities strongly correlate to indicate active transit rather than study: noisy busy environment aligns with walking motion context, elevated heart rate matches continuous physical movement, and substantial GPS travel confirms the user was commuting or moving between locations. The complete absence of stationary periods combined with speech-heavy audio suggests the user was likely in public transit, walking through busy areas, or engaged in social activities.",
+    "holistic_assessment": "This session shows no evidence of concentrated study activity. The combination of distracting noise levels, continuous physical movement, elevated heart rate, and over 1.2km displacement indicates the user was engaged in active travel or social interaction rather than focused academic work. All concentration indicators are outside acceptable ranges for study."
+  },
+  "phase_3": {
+    "recommendations": "1) Establish a dedicated, stationary study location with ambient noise below 45 dB to create an environment conducive to focus. 2) Schedule study sessions separately from travel or social activities—this session appears to be transit time rather than study time. 3) Use noise-canceling headphones and ensure you remain seated for at least 80% of your study duration to minimize physical distractions and maintain physiological calm."
+  },
+  "personalization_basis": null,
+  "score": 1,
+  "reason": "This session demonstrates zero concentration indicators, with all metrics pointing to active transit rather than study. The 64.35 dB busy/speech environment, 88.88 bpm elevated heart rate, continuous walking motion (6 instances, 0 stationary), and 1213m displacement over 109 minutes all confirm the user was traveling or socializing, not studying. No evidence of focused academic work exists in any modality.",
+  "error": null
+}

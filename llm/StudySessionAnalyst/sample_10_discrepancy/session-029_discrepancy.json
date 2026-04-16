@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:45:07.183910Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-029",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored session as 2/10 (transit/commute environment), user reported 5/10 (moderate focus). 3-point gap indicates model over-weighted GPS displacement and under-weighted user's subjective experience of maintaining partial focus during movement."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model interpreted 2km GPS displacement and 50/50 stationary/walking split as fundamentally incompatible with concentration, yielding score of 2. User reported 5, acknowledging movement/transition challenges but experiencing moderate focus despite travel. Key discrepancy: model treated location change as binary disqualifier; user experienced graded impairment. Vitals showed calm state (75.69 bpm) and steps were minimal (4.375 avg), suggesting periods of seated focus during transit (e.g., train/bus study). Model failed to distinguish between active walking commute vs. stationary transit study. User's physiological strain factor is not supported by heart rate data, indicating possible fatigue/discomfort not captured by available sensors.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for ambient context. 49.22 dB 'busy' ambient correctly identified moderately distracting environment. Appropriate weighting as secondary distraction factor. No adjustment needed.",
+      "vitals": "Heart rate (75.69 bpm) accurately indicated calm physiological state, contradicting severe distraction hypothesis. Model under-weighted this stability signal. Low step count (4.375) supports seated behavior during portions of session. Increase weight for calm HR as protective factor against low scores when other sensors show instability.",
+      "motion": "2 stationary + 2 walking events captured transitional nature but lacks temporal granularity. Model correctly identified mixed context but could not distinguish stationary study periods within travel session. Caution: motion event counts may miss duration—2 stationary events could represent majority of 77-minute session. Request timestamp distribution for stationary vs. walking phases in future.",
+      "gps": "Displacement (1993m) and travel (2244m) correctly identified major location change. However, model over-weighted GPS as absolute concentration disqualifier. Large displacement can occur with stationary study periods during transit (train/bus). Reduce GPS penalty weight when motion shows extended stationary periods and vitals remain calm. GPS should modulate score, not determine floor."
+    },
+    "judgment_policy_next_run": [
+      "When GPS shows drastic displacement (>1000m) but motion includes extended stationary periods and vitals are calm, consider stationary transit study scenario (train/bus/car passenger). Score range 4-6 instead of 1-3.",
+      "Increase weighting of calm heart rate (60-85 bpm) as protective factor that raises floor score, especially when contradicting location instability."
+    ]
+  },
+  "db_row_id": 69
+}

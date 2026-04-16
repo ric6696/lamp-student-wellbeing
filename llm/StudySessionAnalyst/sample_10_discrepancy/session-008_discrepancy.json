@@ -1,39 +1,42 @@
 {
-  "timestamp": "2026-04-15T22:39:15.226464Z",
+  "timestamp": "2026-04-15T23:28:59.516784Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-008",
-  "concentration_score": 4.0,
-  "user_score": 5.0,
+  "concentration_score": 3.0,
+  "user_score": 6.0,
   "selected_factors": [
-    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Movement / Restlessness",
     "Location Change / Transition",
-    "Task Challenge (difficulty, frustration)"
+    "Physiological Strain (stress, fatigue, discomfort)"
   ],
   "pre_session_questions": {
-    "activity_context": "Writing / Report Work",
-    "environment_context": "Classroom",
-    "mental_readiness": "Very Low"
+    "activity_context": "Group Meeting",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
   },
   "result": {
     "overview": {
-      "model_score": 4.0,
-      "user_score": 5.0,
-      "gap": 1.0,
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
       "agreement": "USER_HIGHER",
-      "summary": "Model penalized concentration more heavily for GPS displacement (2064m) than user experienced. User attributes poor focus primarily to internal cognitive drift (unmeasured), which model cannot directly observe. Model over-weighted location change impact; user felt it was secondary to internal factors."
+      "summary": "Model scored 3.0 based on drastic GPS displacement (2064m) indicating travel/commute incompatible with deep focus. User scored 6.0, reporting moderate concentration despite movement/restlessness, location change, and physiological strain. Model over-weighted GPS displacement as disqualifying factor; user experienced session as moderately productive despite transit context."
     },
     "selected_factors": [
-      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Movement / Restlessness",
       "Location Change / Transition",
-      "Task Challenge (difficulty, frustration)"
+      "Physiological Strain (stress, fatigue, discomfort)"
     ],
     "factor_sensor_mappings": [
       {
-        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
-        "mapped_observability": "UNMEASURED",
-        "mapped_primary_sensors": [],
-        "confidence_cap": "LOW",
-        "alignment_with_session_sensors": "UNMEASURED"
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
       },
       {
         "factor": "Location Change / Transition",
@@ -46,24 +49,26 @@
         "alignment_with_session_sensors": "ALIGNED"
       },
       {
-        "factor": "Task Challenge (difficulty, frustration)",
-        "mapped_observability": "UNMEASURED",
-        "mapped_primary_sensors": [],
-        "confidence_cap": "LOW",
-        "alignment_with_session_sensors": "UNMEASURED"
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
       }
     ],
-    "why_difference": "Model assigned score 4.0 based on observable GPS disruption (2km+ travel) as primary detractor despite favorable audio/vitals. User reported score 5.0 with primary factor being internal cognitive drift (unmeasured by sensors), treating location change as secondary. Model over-indexed on measurable GPS signal while user's actual experience was dominated by latent cognitive factors the model cannot detect. The 1-point gap reflects model's excessive penalty for location change when user context may have involved intentional, non-disruptive relocation (e.g., library to home) with cognitive drift being the true limiter.",
+    "why_difference": "Model treated 2km+ GPS displacement as categorical disqualifier for concentration (score=3), assuming travel prevents meaningful focus. User reported score=6, indicating they maintained moderate concentration during transit despite movement factors. Key discrepancy: motion sensors showed 4 stationary events with minimal steps (4.5 avg), suggesting passive transportation where user could engage in light study activities (reading, review, audio learning). Model failed to distinguish between active disruption and passive travel contexts. Physiological strain reported by user is not supported by vitals (74.53 bpm is calm, optimal range), suggesting either unmeasured fatigue/discomfort or user misattribution. Movement/restlessness factor conflicts with motion data showing predominantly stationary behavior.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Reliable signal. 44.79 dB with 4 quiet/3 busy labels correctly identified supportive environment. No adjustment needed; audio performed as expected and aligned with user's non-selection of noise as primary factor.",
-      "vitals": "Reliable but insufficient for cognitive state inference. 74.53 bpm indicates calm physiology, but cannot distinguish between focused work and mind-wandering. Do not use stable vitals alone to infer high concentration when unmeasured cognitive factors may dominate.",
-      "motion": "Reliable for physical activity detection. 4 stationary/1 walking with 4.5 avg steps correctly identified seated behavior. However, low motion does not guarantee cognitive engagement. Treat as necessary but not sufficient condition for focus.",
-      "gps": "Reliable for location tracking but impact severity requires context calibration. 2064m displacement is objectively large, but model over-penalized without knowing transition purpose or user adaptation. Reduce GPS displacement weight when other sensors (audio, vitals, motion) remain favorable during stationary segments. Consider displacement as session-structure indicator rather than automatic concentration penalty."
+      "audio": "Reliable and well-utilized. 44.79 dB average with 4 quiet/Silence labels correctly identified supportive acoustic environment. Model appropriately noted this as favorable but did not allow it to offset GPS penalty. Maintain current weighting but consider audio quality as enabling factor for passive learning during transit.",
+      "vitals": "Reliable but potentially over-interpreted. 74.53 bpm indicates calm physiological state, contradicting user's reported physiological strain. Model correctly used vitals to infer calm conditions but missed that HR alone cannot capture fatigue, discomfort, or cognitive load. Next cycle: treat vitals as necessary but insufficient for strain assessment; flag when user reports strain despite normal HR as measurement blind spot.",
+      "motion": "Partial reliability with context dependency. 4 stationary + 1 walking event correctly identified low physical activity, but model did not reconcile this with massive GPS displacement to infer transportation mode. Motion data alone missed the restlessness user reported. Next cycle: cross-reference motion stationarity with GPS displacement to detect passive vs. active movement; stationary + high displacement = transportation context requiring different concentration scoring rubric.",
+      "gps": "Over-weighted as categorical disqualifier. 2064m displacement triggered automatic low score (3.0) without considering that passive travel can support moderate concentration for certain study activities. GPS correctly identified location change but model applied binary logic (travel = no focus) rather than graduated impact. Next cycle: weight GPS displacement on curve rather than threshold; distinguish between <500m (minimal), 500-1500m (moderate disruption), >1500m (major transition but assess activity type); allow scores 5-7 for passive transit with supportive audio/vitals if user demonstrates adaptation."
     },
     "judgment_policy_next_run": [
-      "Reduce GPS displacement penalty weight when audio/vitals/motion remain stable during stationary periods; treat location change as context shift rather than automatic distraction.",
-      "Do not infer high concentration solely from favorable sensor readings (low noise, calm vitals, minimal motion) when session structure suggests potential for unmeasured cognitive factors."
+      "Implement graduated GPS displacement penalty curve instead of categorical threshold: <200m = no penalty, 200-1000m = -1 to -2 points, 1000-2000m = -2 to -3 points, >2000m = -3 to -4 points, modulated by motion context (stationary during displacement suggests passive travel, reduce penalty by 1 point).",
+      "Cross-validate motion stationarity with GPS displacement to detect transportation mode: if motion shows >70% stationary AND GPS displacement >1km, flag as 'passive transit' context and apply separate scoring rubric that allows 5-7 range for light study activities when audio/vitals are favorable."
     ]
   },
-  "db_row_id": 37
+  "db_row_id": 48
 }

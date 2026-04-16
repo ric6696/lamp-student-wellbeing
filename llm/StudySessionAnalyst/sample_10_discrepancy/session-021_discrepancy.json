@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:39:12.880963Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-021",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration worse (5.0) than model (4.0) by 1 point. User attributes poor focus primarily to internal cognitive drift (unmeasured), while model emphasized observable location disruption and audio conditions. Model may have under-weighted unmeasured cognitive factors and over-relied on physiological stability signals."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model correctly identified location disruption (2.5km displacement) but assigned it high causal weight, resulting in score of 4.0. User's primary factor was internal cognitive drift (unmeasured by sensors), with task challenge also cited (unmeasured). Model interpreted optimal vitals (73 bpm, minimal steps) as evidence of good focus quality during stationary periods, but user experienced subjective mind wandering and task difficulty that sensors cannot capture. Model over-indexed on observable physiological calm and under-weighted latent cognitive disruption.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable measurement (47.46 dB, 3 busy/2 quiet events). Model correctly identified moderately distracting environment. However, audio alone cannot distinguish between external distraction and internal cognitive drift. Next: maintain current weighting but avoid over-claiming causality when user reports cognitive factors.",
+      "vitals": "Heart rate (73 bpm) and minimal movement correctly indicated physiological calm. Model interpreted this as positive focus signal, but user reported poor concentration despite calm physiology. Next: treat stable vitals as necessary but insufficient for high concentration—they rule out physiological strain but do not confirm cognitive engagement.",
+      "motion": "Low step count (5.14 avg) and 3 stationary events accurately captured seated behavior. Model correctly inferred stationary study posture. However, stationary posture does not guarantee mental focus. Next: use motion to confirm physical context but do not conflate stillness with concentration quality when cognitive factors are reported.",
+      "gps": "Drastic location change (2491m displacement, 2580m travel) was correctly identified and weighted heavily by model. User also selected location change as a factor, confirming alignment. However, model may have over-penalized this relative to unmeasured cognitive drift. Next: maintain high confidence in GPS disruption detection but calibrate penalty magnitude—location change may be less impactful than internal factors for some users."
+    },
+    "judgment_policy_next_run": [
+      "When vitals show calm and motion shows stillness, do not assume high concentration—these indicate conducive physical state but not cognitive engagement. Cap confidence at MEDIUM for concentration inference from vitals/motion alone.",
+      "GPS-detected location changes are directly observable (HIGH confidence) but their impact magnitude varies by user. Reduce penalty weight when user reports unmeasured cognitive factors as primary."
+    ]
+  },
+  "db_row_id": 61
+}

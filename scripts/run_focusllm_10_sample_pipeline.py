@@ -41,6 +41,7 @@ from llm.StudySessionAnalyst.analyst import (  # noqa: E402
 ACTIVITIES = ["Study", "Lecture", "Group Meeting", "Reading", "Writing / Report Work"]
 ENVIRONMENTS = ["Library", "Classroom", "Cafe", "Home", "Outdoor"]
 MENTAL_STATES = ["Very Low", "Low", "Neutral", "High", "Very High"]
+DEFAULT_SAMPLE_COUNT = int(os.getenv("FOCUSLLM_SAMPLE_COUNT", "1"))
 
 
 def _now_iso() -> str:
@@ -335,7 +336,12 @@ def run_pipeline(sample_count: int, model: str, store_to_db: bool, db_user_id: s
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run 10-sample FocusLLM concentration + discrepancy pipeline")
-    parser.add_argument("--count", type=int, default=10, help="Number of sessions to process (default: 10)")
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=DEFAULT_SAMPLE_COUNT,
+        help="Number of sessions to process (default: FOCUSLLM_SAMPLE_COUNT or 10)",
+    )
     parser.add_argument("--model", type=str, default="claude-sonnet-4-5", help="Snowflake Cortex model")
     parser.add_argument(
         "--no-store-db",

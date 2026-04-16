@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:52:28.884614Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-039",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Library",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model underestimated concentration by 3 points. Model heavily penalized GPS displacement (3.5km travel, 675m displacement) as severe disruption, while user reported moderate focus despite acknowledging movement/location changes. User's self-assessment suggests they maintained partial concentration during transit or multi-location study."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model applied maximum penalty for GPS displacement, treating location change as binary disqualifier for concentration. User acknowledged movement/location factors but rated focus at 6/10, indicating they adapted to mobile study context. Key discrepancy: model interpreted 2 stationary + 2 walking motion events and low step average (4.25/sample) as severe fragmentation, but user experienced this as manageable restlessness. Vitals (76.7 bpm, calm range) contradict user's reported physiological strain, suggesting either unmeasured fatigue/discomfort or misattribution of distraction source.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified moderate distraction (50.45 dB, 5 busy labels). Audio assessment was appropriate and not a source of score gap. Maintain current weighting for ambient noise in 45-60 dB range as mild-to-moderate distractor.",
+      "vitals": "Heart rate (76.7 bpm) indicated calm focus readiness, contradicting user's claim of physiological strain. Low step count (4.25/sample) suggests minimal continuous movement. Model correctly interpreted vitals as non-disruptive, but user reported strain that vitals did not capture. Vitals may miss fatigue, discomfort, or subjective stress not reflected in HR.",
+      "motion": "Motion context (2 stationary, 2 walking) was over-penalized. Equal split suggests intermittent movement, not continuous disruption. Model treated this as severe fragmentation; user managed it as restlessness. Reduce penalty weight for balanced stationary/active splits when step averages remain low (<5/sample). Distinguish between brief transitions and sustained mobility.",
+      "gps": "GPS displacement (675m) and travel (3.5km) triggered maximum concentration penalty. Model assumed location instability = zero sustained focus, but user maintained 6/10 focus during transit/multi-location study. GPS thresholds (<200m for stability) may be too strict. Recalibrate: 200-1000m = moderate penalty, >1000m = severe penalty. Consider session duration (76 min) when interpreting total travel—some users study effectively across locations."
+    },
+    "judgment_policy_next_run": [
+      "Recalibrate GPS penalty curve: treat 200-1000m displacement as moderate distraction (score 5-6 range) rather than severe (score 3). Reserve scores below 4 for >1500m displacement or >5km total travel.",
+      "Reduce motion penalty when stationary/walking split is balanced AND step average is low (<5/sample). Interpret as restlessness rather than continuous mobility disruption."
+    ]
+  },
+  "db_row_id": 79
+}

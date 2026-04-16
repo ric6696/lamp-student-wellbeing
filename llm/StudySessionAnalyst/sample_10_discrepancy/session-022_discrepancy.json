@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:39:59.087439Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-022",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Library",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User reports worse concentration (5.0) than model predicted (4.0). User attributes poor focus primarily to internal cognitive drift and task challenge—both UNMEASURED factors—while model emphasized observable location instability. The 1-point gap suggests model underweighted unmeasured cognitive factors and overweighted GPS displacement."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model heavily penalized GPS displacement (1047m, 2479m travel) as primary distraction driver, scoring 4.0. User confirmed location change as a factor but identified internal cognitive drift and task difficulty as primary—both unmeasured by sensors. The calm vitals (74.53 bpm) and minimal steps (4.71) that model interpreted as 'acceptable physiological readiness' may have masked cognitive struggle. Model lacked visibility into mind wandering and task frustration, leading to underestimation of concentration impairment by 1 point.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for environmental noise detection. 47.86 dB with 'busy' labels correctly identified moderate ambient distraction. However, audio alone cannot distinguish between external noise impact and internal cognitive drift. Maintain current weighting but do not over-attribute concentration loss to audio when levels are in acceptable range (45-60 dB).",
+      "vitals": "Heart rate (74.53 bpm) indicated calm physiological state, but this metric failed to capture cognitive load, frustration, or mind wandering. Vitals showed no stress markers, yet user reported significant cognitive drift and task challenge. Next cycle: treat calm vitals as necessary but insufficient for high concentration scores; absence of physiological strain does not confirm presence of cognitive engagement.",
+      "motion": "Motion data (3 stationary, 1 walking) suggested seated study periods, which model interpreted positively. However, stationary posture does not guarantee mental focus. User's cognitive drift occurred despite physical stillness. Next cycle: downweight motion stability as concentration predictor when other unmeasured factors (task difficulty, motivation) may be present. Motion is better as distraction detector than focus confirmer.",
+      "gps": "GPS correctly identified drastic location change (2479m travel, 1047m displacement), which model weighted heavily in score penalty. User confirmed location transition as a factor but ranked it secondary to cognitive issues. GPS displacement is a valid distraction signal but may not be the dominant driver when internal cognitive factors are at play. Next cycle: maintain GPS as strong negative signal but cap its penalty contribution to avoid overshadowing unmeasured cognitive factors, especially when vitals remain calm."
+    },
+    "judgment_policy_next_run": [
+      "When GPS shows high displacement but vitals remain calm and motion is mostly stationary, consider that unmeasured cognitive factors (mind wandering, task difficulty) may be primary drivers—avoid over-penalizing based on location alone.",
+      "Treat calm heart rate and low step count as absence of physiological/movement distraction, not as confirmation of high concentration. These sensors cannot detect cognitive drift or task frustration."
+    ]
+  },
+  "db_row_id": 62
+}

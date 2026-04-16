@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-04-15T23:42:28.302760Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-026",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-08T21:57:37.043849+00:00",
+    "ended_at": "2026-03-08T22:59:37.043849+00:00",
+    "duration_min": 62.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-026",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-08T21:57:37.043849+00:00",
+      "ended_at": "2026-03-08T22:59:37.043849+00:00",
+      "duration_min": 62.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 5,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 3,
+      "motion_events": 4,
+      "vitals_rows": 21
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 49.1,
+      "label_counts_conf_gt_50": {
+        "busy": 5
+      },
+      "label_counts_conf_gt_50_text": "5 busy",
+      "ai_label_counts_conf_gt_50": {
+        "Ambient": 5
+      },
+      "ai_label_counts_conf_gt_50_text": "5 Ambient"
+    },
+    "vitals": {
+      "avg_heart_rate": 74.10000000000001,
+      "avg_steps": 6.571428571428571,
+      "avg_distance_m": 5.13,
+      "heart_rate_samples": 7,
+      "steps_samples": 7,
+      "distance_samples": 7
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1862.2107249086107,
+      "total_travel_m": 2982.9114701027847,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 4
+      },
+      "counts_text": "4 stationary",
+      "stationary_count": 4,
+      "active_count": 0
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment shows 5 busy/ambient events with average 49.1 dB, which falls in the acceptable range (45-60 dB). All labels indicate 'busy' ambient conditions, suggesting moderate background activity but not highly distracting noise levels.",
+    "vitals": "Heart rate averaged 74.1 bpm (within optimal 60-85 bpm range for calm focus). Steps averaged 6.57 per sample and distance 5.13m, indicating minimal physical movement consistent with seated activity.",
+    "gps_motion": "GPS shows drastic location change with 1862m displacement and 2983m total travel over 62 minutes, indicating significant movement between locations. Motion context shows 4 stationary periods, suggesting intermittent stops during travel rather than continuous study position."
+  },
+  "phase_2": {
+    "correlations": "Strong contradiction exists between vitals/motion (suggesting stationary behavior) and GPS data (showing extensive travel ~3km). The pattern indicates transportation or commuting: user remained physically stationary (likely seated in vehicle/transit) while location changed drastically. Low step count and stationary motion contexts align with passive travel rather than active study. Busy ambient audio at moderate volume supports transit environment hypothesis.",
+    "holistic_assessment": "This session represents a commute or travel period rather than a focused study session. While physiological markers (heart rate, minimal steps) and motion contexts suggest physical stillness, the extensive GPS displacement reveals the user was in transit. The busy ambient audio at acceptable volume levels is consistent with public transportation or vehicle travel. No evidence of sustained, location-stable concentration exists."
+  },
+  "phase_3": {
+    "recommendations": "1) Avoid logging travel/commute time as study sessions - establish a stable study location before starting concentration tracking. 2) If studying during transit, seek quieter transportation options and use noise-canceling methods to improve focus quality. 3) Dedicate separate session types for travel versus actual study to accurately track productive concentration time."
+  },
+  "personalization_basis": null,
+  "score": 2,
+  "reason": "The session shows clear evidence of travel rather than concentrated study, with GPS displacement of 1862m and total travel of 2983m despite stationary motion contexts. While heart rate (74.1 bpm) and minimal steps suggest physical calmness, the drastic location change indicates commuting or transit, not focused study in a stable environment. The busy ambient audio (49.1 dB) further supports a transportation setting incompatible with quality concentration.",
+  "error": null
+}

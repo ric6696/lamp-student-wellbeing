@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:48:40.896981Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-034",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized for GPS displacement (948m) and travel (2.2km), interpreting location change as fragmentation. User acknowledged location change but rated primary distraction as internal cognitive drift (unmeasured), suggesting the travel impact was less disruptive than model estimated."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS displacement as session fragmentation, reducing score to 6.0. User confirmed location change occurred but rated it secondary to internal cognitive drift (primary factor). The 5 stationary motion events and excellent audio/vitals suggest focused study did occur at locations, with travel between them being brief transitions rather than sustained disruption. Model lacked visibility into cognitive drift and task difficulty, which user identified as more impactful than observable location change.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. 44.98 dB avg with 4 quiet/silence events strongly supports concentration-friendly environment. No evidence of noise distraction. Maintain high weight for audio quality signals.",
+      "vitals": "Reliable and supportive. 74.77 bpm in optimal range, 3.56 avg steps indicate minimal movement and calm physiological state. However, vitals cannot detect cognitive drift or task frustration. Use as supporting evidence only for internal states.",
+      "motion": "Reliable for physical state. 5 stationary, 0 active events confirm seated study behavior. Contradicts GPS travel signal, suggesting stationary periods were genuine focus time. Motion context should moderate GPS displacement interpretation.",
+      "gps": "Accurate but over-interpreted. 948m displacement and 2.2km travel are factually correct, but model assumed high disruption. When paired with stationary motion and low steps, GPS likely captured brief transportation between stable study locations. Reduce penalty weight for GPS displacement when motion shows sustained stationary periods and other sensors indicate focus."
+    },
+    "judgment_policy_next_run": [
+      "When GPS shows displacement but motion is stationary (5/5 events) and steps are minimal (<4 avg), interpret as brief transitions between stable study locations rather than continuous fragmentation. Apply reduced penalty (0.5-1.0 point vs 1.5-2.0 point).",
+      "Do not over-claim detection of internal cognitive drift or task difficulty. When user reports these as primary factors, acknowledge model blind spot and cap confidence at LOW. Avoid conflating good environmental conditions (audio/vitals) with absence of cognitive distractions."
+    ]
+  },
+  "db_row_id": 74
+}

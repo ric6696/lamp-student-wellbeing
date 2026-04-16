@@ -1,0 +1,16 @@
+{
+  "user_response": [
+    {
+      "question": "How focused were you during this study session?",
+      "answer": 4
+    },
+    {
+      "question": "What most affected your concentration during this session?",
+      "answer": [
+        "Environmental Noise / Speech",
+        "Movement / Restlessness",
+        "Location Change / Transition"
+      ]
+    }
+  ]
+}

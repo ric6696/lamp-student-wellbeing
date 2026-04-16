@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:58:01.551252Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-046",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Cafe",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored session as extremely poor concentration (2.0) based on extensive mobility (4.3km travel, 80% walking), busy audio (60.2 dB, speech present), and elevated heart rate (92.2 bpm). User reported moderate-low concentration (5.0) and acknowledged all three distraction factors the model detected. The 3-point gap suggests model over-penalized mobility or user adapted better than sensors indicate."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly identified all three distraction factors user reported, but assigned extreme penalty (score 2.0) interpreting the session as transit/commute rather than study. User acknowledged same distractions yet rated concentration at 5.0, suggesting either: (1) user maintained partial focus despite mobility (e.g., audiobook study, review while commuting, walking study break), (2) user's internal concentration threshold differs from model's mobility-based heuristic, or (3) model conflated physical activity with complete concentration failure. The 60.2 dB audio is borderline (not extreme), and user may have adapted to environmental noise better than model weighted. Model lacked context on study modality (passive listening vs active writing) that would justify different mobility tolerance.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable and well-calibrated. 60.2 dB with 5 'busy' labels and 2 Speech events correctly flagged as distraction. However, this level is upper-boundary disruptive, not catastrophic—avoid treating 60 dB as equivalent to 80+ dB. Weight: moderate negative, not extreme.",
+      "vitals": "Heart rate 92.2 bpm and 26.1 steps/sample accurately detected elevated activity. However, elevated HR during walking is physiologically normal and does not necessarily indicate stress or zero concentration. Distinguish between movement-induced HR vs stress-induced HR. Weight: confirm activity level, but do not assume cognitive incapacity.",
+      "motion": "4 walking vs 1 stationary context is factually correct and indicates high mobility. However, model assumed walking = zero concentration without considering study modalities compatible with movement (audio review, spaced repetition apps, walking breaks). Weight: strong indicator of non-traditional study, but allow for non-zero concentration during mobile study.",
+      "gps": "4.3km travel and 355m displacement are extreme and correctly flagged drastic instability. This is the strongest objective indicator of non-stationary session. However, travel does not universally preclude all concentration (e.g., commute study). Weight: very high for detecting location instability, but context-dependent for concentration impact."
+    },
+    "judgment_policy_next_run": [
+      "Recalibrate mobility penalty: distinguish between 'no stationary period' (score 1-2 range) vs 'some stationary with walking breaks' (score 4-6 range). Current model conflates any significant travel with zero concentration.",
+      "Audio: maintain current 60 dB threshold as moderate distraction, but do not compound with mobility into extreme penalty. 60 dB + walking should yield score ~4-5, not 2."
+    ]
+  },
+  "db_row_id": 86
+}

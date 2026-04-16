@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:37:28.107612Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-019",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned score of 3/10 emphasizing drastic location instability (3.9km travel, 678m displacement) as fundamentally incompatible with concentration. User reported 6/10, acknowledging movement/location issues but perceiving moderate focus capability despite mobility. Model over-penalized GPS metrics; user experienced session as moderately productive transit study."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model applied binary logic: drastic GPS displacement (>200m threshold) = poor concentration, yielding score of 3. User reported 6, indicating they maintained moderate focus during mobile study (e.g., reviewing notes on transit, walking between library locations). Model failed to distinguish between disruptive unplanned movement vs. intentional mobile study. Heart rate (74.79 bpm, calm range) and acceptable audio (48.26 dB) support user's claim of moderate focus capacity. User's selection of physiological strain suggests fatigue/discomfort not captured by HR alone. Model over-weighted GPS as absolute disqualifier without contextualizing study modality.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for distraction detection. 48.26 dB average and 5 busy/2 quiet labels correctly identified moderate ambient environment. Model appropriately weighted this as minor distraction factor. Maintain current sensitivity; audio performed as expected.",
+      "vitals": "Heart rate (74.79 bpm) accurately indicated calm physiological state, contradicting model's severe concentration penalty. Steps (6.0 avg) and distance (5.18m) showed movement but not extreme agitation. Model correctly identified movement but should weight calm HR as moderating factor. User reported physiological strain; HR alone insufficient for fatigue/discomfort detection. Increase weight of HR stability as concentration enabler even during movement.",
+      "motion": "3 stationary vs 2 walking events confirmed mobility but also showed sustained stationary periods. Model treated walking contexts as disqualifying without recognizing stationary intervals. Next cycle: distinguish between continuous movement (disruptive) vs. intermittent walking with stationary study blocks (potentially productive). Motion sensor alignment was correct but interpretation was too binary.",
+      "gps": "Model over-penalized GPS metrics. 678m displacement and 3.9km travel triggered 'fundamentally incompatible' judgment, but user maintained 6/10 focus. GPS correctly measured location change (DIRECT observability, HIGH confidence) but model failed to contextualize: mobile study is valid modality for some users/tasks. Next cycle: treat extreme GPS travel as strong negative signal but not absolute floor; allow other sensors (calm vitals, acceptable audio) to moderate final score. Consider displacement rate (m/min) rather than absolute distance for 91-min session."
+    },
+    "judgment_policy_next_run": [
+      "GPS: Reduce weight of absolute displacement thresholds for long sessions (>60 min). Drastic location change should lower score ceiling to 6-7 range, not force floor of 3, especially when vitals/audio are favorable.",
+      "Vitals: Elevate heart rate stability as positive concentration signal. Calm HR (60-85 bpm) during movement indicates controlled, non-stressed mobility and should partially offset GPS penalties."
+    ]
+  },
+  "db_row_id": 59
+}

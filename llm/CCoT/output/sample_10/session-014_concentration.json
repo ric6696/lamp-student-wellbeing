@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-04-15T23:33:05.967358Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-014",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-02-25T18:46:10.105559+00:00",
+    "ended_at": "2026-02-25T20:18:10.105559+00:00",
+    "duration_min": 92.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-014",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-02-25T18:46:10.105559+00:00",
+      "ended_at": "2026-02-25T20:18:10.105559+00:00",
+      "duration_min": 92.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 7,
+      "audio_events_conf_gt_50": 7,
+      "gps_points": 3,
+      "motion_events": 5,
+      "vitals_rows": 30
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 45.128571428571426,
+      "label_counts_conf_gt_50": {
+        "busy": 2,
+        "quiet": 5
+      },
+      "label_counts_conf_gt_50_text": "5 quiet, 2 busy",
+      "ai_label_counts_conf_gt_50": {
+        "Ambient": 2,
+        "Silence": 5
+      },
+      "ai_label_counts_conf_gt_50_text": "5 Silence, 2 Ambient"
+    },
+    "vitals": {
+      "avg_heart_rate": 75.21000000000001,
+      "avg_steps": 5.1,
+      "avg_distance_m": 4.652,
+      "heart_rate_samples": 10,
+      "steps_samples": 10,
+      "distance_samples": 10
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 721.3777121270164,
+      "total_travel_m": 3066.4234358117374,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 4,
+        "walking": 1
+      },
+      "counts_text": "4 stationary, 1 walking",
+      "stationary_count": 4,
+      "active_count": 1
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment is excellent for concentration with avg dB at 45.13 (at the threshold for good focus). Label distribution strongly supports focus: 5 quiet labels and 5 Silence AI labels dominate, with only 2 busy/Ambient labels. The acoustic environment appears calm and conducive to study.",
+    "vitals": "Heart rate at 75.21 bpm falls within the optimal calm focus range (60-85 bpm). However, steps (avg 5.1) and distance (avg 4.65m) per sample suggest minimal but present movement. These vitals indicate a relatively calm physiological state with occasional minor activity.",
+    "gps_motion": "GPS shows drastic location instability: 721.38m displacement and 3066.42m total travel distance, far exceeding stable study thresholds (<200m). Motion context shows 4 stationary vs 1 walking event, but the massive GPS travel indicates significant location changes during the 92-minute session."
+  },
+  "phase_2": {
+    "correlations": "Strong contradiction exists between modalities: audio and vitals suggest seated, focused study (quiet environment, calm heart rate, low steps), while GPS reveals extensive travel (>3km total). This pattern indicates the user likely studied while commuting or traveling between locations. The predominantly stationary motion contexts (4/5) combined with high GPS travel suggests vehicular transport rather than walking.",
+    "holistic_assessment": "This session represents mobile studying during transit. While the immediate acoustic and physiological conditions were favorable (quiet environment, calm vitals), the drastic location changes and travel distance indicate the user was likely studying during a commute or journey. The 92-minute duration with stable audio/vitals but high GPS movement suggests studying in a vehicle (bus, train, car). Concentration was likely moderate - the quiet environment enabled some focus, but the inherent distractions and instability of travel would have reduced deep concentration capacity."
+  },
+  "phase_3": {
+    "recommendations": "1) Reserve deep focus work for stationary locations rather than during travel; use commute time for lighter review tasks or passive learning (podcasts, recorded lectures). 2) If studying during transit is necessary, focus on consolidation activities (flashcard review, reading) rather than complex problem-solving that requires sustained deep concentration. 3) Establish a dedicated, stationary study space to maximize concentration quality for your most demanding cognitive tasks."
+  },
+  "personalization_basis": null,
+  "score": 5,
+  "reason": "The audio environment was excellent (45.13 dB, mostly quiet/silence labels) and vitals were optimal (75.21 bpm, minimal steps), supporting concentration. However, the drastic location change (721m displacement, 3066m total travel) indicates studying during transit, which fundamentally compromises deep focus despite favorable immediate conditions. The score reflects moderate concentration - adequate for light study but insufficient for demanding cognitive work.",
+  "error": null
+}

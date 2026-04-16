@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-04-15T23:32:17.595333Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-013",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-02-25T05:12:07.270370+00:00",
+    "ended_at": "2026-02-25T06:12:07.270370+00:00",
+    "duration_min": 60.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-013",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-02-25T05:12:07.270370+00:00",
+      "ended_at": "2026-02-25T06:12:07.270370+00:00",
+      "duration_min": 60.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 4,
+      "audio_events_conf_gt_50": 4,
+      "gps_points": 3,
+      "motion_events": 3,
+      "vitals_rows": 18
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 47.35,
+      "label_counts_conf_gt_50": {
+        "quiet": 1,
+        "busy": 3
+      },
+      "label_counts_conf_gt_50_text": "3 busy, 1 quiet",
+      "ai_label_counts_conf_gt_50": {
+        "Silence": 1,
+        "Ambient": 3
+      },
+      "ai_label_counts_conf_gt_50_text": "3 Ambient, 1 Silence"
+    },
+    "vitals": {
+      "avg_heart_rate": 74.78333333333333,
+      "avg_steps": 6.166666666666667,
+      "avg_distance_m": 5.638333333333333,
+      "heart_rate_samples": 6,
+      "steps_samples": 6,
+      "distance_samples": 6
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1627.2390594903363,
+      "total_travel_m": 1887.32432522188,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 3
+      },
+      "counts_text": "3 stationary",
+      "stationary_count": 3,
+      "active_count": 0
+    }
+  },
+  "phase_1": {
+    "audio": "Average audio level of 47.35 dB falls in the acceptable range (45-60 dB), slightly above the ideal quiet threshold. Label distribution shows 3 'busy' and 1 'quiet' events with 3 'Ambient' AI classifications, indicating a moderately active acoustic environment that is not optimal for deep concentration but not severely distracting.",
+    "vitals": "Heart rate of 74.78 bpm is well within the calm focus range (60-85 bpm), suggesting physiological readiness for concentration. However, average steps (6.17) and distance (5.64m) per sample indicate minimal but present movement, consistent with occasional position adjustments rather than sustained seated study.",
+    "gps_motion": "GPS shows drastic location instability with 1627m displacement and 1887m total travel distance, far exceeding the stable study threshold of <200m. Motion context shows 3 stationary readings, creating a contradiction with the significant GPS movement, suggesting the user was stationary during brief periods but traveled extensively during the session."
+  },
+  "phase_2": {
+    "correlations": "Strong negative correlation exists between the stationary motion contexts and the extensive GPS travel (1887m), indicating the user alternated between stationary periods and significant travel. The acceptable audio levels and calm heart rate during stationary periods suggest potential for focus, but the drastic location changes (>1600m displacement) indicate major environmental disruptions. The low step count despite high GPS travel suggests vehicular movement rather than walking, implying commuting or transportation during the study session.",
+    "holistic_assessment": "This session reflects severely fragmented concentration due to significant travel and location changes during what should be a study period. While physiological markers (heart rate) and brief stationary periods suggest moments of potential focus, the drastic 1.9km travel distance indicates the user was primarily in transit or changing locations. The moderately busy audio environment and acceptable decibel levels suggest the user may have attempted to study in transit or between locations, but the environmental instability would severely compromise sustained concentration and deep learning."
+  },
+  "phase_3": {
+    "recommendations": "Establish a fixed study location to eliminate the 1.9km travel disruption observed in this session; choose a quiet space where you can remain stationary for the entire study duration. Schedule dedicated study blocks separate from commute or travel time, as the GPS data shows you were in transit during this session rather than in a stable environment. If studying during travel is necessary, use noise-canceling headphones and focus on review tasks rather than deep learning, as the environmental instability (1627m displacement) prevents optimal concentration for complex material."
+  },
+  "personalization_basis": null,
+  "score": 3,
+  "reason": "The extensive GPS travel (1887m total, 1627m displacement) during the 60-minute session indicates major location instability incompatible with sustained concentration. While heart rate (74.78 bpm) and audio levels (47.35 dB) fall within acceptable ranges, the drastic location changes suggest the user was commuting or in transit rather than engaged in focused study. The contradiction between stationary motion contexts and high GPS movement, combined with busy audio labels, reveals a fragmented session with minimal opportunity for deep concentration.",
+  "error": null
+}

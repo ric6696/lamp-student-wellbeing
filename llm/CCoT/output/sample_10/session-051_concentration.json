@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-04-16T00:01:20.351914Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-051",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-31T01:19:22.845136+00:00",
+    "ended_at": "2026-03-31T02:27:22.845136+00:00",
+    "duration_min": 68.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-051",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-31T01:19:22.845136+00:00",
+      "ended_at": "2026-03-31T02:27:22.845136+00:00",
+      "duration_min": 68.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 5,
+      "audio_events_conf_gt_50": 5,
+      "gps_points": 3,
+      "motion_events": 4,
+      "vitals_rows": 21
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 47.36,
+      "label_counts_conf_gt_50": {
+        "busy": 3,
+        "quiet": 2
+      },
+      "label_counts_conf_gt_50_text": "3 busy, 2 quiet",
+      "ai_label_counts_conf_gt_50": {
+        "Ambient": 3,
+        "Silence": 2
+      },
+      "ai_label_counts_conf_gt_50_text": "3 Ambient, 2 Silence"
+    },
+    "vitals": {
+      "avg_heart_rate": 75.94285714285715,
+      "avg_steps": 5.142857142857143,
+      "avg_distance_m": 4.17,
+      "heart_rate_samples": 7,
+      "steps_samples": 7,
+      "distance_samples": 7
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1857.1209573555584,
+      "total_travel_m": 2293.0906503816177,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 3,
+        "walking": 1
+      },
+      "counts_text": "3 stationary, 1 walking",
+      "stationary_count": 3,
+      "active_count": 1
+    }
+  },
+  "phase_1": {
+    "audio": "Average audio level of 47.36 dB falls in the acceptable range (45-60 dB), slightly above the ideal threshold for good focus. Label distribution shows 3 busy and 2 quiet events with 3 Ambient and 2 Silence AI labels, indicating a mixed but moderately distracting environment.",
+    "vitals": "Heart rate of 75.94 bpm is within the calm focus range (60-85 bpm). However, average steps (5.14) and distance (4.17m) per sample suggest minimal but present movement, indicating some physical activity during the session.",
+    "gps_motion": "GPS shows drastic location change with 1857m displacement and 2293m total travel, indicating significant movement during the session. Motion context shows 3 stationary and 1 walking event, but the large GPS displacement reveals substantial location changes inconsistent with stable study conditions."
+  },
+  "phase_2": {
+    "correlations": "The combination of moderate audio distraction (47.36 dB, busy labels), stable heart rate, and drastic GPS movement (1857m displacement) indicates the user was likely traveling or commuting during this session. The predominantly stationary motion contexts conflict with the large GPS displacement, suggesting seated travel (vehicle, public transport). The acceptable but not optimal audio environment combined with significant location changes points to studying while in transit.",
+    "holistic_assessment": "This session shows poor concentration conditions due to significant environmental instability. While physiological markers suggest calm state, the drastic location change of nearly 2km combined with moderately distracting audio environment indicates the user was attempting to study during travel or commute. The mixed audio labels and substantial displacement are primary detractors from concentration quality."
+  },
+  "phase_3": {
+    "recommendations": "Avoid studying during commutes or travel periods; wait until reaching a stable destination to maximize focus quality. If travel study is necessary, use noise-canceling headphones to reduce ambient audio distractions below 45 dB. Establish a dedicated, stationary study location with minimal movement (<200m displacement) to create optimal concentration conditions."
+  },
+  "personalization_basis": null,
+  "score": 3,
+  "reason": "The session shows very poor concentration conditions primarily due to drastic location change (1857m displacement, 2293m travel) indicating study during transit. Audio environment at 47.36 dB with busy labels adds moderate distraction. While heart rate (75.94 bpm) suggests physiological calm, the environmental instability and movement fundamentally undermine concentration quality.",
+  "error": null
+}

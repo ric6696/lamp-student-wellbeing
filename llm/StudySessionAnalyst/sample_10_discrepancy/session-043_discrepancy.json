@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:55:39.834633Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-043",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (1.0) interpreting continuous walking and busy audio as non-study activity. User reported low-moderate concentration (4.0) acknowledging the same distractions but framing the session as a study attempt under adverse conditions. The 3-point gap reflects model over-penalization of mobility and noise without recognizing possible study intent during transit or multitasking."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly detected all three distraction factors with high sensor confidence but interpreted their combination as evidence of zero study intent, yielding score 1.0. User confirmed identical distractions yet self-assessed at 4.0, indicating they were attempting to study despite adverse conditions (e.g., studying while commuting, listening to audio material while walking, or reviewing notes during transit). The model lacks context to distinguish 'no study attempt' from 'study attempt under severe distraction.' The gap arises from binary treatment of mobility: model assumes walking = non-study, but user may have engaged in audio-based learning, flashcard review, or podcast study during movement.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio sensor correctly identified busy environment (60.6 dB, 6 busy labels, 3 Speech events). Reliable for detecting noise distraction. However, presence of speech and ambient noise does not preclude audio-based study (podcasts, lectures, language practice). Next cycle: flag as distraction but do not auto-conclude zero study intent when audio is primary input modality.",
+      "vitals": "Heart rate 90.5 bpm accurately reflects physical activity from walking. Reliable indicator of movement-related arousal. However, elevated HR during walking does not distinguish between 'commute only' and 'study while commuting.' Next cycle: weight vitals as secondary confirmation of motion context, not as standalone study/non-study classifier.",
+      "motion": "Motion sensor (6 walking events, 0 stationary) correctly captured continuous movement. High reliability for activity detection. Critical blind spot: walking does not preclude cognitive engagement (audio learning, mental rehearsal). Next cycle: treat continuous walking as strong distraction signal but allow partial concentration credit when other modalities (e.g., audio content consumption) suggest learning activity.",
+      "gps": "GPS displacement (816m) and travel (3975m) accurately measured location instability. Reliable for detecting transitions. However, travel distance alone cannot determine study intent—user may have been commuting to library, walking between study spots, or engaging in mobile learning. Next cycle: use GPS as context flag (unstable environment) but avoid using travel metrics as sole basis for score floor of 1.0."
+    },
+    "judgment_policy_next_run": [
+      "Decouple mobility detection from study intent inference: continuous walking is a verified distraction but does not eliminate all concentration (user may study via audio, review notes briefly, or engage in low-intensity learning).",
+      "Introduce score floor flexibility: when all distraction factors are user-confirmed but self-score is >3, consider 'study under adversity' scenario and cap penalty at score 3-4 range instead of forcing 1.0."
+    ]
+  },
+  "db_row_id": 83
+}

@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-16T00:02:32.051919Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-052",
+  "concentration_score": 5.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Home",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 5.0,
+      "user_score": 6.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized heavily for GPS travel (3036m) and elevated audio (47.08 dB), while user attributed distraction primarily to unmeasured internal cognitive drift rather than observable environmental factors. Model over-weighted location instability despite stationary motion context."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 5.0 by heavily penalizing GPS displacement (3036m travel) as concentration disruption. User acknowledged location change as secondary factor but rated primary distraction as internal cognitive drift (unmeasured by sensors), suggesting the travel may have been between stable study periods or less disruptive than model assumed. Model failed to reconcile GPS travel with contradictory stationary motion signals (4 stationary, 0 active) and excellent vitals (76.56 bpm, 3.43 steps), leading to over-penalization. User's higher score indicates maintained subjective focus despite location transitions, with internal mental factors being the true limiter.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable signal. 47.08 dB slightly above threshold with 3 busy/2 quiet events correctly identified moderate acoustic distraction. User did not select noise as primary factor, suggesting audio weight should be moderate, not severe. Maintain current interpretation but avoid over-penalizing marginal exceedances of 45 dB threshold.",
+      "vitals": "Highly reliable and well-interpreted. 76.56 bpm heart rate, 3.43 avg steps, 2.80m distance all strongly indicate seated focus. Model correctly identified excellent physiological markers. No adjustment needed; vitals remain strong positive signal for concentration.",
+      "motion": "Reliable and correctly interpreted. 4 stationary contexts with 0 active events directly contradict GPS travel narrative. Model acknowledged contradiction but failed to prioritize motion over GPS. Next cycle: weight motion context more heavily than GPS when signals conflict, as motion reflects immediate behavioral state during study.",
+      "gps": "Signal present but interpretation flawed. 3036m total travel with 232m displacement was over-weighted as active distraction despite contradictory stationary motion. GPS likely captured inter-location transitions (commute, room changes) rather than continuous movement during study. Next cycle: reduce GPS penalty when motion shows stationary patterns; treat GPS as context-shift indicator rather than continuous distraction measure. Apply temporal segmentation to distinguish travel-between vs. travel-during study periods."
+    },
+    "judgment_policy_next_run": [
+      "Prioritize motion context over GPS displacement when signals conflict; motion reflects real-time study behavior while GPS may capture pre/post-session or inter-segment travel.",
+      "Reduce penalty magnitude for GPS travel when accompanied by stationary motion (4 stationary, 0 active) and low vitals movement (3.43 steps). Interpret as location transitions between stable study periods rather than continuous disruption."
+    ]
+  },
+  "db_row_id": 92
+}

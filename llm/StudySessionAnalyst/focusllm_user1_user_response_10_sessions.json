@@ -1,56 +1,11 @@
 {
-  "generated_at": "2026-04-15T22:40:48.593876Z",
-  "session_count": 10,
+  "generated_at": "2026-04-16T01:13:34.315603Z",
+  "session_count": 1,
   "results": [
     {
       "session_id": "session-001",
       "file": "llm/StudySessionAnalyst/sample_10_user_response/session-001_user_response.json",
       "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-001_pre_session.json"
-    },
-    {
-      "session_id": "session-002",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-002_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-002_pre_session.json"
-    },
-    {
-      "session_id": "session-003",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-003_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-003_pre_session.json"
-    },
-    {
-      "session_id": "session-004",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-004_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-004_pre_session.json"
-    },
-    {
-      "session_id": "session-005",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-005_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-005_pre_session.json"
-    },
-    {
-      "session_id": "session-006",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-006_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-006_pre_session.json"
-    },
-    {
-      "session_id": "session-007",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-007_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-007_pre_session.json"
-    },
-    {
-      "session_id": "session-008",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-008_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-008_pre_session.json"
-    },
-    {
-      "session_id": "session-009",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-009_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-009_pre_session.json"
-    },
-    {
-      "session_id": "session-010",
-      "file": "llm/StudySessionAnalyst/sample_10_user_response/session-010_user_response.json",
-      "pre_session_file": "llm/StudySessionAnalyst/sample_10_pre_session/session-010_pre_session.json"
     }
   ]
 }

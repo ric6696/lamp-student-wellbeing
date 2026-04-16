@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-16T00:04:53.629358Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-055",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (2/10) interpreting the session as active transit with extreme mobility and distraction. User reported moderate concentration (5/10) acknowledging the same three distraction factors the model detected. The 3-point gap suggests the model over-penalized mobility and noise, failing to recognize partial concentration despite suboptimal conditions."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model and user agree on distraction presence but disagree on severity impact. Model interpreted 3km travel, 4 walking events, 60dB busy audio, and elevated HR as incompatible with any study concentration, yielding score=2. User acknowledged all three distraction categories but still reported 5/10 focus, suggesting they maintained partial concentration during mobile/noisy conditions (e.g., reviewing notes while commuting, listening to audio materials). Model applied binary logic (movement = no study) rather than recognizing degraded-but-present concentration. The 106-minute duration may also indicate intentional mobile study rather than pure transit.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly detected noisy environment (60.09dB, 7 busy labels, 3 Speech events). Reliable signal for distraction presence. However, threshold of 60dB may be too strict—some users tolerate moderate noise. Next: distinguish between disruptive speech (conversation) vs. background ambient; weight speech events more heavily than dB alone. Avoid binary 'busy=no concentration' assumption.",
+      "vitals": "Elevated HR (87.93 bpm, above 60-85 calm range) and moderate steps (24.36/sample) correctly flagged activity. However, elevated HR during 106-min session may reflect sustained cognitive effort or walking pace rather than stress/distraction alone. Next: contextualize HR elevation with motion—if walking is steady (not erratic), reduce penalty. Consider HR variability, not just mean, to distinguish stress from steady-state activity.",
+      "motion": "Motion events (4 walking, 2 stationary) and active>stationary ratio accurately captured mobility. Model correctly identified movement as distraction factor. However, 2 stationary periods suggest some seated intervals existed. Next: weight stationary duration more than count; assess temporal clustering (e.g., 20-min stationary block = higher focus potential). Do not assume walking always eliminates concentration—some users study while pacing or commuting.",
+      "gps": "GPS showed extreme travel (3007m total, 195m displacement, drastic change flag). Model correctly flagged location instability. However, 3 GPS points over 106 minutes = sparse sampling; total travel may be overestimated due to GPS noise or multi-modal transit. Next: require minimum 5+ points for high-confidence travel estimates. Distinguish commute patterns (linear travel) from erratic movement (errands). If travel is steady, reduce score penalty—user may be studying en route."
+    },
+    "judgment_policy_next_run": [
+      "Do not apply binary thresholds: presence of movement/noise does not eliminate all concentration. Use graduated penalties based on intensity and duration.",
+      "Weight stationary periods and quiet intervals more heavily: even brief stable segments (e.g., 15-20 min stationary) should lift score above 2."
+    ]
+  },
+  "db_row_id": 95
+}

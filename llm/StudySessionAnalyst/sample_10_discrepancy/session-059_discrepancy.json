@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-16T00:07:56.004082Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-059",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Library",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned score of 2 (poor concentration) based on extensive travel, walking motion, and busy audio environment. User self-reported 5 (moderate concentration) while acknowledging the same distraction factors. This represents a significant 3-point discrepancy where the model interpreted mobility and environmental noise as incompatible with study, while the user maintained moderate focus despite these challenges."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model and user agree on distraction presence but disagree on impact severity. Model interpreted 2975m travel, 3 walking periods, and 60.28 dB busy audio as fundamentally incompatible with study (score 2). User acknowledged identical factors but reported maintaining moderate concentration (score 5), suggesting adaptation to mobile study or task completion despite suboptimal conditions. Model may have over-penalized mobility without accounting for intentional mobile study patterns (e.g., reviewing flashcards while commuting, audio-based learning). The 92 bpm heart rate was attributed to physical activity by model, but could reflect engaged cognitive effort during mobile study rather than pure distraction.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified busy environment (60.28 dB, 5 busy events, 2 Speech). However, threshold of 60 dB may be too strict for mobile study contexts. Next cycle: maintain detection accuracy but reduce penalty weight when audio distraction co-occurs with intentional mobility patterns. Consider that speech/ambient noise during commute may be tolerated background rather than primary disruptor.",
+      "vitals": "Heart rate of 92 bpm was interpreted as stress/distraction indicator, but this may conflate physical activity with cognitive disengagement. Walking naturally elevates HR without necessarily destroying focus. Next cycle: when elevated HR (85-95 bpm) co-occurs with walking motion, apply reduced penalty multiplier (0.5x) rather than full distraction weight. Reserve high penalties for HR >100 bpm or HR elevation without corresponding motion.",
+      "motion": "Motion sensor correctly detected 3 walking vs 1 stationary period, supporting mobility conclusion. However, model assumed walking = no study, which user data contradicts. Next cycle: distinguish between brief transitions (<10 min walking) and sustained walking (>30 min). For sessions with consistent moderate movement, check if audio/task patterns suggest mobile learning rather than pure commute. Reduce categorical penalty for walking when session duration is long (>60 min) and other engagement signals present.",
+      "gps": "GPS displacement (1363m) and travel (2975m) were heavily penalized as incompatible with study. This was model's strongest evidence for score 2, but user maintained focus despite travel. Next cycle: GPS should flag location instability but not dominate score calculation. Weight GPS at 20-30% of total rather than 40-50%. Consider that modern study can occur during transit. Flag drastic changes but allow other sensors (audio content type, vitals stability) to modulate final impact."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS/motion penalty weight from dominant to moderate (20-30% influence) when session duration >60 min and movement is consistent rather than erratic.",
+      "Introduce mobile study context detection: when walking motion + moderate HR + audio events are sustained and consistent, apply 0.6x penalty multiplier instead of full distraction weight."
+    ]
+  },
+  "db_row_id": 99
+}

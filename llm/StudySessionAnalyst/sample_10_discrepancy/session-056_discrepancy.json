@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-16T00:05:40.223414Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-056",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (1.0) interpreting session as active transit, while user reported low-moderate focus (4.0). User acknowledged all three distraction factors model detected (noise, movement, location change) but still perceived partial study activity occurred during travel."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly identified all distraction factors user reported, but over-penalized by treating continuous movement as complete absence of study. User self-report suggests they attempted studying during transit (e.g., reviewing notes while commuting, audio learning during walking). Model binary logic (stationary=study, movement=not-study) failed to account for mobile study behaviors. The 61.55 dB audio, 89 bpm heart rate, 5 walking events, and 3.6km travel are accurate distraction signals, but do not necessarily mean zero concentration effort occurred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly detected noisy environment (61.55 dB, 4 busy labels, 3 Speech events). Reliable indicator of distraction presence, but cannot distinguish between 'no study possible' vs 'degraded study quality'. Weight as strong negative factor but not absolute veto.",
+      "vitals": "Elevated heart rate (89 bpm) and steps (30.33/sample) accurately captured physical activity. Reliable for detecting non-stationary state, but should not automatically imply zero focus—some users study while walking. Use as moderate penalty, not disqualifier.",
+      "motion": "5 walking events with 0 stationary periods correctly identified continuous movement. High confidence signal for distraction, but model should allow partial credit for mobile study attempts rather than floor score at 1.0.",
+      "gps": "Drastic location change (1661m displacement, 3569m travel) is strong evidence of transit context. Reliable for detecting instability, but 88-minute session with significant travel may include stationary study segments not captured by 3 GPS points. Temporal granularity limitation—increase weighting caution when GPS sample density is low."
+    },
+    "judgment_policy_next_run": [
+      "Maintain current sensor detection logic for noise, movement, and location change—all three factors were user-confirmed and observability is DIRECT/HIGH confidence.",
+      "Revise scoring floor: do not assign score=1.0 solely based on movement + travel. Introduce partial credit (2.0-4.0 range) when user exhibits mobile study patterns, even with distraction factors present."
+    ]
+  },
+  "db_row_id": 96
+}

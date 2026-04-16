@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-04-15T23:43:53.923900Z",
+  "model": "claude-sonnet-4-5",
+  "source": "json_batch",
+  "session": {
+    "id": "session-028",
+    "label": "study_session",
+    "source": "sessions_table",
+    "started_at": "2026-03-09T19:15:54.835647+00:00",
+    "ended_at": "2026-03-09T21:02:54.835647+00:00",
+    "duration_min": 107.0,
+    "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+    "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+  },
+  "sensor_features": {
+    "session": {
+      "id": "session-028",
+      "label": "study_session",
+      "source": "sessions_table",
+      "started_at": "2026-03-09T19:15:54.835647+00:00",
+      "ended_at": "2026-03-09T21:02:54.835647+00:00",
+      "duration_min": 107.0,
+      "user_id": "user-832b2d98-bf98-4bd3-bca9-0f939391f0bb",
+      "device_id": "97302249-9615-4e8e-9d79-513f16c543ef"
+    },
+    "counts": {
+      "audio_events_total": 8,
+      "audio_events_conf_gt_50": 8,
+      "gps_points": 3,
+      "motion_events": 6,
+      "vitals_rows": 33
+    },
+    "audio": {
+      "avg_db_conf_gt_50": 39.6125,
+      "label_counts_conf_gt_50": {
+        "quiet": 8
+      },
+      "label_counts_conf_gt_50_text": "8 quiet",
+      "ai_label_counts_conf_gt_50": {
+        "Silence": 8
+      },
+      "ai_label_counts_conf_gt_50_text": "8 Silence"
+    },
+    "vitals": {
+      "avg_heart_rate": 65.15454545454546,
+      "avg_steps": 5.2727272727272725,
+      "avg_distance_m": 4.967272727272728,
+      "heart_rate_samples": 11,
+      "steps_samples": 11,
+      "distance_samples": 11
+    },
+    "gps": {
+      "points": 3,
+      "displacement_m": 1263.8306095076484,
+      "total_travel_m": 1543.7987492187146,
+      "drastic_location_change": true
+    },
+    "motion": {
+      "counts": {
+        "stationary": 4,
+        "walking": 2
+      },
+      "counts_text": "4 stationary, 2 walking",
+      "stationary_count": 4,
+      "active_count": 2
+    }
+  },
+  "phase_1": {
+    "audio": "Audio environment is excellent for concentration with avg 39.6 dB (well below 45 dB threshold) and all 8 events labeled as 'quiet' and 'Silence'. This indicates a consistently calm, distraction-free acoustic environment throughout the 107-minute session.",
+    "vitals": "Heart rate at 65.2 bpm falls within the optimal 60-85 bpm range for calm focus. Steps (5.3 avg) and distance (5.0m avg) are very low, indicating minimal physical movement consistent with seated study behavior. Physiological indicators strongly support sustained concentration.",
+    "gps_motion": "GPS shows drastic location change with 1263.8m displacement and 1543.8m total travel, far exceeding the 200m stability threshold. Motion context shows 4 stationary and 2 walking periods, suggesting the student relocated during the session but maintained stationary periods for study."
+  },
+  "phase_2": {
+    "correlations": "The data reveals a clear pattern of relocation during study: excellent audio environment and minimal step activity during stationary periods indicate focused study sessions, while GPS displacement shows significant travel between locations. The combination of quiet environment, low heart rate, minimal steps, yet high GPS travel suggests the student moved to a different study location mid-session but maintained concentration during stationary periods.",
+    "holistic_assessment": "Overall concentration quality is good but compromised by location instability. The acoustic environment and physiological markers are optimal for focus, and the majority of time (4 of 6 motion contexts) was spent stationary. However, the substantial geographic displacement (>1.2km) indicates significant interruption to study continuity, likely involving transportation or relocation that fragmented the session despite good conditions at each location."
+  },
+  "phase_3": {
+    "recommendations": "1) Plan study sessions at a single stable location to avoid the 1.2km+ displacement observed; relocation breaks concentration continuity even when conditions at each site are good. 2) Continue leveraging quiet environments (39.6 dB) as this is optimal for focus; replicate these acoustic conditions in future sessions. 3) If location changes are necessary, schedule them between study sessions rather than during them to maintain uninterrupted focus blocks."
+  },
+  "personalization_basis": null,
+  "score": 6,
+  "reason": "The audio environment was excellent (39.6 dB, all quiet/silence labels) and vitals were optimal (65.2 bpm, minimal movement), supporting strong concentration during stationary periods. However, the drastic location change of 1263.8m displacement significantly fragmented the session, reducing overall concentration effectiveness despite good conditions at individual locations. The score reflects strong focus quality undermined by poor location stability.",
+  "error": null
+}

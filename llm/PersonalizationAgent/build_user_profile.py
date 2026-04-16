@@ -24,6 +24,13 @@ except ImportError:  # pragma: no cover
 
 SENSOR_KEYS = ("vitals", "gps", "motion", "audio")
 DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "user_profile_summary.json"
+DEFAULT_DISCREPANCY_READ_LIMIT = int(os.getenv("PERSONALIZATION_DISCREPANCY_READ_LIMIT", "60"))
+
+
+def _normalize_read_limit(limit):
+	val = int(_to_float(limit) or 0)
+	# 0 or negative means read all available discrepancy rows.
+	return None if val <= 0 else val
 
 def _to_float(value):
 	try:
@@ -540,10 +547,21 @@ def upsert_profile_to_db(connection, user_id, payload, context_averages=None, la
 	connection.commit()
 
 
-def refresh_user_profile(connection, user_id, output_path=DEFAULT_OUTPUT_PATH, snowflake_session=None, store_db=True):
+def refresh_user_profile(
+	connection,
+	user_id,
+	output_path=DEFAULT_OUTPUT_PATH,
+	snowflake_session=None,
+	store_db=True,
+	discrepancy_read_limit=DEFAULT_DISCREPANCY_READ_LIMIT,
+):
 	assert_profile_table_exists(connection)
 	ensure_profile_tracking_columns(connection)
-	all_rows = fetch_recent_discrepancy_rows(connection, user_id, limit=None)
+	all_rows = fetch_recent_discrepancy_rows(
+		connection,
+		user_id,
+		limit=_normalize_read_limit(discrepancy_read_limit),
+	)
 	row = all_rows[0] if all_rows else None
 	existing_profile = fetch_existing_profile_state(connection, user_id)
 	payload = build_profile_from_latest(
@@ -576,9 +594,10 @@ def save_profile(output_path, payload):
 
 
 def main(
-	user_id="kevin",
+	user_id="minsuk",
 	output_path=str(DEFAULT_OUTPUT_PATH),
 	store_db=True,
+	discrepancy_read_limit=DEFAULT_DISCREPANCY_READ_LIMIT,
 ):
 	user_id = (user_id or "").strip()
 	if not user_id:
@@ -603,6 +622,7 @@ def main(
 			output_path=output_path,
 			snowflake_session=sf_session,
 			store_db=store_db,
+			discrepancy_read_limit=discrepancy_read_limit,
 		)
 	finally:
 		if sf_session is not None:

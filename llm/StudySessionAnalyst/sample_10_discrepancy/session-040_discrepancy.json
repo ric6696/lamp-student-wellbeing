@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:53:15.127603Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-040",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model underestimated concentration by 3 points. Model heavily penalized GPS displacement (1688m) and location change, interpreting the session as fragmented travel. User rated moderate concentration (6/10) and acknowledged movement/location factors but perceived better focus than model inferred. Model may have over-weighted GPS instability relative to user's subjective experience during stationary intervals."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model assigned score 3 primarily due to GPS displacement (1688m) and drastic location change, interpreting the session as fragmented and incompatible with sustained focus. However, user reported score 6, suggesting they maintained moderate concentration despite movement. Key discrepancy: model treated location instability as dominant negative signal, while user experienced stationary intervals as productive. Motion data shows only 2 walking events vs 3 stationary, and vitals (78 bpm, 3.78 steps avg) indicate minimal restlessness during measurement windows. Model likely conflated inter-location travel with continuous distraction, whereas user may have studied effectively at multiple stable locations. Physiological strain factor selected by user is not supported by heart rate (78 bpm is optimal range), indicating possible unmeasured fatigue or discomfort not captured by sensors.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable and supportive of concentration: 44.75 dB below threshold, balanced labels. Model correctly weighted this positively but was overridden by GPS penalty. Next time: maintain current weighting; audio was accurate indicator of favorable conditions during stationary periods.",
+      "vitals": "Reliable for calm focus assessment: 78.36 bpm in optimal range, very low steps (3.78 avg). Model correctly interpreted as positive signal but insufficient to offset GPS concerns. Caution: vitals cannot detect subjective strain (fatigue, discomfort) reported by user. Next time: vitals indicate physiological calm but do not rule out unmeasured strain; avoid over-confidence in absence of stress markers.",
+      "motion": "Partially reliable: 3 stationary vs 2 walking events supports predominantly seated behavior, contradicting model's fragmentation narrative. Model under-weighted motion's indication of stability. Next time: prioritize motion event distribution over GPS displacement when motion shows majority stationary—motion provides finer temporal resolution than sparse GPS (3 points). Walking events may represent brief transitions, not continuous distraction.",
+      "gps": "High displacement (1688m) is factually accurate but interpretation was too severe. Model assumed continuous fragmentation; user's score 6 suggests travel occurred between productive stationary study blocks. Caution: GPS with only 3 points lacks temporal granularity to distinguish 'commute then study' from 'constant movement'. Next time: when GPS shows high displacement but motion shows majority stationary and vitals/audio are favorable, reduce GPS penalty weight—interpret as multi-location session rather than zero-focus fragmentation. Consider displacement may occur outside core study intervals."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when motion data shows majority stationary events (≥60%) and vitals/audio support focus—interpret as multi-location session with stable study intervals rather than continuous fragmentation.",
+      "When user reports 'Physiological Strain' but vitals are in optimal range, acknowledge sensor blind spot: heart rate cannot capture subjective fatigue, discomfort, or mental exhaustion. Flag low confidence for this factor."
+    ]
+  },
+  "db_row_id": 80
+}

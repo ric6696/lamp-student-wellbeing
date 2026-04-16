@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:36:37.444046Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-018",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Home",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned very low concentration (2.0) interpreting session as transit/errands with severe distraction. User rated moderate-low (5.0) acknowledging three major distraction factors but perceiving higher residual focus than model inferred. Gap of 3.0 points indicates model over-penalized mobility and noise relative to user's subjective experience."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "User and model agree on presence of all three distraction factors (noise, movement, location change), but disagree on severity impact. Model interpreted 63.2 dB audio, 3km travel, and walking motion as incompatible with any meaningful study, yielding score=2. User acknowledged same distractions but rated focus=5, suggesting partial task engagement despite suboptimal conditions (e.g., studying during commute, audio learning while walking). Model lacks context for intentional mobile study or tolerance thresholds, leading to over-penalization. User's self-assessment implies residual concentration capacity the sensor-only model cannot detect.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified busy/speech environment at 63.2 dB. Reliable signal for noise distraction. However, model should not assume all speech environments preclude focus—consider user may tolerate or adapt to moderate noise (60-65 dB range). Next: distinguish between disruptive speech (interruptions) vs. ambient speech (background).",
+      "vitals": "Heart rate 93.66 bpm elevated above calm range (60-85) but not extreme. Model interpreted as stress/exertion; user may experience this as normal active state. Steps (25.14 avg) indicate movement but not frantic activity. Next: avoid binary calm/stressed classification; allow for 'active focus' states with moderate HR elevation (85-95 bpm) that don't fully negate concentration.",
+      "motion": "Motion data (3 walking, 1 stationary) accurately captured mobility. Model correctly flagged movement as distraction factor. However, walking does not eliminate all cognitive engagement (e.g., audiobook study, review while commuting). Next: weight walking less severely when combined with moderate user scores; consider duration and intensity of motion events.",
+      "gps": "GPS displacement (1198m) and travel (3048m) correctly identified location instability. Model applied strict stationary threshold (<200m), appropriate for traditional desk study but potentially too rigid. User's score=5 suggests intentional mobile session. Next: calibrate GPS penalty curves—large displacement should reduce score ceiling but not floor it at 2 unless combined with user report of zero focus."
+    },
+    "judgment_policy_next_run": [
+      "Recalibrate score floor: when all distraction factors are sensor-confirmed but user reports score ≥5, avoid scores below 4. Reserve scores 1-3 for sessions where user also reports very low focus.",
+      "Introduce 'active study' mode detection: when motion=walking + audio=speech/busy + vitals=moderate elevation + user_score ≥5, infer possible mobile learning scenario and apply gentler penalties (target score 4-6 range instead of 1-3)."
+    ]
+  },
+  "db_row_id": 58
+}

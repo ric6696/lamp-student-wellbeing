@@ -1,33 +1,40 @@
 {
-  "timestamp": "2026-04-15T22:38:35.274869Z",
+  "timestamp": "2026-04-15T23:28:06.368228Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-007",
-  "concentration_score": 7.0,
-  "user_score": 6.0,
+  "concentration_score": 6.0,
+  "user_score": 7.0,
   "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
     "Location Change / Transition",
-    "No Major Distraction",
-    "Internal Cognitive Drift (mind wandering, low motivation)"
+    "Task Challenge (difficulty, frustration)"
   ],
   "pre_session_questions": {
-    "activity_context": "Study",
-    "environment_context": "Library",
-    "mental_readiness": "High"
+    "activity_context": "Group Meeting",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
   },
   "result": {
     "overview": {
-      "model_score": 7.0,
-      "user_score": 6.0,
+      "model_score": 6.0,
+      "user_score": 7.0,
       "gap": 1.0,
-      "agreement": "MODEL_HIGHER",
-      "summary": "Model rated concentration 1 point higher than user. Model emphasized excellent environmental conditions (quiet audio, optimal vitals, stationary motion) while acknowledging location transitions. User identified location changes as primary distraction alongside internal cognitive drift, which sensors cannot directly measure."
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized location changes heavily; user acknowledged transitions but reported better subjective focus quality, attributing distraction primarily to unmeasured internal cognitive drift rather than observable environmental factors."
     },
     "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
       "Location Change / Transition",
-      "No Major Distraction",
-      "Internal Cognitive Drift (mind wandering, low motivation)"
+      "Task Challenge (difficulty, frustration)"
     ],
     "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
       {
         "factor": "Location Change / Transition",
         "mapped_observability": "DIRECT",
@@ -39,35 +46,24 @@
         "alignment_with_session_sensors": "ALIGNED"
       },
       {
-        "factor": "No Major Distraction",
-        "mapped_observability": "DIRECT",
-        "mapped_primary_sensors": [
-          "audio",
-          "motion",
-          "vitals"
-        ],
-        "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "ALIGNED"
-      },
-      {
-        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "factor": "Task Challenge (difficulty, frustration)",
         "mapped_observability": "UNMEASURED",
         "mapped_primary_sensors": [],
         "confidence_cap": "LOW",
         "alignment_with_session_sensors": "UNMEASURED"
       }
     ],
-    "why_difference": "Model over-weighted positive environmental signals (41.2 dB quiet audio, 65.7 bpm optimal heart rate, stationary motion) and under-weighted the cognitive impact of location transitions (1067m displacement, 2573m travel). User reported internal cognitive drift as a co-factor, which is unmeasured by sensors. Model interpreted GPS travel as efficient transport between quality study locations, awarding 7/10. User experienced this transition plus unmeasured mind-wandering as more disruptive, rating 6/10. The 1-point gap reflects model blindness to internal cognitive states despite detecting the physical transition.",
+    "why_difference": "Model heavily weighted GPS displacement (1067m, 2573m travel) as fragmenting concentration, reducing score to 6.0. User confirmed location transitions occurred but rated focus at 7.0, indicating transitions were less disruptive than model assumed. User's primary distraction was internal cognitive drift (unmeasured by sensors), suggesting the model over-penalized observable location changes while missing the dominant subjective factor. Two of three user-reported factors are unmeasured, limiting model's ability to capture true concentration dynamics.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Highly reliable. 8 quiet events at 41.2 dB with 'Silence' AI labels provide strong evidence of non-disruptive acoustic environment. Correctly supported 'No Major Distraction' factor. Maintain high weighting for environmental noise assessment.",
-      "vitals": "Reliable for physiological calm. 65.7 bpm heart rate in optimal focus range (60-85 bpm) and minimal steps (4.25 avg) correctly indicated seated, low-stress behavior. However, vitals cannot detect internal cognitive drift or subjective impact of transitions. Use for physiological state only; do not infer cognitive engagement.",
-      "motion": "Reliable for activity classification. 6 stationary events with 0 active periods correctly identified sedentary study posture. Combined with low steps, this supported the model's interpretation of efficient transport. However, stationary status does not measure cognitive continuity across location changes. Maintain for physical state; add caution that stationary ≠ mentally engaged.",
-      "gps": "Accurately detected location transitions (1067m displacement, 2573m travel) but model under-weighted their cognitive cost. GPS correctly identified the 'Location Change / Transition' factor user reported as primary. Next time: increase penalty weighting for drastic location changes during study sessions, even when other sensors show calm conditions. Physical transition disrupts cognitive continuity beyond what environmental sensors capture."
+      "audio": "Highly reliable. Consistently quiet environment (41.2 dB, 8 'Silence' events) strongly supports concentration. Model correctly weighted this positively. No recalibration needed; maintain high confidence in audio as concentration indicator.",
+      "vitals": "Reliable and well-calibrated. Heart rate 65.7 bpm in optimal range, minimal steps (4.25 avg) confirm stationary study behavior. Model correctly interpreted as supporting focus. Continue high weighting for calm vitals as positive signal.",
+      "motion": "Reliable but context-dependent. All 6 events stationary, correctly indicating seated study periods. Model appropriately used this to confirm focus during stationary intervals. However, motion alone cannot distinguish passive transport from active distraction. Maintain current weighting but cross-reference with GPS context.",
+      "gps": "Reliable for detecting transitions but model over-weighted impact. GPS correctly identified drastic location change (HIGH confidence per policy), but model assumed this fragmented concentration more than user experienced. Next cycle: detect location changes with high confidence but apply moderate penalty (not severe) unless corroborated by degraded audio/vitals or increased motion activity. User may adapt well to planned transitions."
     },
     "judgment_policy_next_run": [
-      "Increase GPS displacement penalty: When drastic_location_change=true during study sessions, apply stronger downward score adjustment (suggest -1.5 to -2.0 points) even if audio/vitals/motion are optimal. User confirmed transitions were primary distraction.",
-      "Do not conflate environmental quality with cognitive continuity: Quiet audio + low heart rate + stationary motion indicate good conditions but cannot measure mental engagement or transition costs. Avoid scoring above 7.5 when significant GPS travel occurs, regardless of other positive signals."
+      "Reduce penalty weight for GPS location changes when audio remains quiet and vitals stay calm throughout session. Transitions may be planned and less disruptive than assumed.",
+      "Acknowledge unmeasured factors explicitly in scoring rationale. When sensors show optimal conditions but score is moderate, flag potential unmeasured cognitive/task factors and express uncertainty rather than over-attributing to observable signals."
     ]
   },
-  "db_row_id": 36
+  "db_row_id": 47
 }

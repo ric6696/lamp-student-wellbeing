@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-16T00:06:24.326500Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-057",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Outdoor",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User reports worse concentration (5.0) than model predicted (4.0). User attributes distraction primarily to unmeasured internal cognitive drift, while model emphasized observable location changes. The 1-point gap suggests model over-weighted mobility impact and under-recognized unmeasured cognitive factors."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model heavily penalized GPS displacement (474m) and travel (2.4km), interpreting mobility as primary distraction driver. User confirms location change was a factor but identifies internal cognitive drift and task difficulty as primary—both unmeasured by sensors. Model lacked visibility into cognitive state and task context, leading to over-attribution of concentration loss to observable mobility. The 4 stationary motion events suggest some stable study periods that model may have under-weighted.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for environmental noise assessment. 47.16 dB and 5 busy/5 ambient events correctly identified moderate acoustic distraction. However, audio alone cannot distinguish whether noise caused distraction or was incidental to location changes. Maintain current weighting but avoid over-claiming causal impact without corroborating user feedback.",
+      "vitals": "Heart rate (74.1 bpm) accurately indicated physiological readiness for focus. Low steps (6.36 avg) and distance (6.11m) per sample suggest minimal restlessness. Vitals provided weak signal for cognitive drift or task challenge. Do not use stable vitals to dismiss unmeasured internal factors; absence of physiological strain does not equal high concentration.",
+      "motion": "4 stationary vs 2 walking events correctly identified mixed activity. Model appropriately used this to infer fragmented attention. However, stationary periods may have supported focus despite location changes. Next cycle: distinguish between disruptive transitions and productive multi-location study. Weight stationary duration more heavily than transition count.",
+      "gps": "GPS data (474m displacement, 2.4km travel, drastic change flag) was accurate and directly observable. Model correctly identified mobility but over-weighted its impact on concentration score. User confirmed location change as a factor but not primary. Next cycle: treat GPS as context modifier rather than dominant score driver. Mobility during long sessions (110 min) may be intentional and partially compatible with focus."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS/location change penalty weight when session duration exceeds 90 minutes and motion shows multiple stationary periods (≥3). Long sessions may involve intentional location shifts without proportional concentration loss.",
+      "When vitals are stable (HR 60-85 bpm, low steps) but GPS shows high mobility, flag potential unmeasured cognitive factors rather than defaulting to mobility-driven score reduction. Stable physiology + movement suggests external task demands or cognitive load, not environmental disruption alone."
+    ]
+  },
+  "db_row_id": 97
+}

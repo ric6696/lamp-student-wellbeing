@@ -1,42 +1,39 @@
 {
-  "timestamp": "2026-04-15T22:37:02.472533Z",
+  "timestamp": "2026-04-15T23:26:42.819550Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-005",
-  "concentration_score": 2.0,
+  "concentration_score": 4.0,
   "user_score": 5.0,
   "selected_factors": [
-    "Movement / Restlessness",
+    "Internal Cognitive Drift (mind wandering, low motivation)",
     "Location Change / Transition",
-    "Physiological Strain (stress, fatigue, discomfort)"
+    "Task Challenge (difficulty, frustration)"
   ],
   "pre_session_questions": {
-    "activity_context": "Study",
-    "environment_context": "Classroom",
-    "mental_readiness": "Very Low"
+    "activity_context": "Lecture",
+    "environment_context": "Library",
+    "mental_readiness": "High"
   },
   "result": {
     "overview": {
-      "model_score": 2.0,
+      "model_score": 4.0,
       "user_score": 5.0,
-      "gap": 3.0,
+      "gap": 1.0,
       "agreement": "USER_HIGHER",
-      "summary": "Model assigned score of 2.0 interpreting session as transit/commute with poor concentration conditions. User reported 5.0 (moderate focus), citing movement/restlessness, location change, and physiological strain as distractions. The 3-point gap indicates model over-penalized GPS displacement and misinterpreted the session context."
+      "summary": "User reported worse concentration (5.0) than model predicted (4.0). User attributes poor focus primarily to internal cognitive drift and task challenge—both UNMEASURED factors—while model emphasized observable location instability (2050m displacement) and moderately busy audio. The 1-point gap suggests model underweighted unmeasured cognitive factors that dominated user experience."
     },
     "selected_factors": [
-      "Movement / Restlessness",
+      "Internal Cognitive Drift (mind wandering, low motivation)",
       "Location Change / Transition",
-      "Physiological Strain (stress, fatigue, discomfort)"
+      "Task Challenge (difficulty, frustration)"
     ],
     "factor_sensor_mappings": [
       {
-        "factor": "Movement / Restlessness",
-        "mapped_observability": "DIRECT",
-        "mapped_primary_sensors": [
-          "motion",
-          "vitals"
-        ],
-        "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "PARTIAL"
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
       },
       {
         "factor": "Location Change / Transition",
@@ -49,26 +46,24 @@
         "alignment_with_session_sensors": "ALIGNED"
       },
       {
-        "factor": "Physiological Strain (stress, fatigue, discomfort)",
-        "mapped_observability": "INDIRECT",
-        "mapped_primary_sensors": [
-          "vitals"
-        ],
-        "confidence_cap": "MEDIUM",
-        "alignment_with_session_sensors": "UNSUPPORTED"
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
       }
     ],
-    "why_difference": "Model treated 2050m GPS displacement as disqualifying for any concentration, assigning score of 2.0 and labeling session as 'transit time, not study time.' User acknowledged location change and movement as distractions but still achieved moderate focus (5.0). Key discrepancy: model assumed GPS travel = zero concentration possibility, while user experienced partial but real focus despite environmental challenges. Motion data (3 stationary, 1 walking) and calm heart rate (77.84 bpm) actually support user's claim of moderate focus during travel. Model failed to consider that studying during commute is feasible at moderate concentration levels. User also cited physiological strain, which vitals data (calm HR) do not support, suggesting subjective fatigue not captured by sensors.",
+    "why_difference": "Model correctly identified location instability (2050m displacement, drastic change flag) as a major distractor and assigned score 4.0. User confirmed location change as a factor but rated primary distraction as internal cognitive drift (UNMEASURED) and task challenge (UNMEASURED), reporting worse concentration (5.0). The gap arises because model relied heavily on observable GPS/motion signals while user experienced dominant cognitive/task-related issues invisible to sensors. Calm vitals (77.84 bpm) and low steps (4.0) provided no signal for cognitive drift or task difficulty, leaving model blind to primary user-reported causes.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Audio data (48.96 dB, 3 busy/2 quiet) correctly identified moderately challenging acoustic environment. Model appropriately weighted this as tolerable but suboptimal. Judgment was reasonable; maintain current weighting for audio in 45-60 dB range as moderate distraction, not disqualifying.",
-      "vitals": "Heart rate (77.84 bpm) and low step count (4.0 avg) indicated calm, stationary state. Model correctly interpreted physiological calmness but failed to integrate this with GPS to recognize 'stationary-within-vehicle' can still support moderate focus. Next time: calm vitals during GPS travel should moderate (not eliminate) location-change penalty. User reported physiological strain unsupported by HR data—vitals may miss subjective fatigue; treat as incomplete signal for strain.",
-      "motion": "Motion events (3 stationary, 1 walking) supported user's stationary behavior claim. Model noted this but subordinated it entirely to GPS data. Next time: when motion shows predominantly stationary despite GPS travel, recognize potential for seated focus (vehicle study). Motion data should partially offset GPS displacement penalty rather than being overridden.",
-      "gps": "GPS displacement (2050m) was heavily over-weighted, driving score to 2.0 with categorical 'not study time' judgment. User achieved 5.0 despite this travel, proving concentration is possible during transit. Critical recalibration needed: GPS travel >2km should reduce score moderately (e.g., cap at 5-6 range) rather than catastrophically (2.0). Distinguish between active travel (walking/cycling) vs. passive transit (vehicle)—latter permits moderate focus. GPS should be weighted as strong negative modifier, not absolute disqualifier."
+      "audio": "Moderately reliable. 48.96 dB average and 3 busy vs 2 quiet labels correctly indicated suboptimal acoustic environment. However, audio alone did not explain the severity of user-reported distraction. Weight audio as supporting evidence for environmental context, not sole predictor of concentration.",
+      "vitals": "Limited predictive value in this session. Heart rate 77.84 bpm (calm range) and low steps suggested physical stillness but failed to detect cognitive drift or task frustration. Do not interpret calm vitals as proxy for good concentration when UNMEASURED factors are plausible. Vitals provide physiological baseline only.",
+      "motion": "Partially reliable. 3 stationary vs 1 walking event aligned with low step counts, supporting seated behavior. However, motion data did not capture restlessness or cognitive disengagement. Motion sensors detect physical activity but miss internal attentional shifts. Use cautiously for concentration inference.",
+      "gps": "Highly reliable for location instability detection. 2050m displacement and drastic change flag accurately identified environmental disruption. GPS correctly flagged a major observable distractor. However, GPS cannot measure whether location change was the primary subjective cause. Weight GPS strongly for environmental context but acknowledge it may not dominate user-perceived distraction hierarchy."
     },
     "judgment_policy_next_run": [
-      "Recalibrate GPS displacement penalty: >2km travel should cap score at 5-6 (moderate focus possible during commute) rather than 2-3 (no focus). Avoid categorical 'not study time' claims when other sensors show stability.",
-      "Integrate motion context with GPS: when motion shows 'stationary' dominance during large GPS displacement, infer passive transit (vehicle) and allow moderate concentration scores. Stationary motion should partially offset GPS penalty."
+      "When GPS shows drastic location change (>2km) but user reports cognitive drift or task challenge as primary factors, do not over-anchor on location instability. Assign moderate weight to GPS findings and acknowledge unmeasured cognitive factors may dominate subjective experience.",
+      "Calm vitals (60-85 bpm) and low motion do not rule out severe concentration issues from cognitive drift or task difficulty. Avoid interpreting physiological calm as evidence of good focus when UNMEASURED factors are candidate causes."
     ]
   },
-  "db_row_id": 34
+  "db_row_id": 45
 }

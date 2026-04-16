@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-16T00:04:03.537529Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-054",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Library",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted severe concentration impairment (2/10) while user reported moderate focus (5/10). Both agree on presence of environmental noise, movement, and location change as distractors, but differ substantially on impact severity. Model interpreted transit-like sensor patterns as near-zero study quality; user acknowledged distractions but reported achieving moderate focus despite them."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS displacement (1088m) and total travel (1530m) as definitive evidence of transit/commute, concluding virtually no study occurred. User confirms location change occurred but indicates they maintained moderate focus despite environmental challenges. The 3-point gap suggests model conflated physical mobility with complete cognitive disengagement. User's self-report indicates adaptation or tolerance to suboptimal conditions that sensors cannot capture. Model may have applied overly rigid thresholds (e.g., 200m GPS stability rule) without accounting for study-during-travel scenarios or brief transitions between study locations.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified noisy environment (64.3 dB, 3 busy labels, 2 Speech events). Reliable signal for distraction presence. However, audio alone cannot quantify cognitive impact—some users maintain focus in noisy settings. Next: treat audio as distraction indicator but avoid deterministic score penalties without corroborating cognitive proxies.",
+      "vitals": "Elevated heart rate (94.96 bpm, above 85 bpm calm threshold) interpreted as stress/physical activity. Reliable physiological signal but ambiguous cause: could indicate stress, walking, or even engaged cognitive effort. Steps (40.43 avg) and distance (35.78m avg per sample) suggest movement but not necessarily incompatible with study. Next: use vitals as secondary signal; avoid conflating elevated HR with zero concentration without motion context.",
+      "motion": "Motion events (3 stationary, 1 walking) suggested predominantly stationary behavior, contradicting GPS travel interpretation. This sensor showed restraint but was overridden by GPS. Next: increase motion sensor weight when it conflicts with GPS—motion may better reflect micro-context (sitting in vehicle, stationary in café) than raw displacement.",
+      "gps": "GPS displacement (1088m) and travel (1530m) heavily penalized score, interpreted as definitive transit. However, GPS cannot distinguish between commute-with-no-study vs. study-in-transit vs. brief location change between study spots. Model applied binary logic (movement = no study) that user experience contradicts. Next: soften GPS penalties when motion shows stationary dominance; treat large displacement as context flag requiring corroboration, not automatic disqualification. Consider time-windowed GPS analysis to detect sustained vs. brief transitions."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement as sole determinant of concentration failure; require motion sensor corroboration (e.g., sustained walking/vehicle motion) before concluding transit scenario.",
+      "Treat audio and vitals as distraction presence indicators with HIGH confidence, but apply graduated score penalties rather than binary (distraction detected → score=2) logic."
+    ]
+  },
+  "db_row_id": 94
+}

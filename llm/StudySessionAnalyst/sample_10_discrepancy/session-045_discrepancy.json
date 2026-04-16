@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:57:11.393929Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-045",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model severely underestimated concentration (2.0 vs 5.0). Model heavily penalized GPS travel (2.2km) as incompatible with study, while user reported moderate focus despite movement/restlessness and location changes. The 3-point gap suggests model over-weighted location instability relative to user's subjective experience."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model interpreted drastic GPS displacement (1477m) and total travel (2262m) as fundamentally incompatible with concentration, assigning score=2. User acknowledged location change and movement as distractors but still achieved moderate focus (5.0), suggesting study-during-transit is more viable than model assumed. Model failed to distinguish between disruptive travel and managed study-in-motion scenarios. Physiological strain reported by user is not supported by calm HR (76 bpm), indicating either unmeasured fatigue/discomfort or user misattribution.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly identified moderately busy environment (47.32 dB, 4 busy labels). Reliable signal but model appropriately weighted this as secondary to location instability. Next: maintain current weighting but recognize busy audio may be tolerable in transit contexts.",
+      "vitals": "Heart rate (76 bpm) accurately indicated calm physiological state, contradicting user's 'Physiological Strain' claim. Steps (5.25 avg) and distance (5.21m) showed minor movement but model over-interpreted these as disruptive. Next: reduce penalty for low-level step activity; do not infer strain from calm HR alone.",
+      "motion": "Motion contexts (4 stationary, 0 active) correctly identified seated posture but conflicted with GPS travel, suggesting stationary-in-vehicle scenario. Model correctly identified contradiction but over-penalized. Next: when motion=stationary + GPS=travel, infer transit study and apply moderate (not severe) penalty.",
+      "gps": "GPS displacement (1477m) and travel (2262m) were accurately measured and correctly flagged as drastic change. However, model applied maximum penalty assuming zero concentration possible during travel. User evidence shows 5.0 focus achievable. Next: recalibrate GPS penalty curve—drastic travel should cap score at ~4-5 range, not 2, unless combined with other severe stressors. Distinguish commute-study from chaotic relocation."
+    },
+    "judgment_policy_next_run": [
+      "Recalibrate GPS travel penalty: drastic location change (>1km) should reduce score by 2-3 points maximum, not force floor score, especially when motion=stationary and vitals=calm.",
+      "Introduce transit-study context detection: when GPS shows travel + motion shows stationary + vitals calm, infer study-during-commute and apply moderate distraction weight rather than severe impairment."
+    ]
+  },
+  "db_row_id": 85
+}

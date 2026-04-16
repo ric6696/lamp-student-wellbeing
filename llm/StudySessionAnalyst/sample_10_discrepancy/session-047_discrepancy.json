@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:58:51.223707Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-047",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Cafe",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted poor concentration (3/10) emphasizing drastic GPS displacement (982m) and total travel (2.3km) as dominant disruption. User reported moderate concentration (6/10) citing movement/restlessness, location change, and physiological strain as factors. The 3-point gap indicates model over-weighted GPS macro-movement while under-weighting user's subjective ability to maintain focus during transitions or stationary intervals."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model treated GPS displacement (982m) and travel (2.3km) as catastrophic to concentration, assigning score 3/10. User acknowledged location change and movement as distractions but rated focus at 6/10, suggesting productive work occurred during stationary intervals (3 stationary motion events) despite transitions. Model failed to credit the low step count (4.1 avg), calm heart rate (73.6 bpm), and stationary periods as evidence of partial focus maintenance. User also cited physiological strain, which vitals (HR 73.6 bpm, normal range) do not strongly support, indicating possible unmeasured fatigue or discomfort. Model's binary treatment of GPS movement as disqualifying ignored nuanced reality of mixed-mode sessions (e.g., studying on transit, between locations with focused intervals).",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable and well-utilized. 6 busy/ambient events at 49.4 dB correctly identified as moderate, non-severe distraction. Audio assessment was appropriate and not a source of discrepancy. Maintain current weighting.",
+      "vitals": "Reliable but under-weighted. HR 73.6 bpm and minimal steps (4.1 avg) indicated seated, physiologically calm intervals that model acknowledged but discounted due to GPS dominance. Model should increase weight on vitals stability as evidence of focus windows even during location-changing sessions. User cited physiological strain, but vitals show no stress markers—highlight this observability gap and cap confidence on strain claims to MEDIUM.",
+      "motion": "Partially informative but context-dependent. 3 stationary vs 2 walking events suggest mixed session with focus opportunities. Model noted this but did not credit stationary periods enough. Next cycle: treat stationary motion events as positive focus signals even when GPS shows displacement, especially in longer sessions (87 min). Motion context should modulate GPS severity, not be overridden by it.",
+      "gps": "Over-weighted and applied too rigidly. 982m displacement and 2.3km travel were treated as absolute disqualifiers for concentration. User's 6/10 score proves focus is possible during transitional sessions. GPS should flag potential disruption but not dominate scoring when vitals, motion stationary periods, and audio are stable. Recalibrate: GPS drastic_location_change should reduce score by 1-2 points maximum when other sensors show focus intervals, not force score below 5. Consider session duration (87 min) and stationary/walking ratio before applying harsh GPS penalty."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement weight: treat as context modifier (−1 to −2 points) rather than dominant factor when vitals and motion show stationary focus intervals.",
+      "Increase credit for stationary motion events and low step counts as positive focus signals, especially in sessions >60 min with mixed movement."
+    ]
+  },
+  "db_row_id": 87
+}

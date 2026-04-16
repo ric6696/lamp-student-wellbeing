@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:42:11.380854Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-025",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Library",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized for location change during transit study; user acknowledged location transition but reported better subjective focus despite internal cognitive drift and task challenge."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model over-weighted GPS displacement (2009m) as concentration penalty, interpreting transit as inherently disruptive. User reported higher focus despite acknowledging location change, indicating successful adaptation to commute study. Two of three user-reported factors (cognitive drift, task challenge) are sensor-unmeasured, representing internal states that favorable sensor readings (quiet audio, calm vitals) cannot capture. Model lacked visibility into subjective cognitive load and task difficulty that user experienced.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable for environmental distraction detection. 6 quiet/silence events at 39.12 dB correctly indicated excellent acoustic conditions. No adjustment needed; audio performed as expected and aligned with user not selecting noise as factor.",
+      "vitals": "Heart rate (66 bpm) and low steps correctly indicated calm physiological state. However, vitals cannot detect cognitive drift or task frustration. Avoid inferring high concentration solely from calm vitals when user reports internal cognitive challenges. Vitals show physical calm, not mental engagement.",
+      "motion": "4 stationary + 1 walking context correctly identified seated behavior during transit. Motion data was accurate but insufficient to distinguish between focused study and distracted sitting. Motion confirms physical stillness but not cognitive focus quality.",
+      "gps": "Accurately detected 2009m displacement and drastic location change. However, model over-penalized this factor. GPS indicates environmental instability but cannot measure user's adaptation capability. Reduce GPS displacement penalty when other sensors (audio, vitals) remain favorable and motion shows sustained stationary periods, suggesting controlled transit study rather than chaotic movement."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when audio remains quiet (<45 dB) and motion shows prolonged stationary periods (≥3 events), indicating controlled commute study rather than disruptive travel.",
+      "Do not infer high concentration from favorable vitals/audio alone when session duration is long (>60 min) without direct engagement signals; internal cognitive drift and task challenge are unmeasured and may be present despite calm sensors."
+    ]
+  },
+  "db_row_id": 65
+}

@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:32:46.664265Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-013",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Classroom",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned low score (3.0) emphasizing drastic GPS travel (1887m) as primary disruptor. User reported moderate score (6.0) citing movement/restlessness, location change, and physiological strain. Model over-weighted GPS displacement; user experienced moderate distraction despite travel, suggesting study occurred during stationary periods or travel was less disruptive than model inferred."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model treated GPS travel (1887m) as catastrophic to concentration, assigning score of 3.0. User acknowledged location change but rated focus at 6.0, indicating moderate productivity despite travel. Key discrepancy: model assumed continuous disruption from travel; user likely studied effectively during 3 stationary periods. Motion sensor showed 3 stationary events supporting user's ability to focus intermittently. Low step count (6.17 avg) and calm heart rate (74.78 bpm) suggest passive travel (vehicle) with stationary study windows, not continuous walking disruption. Model failed to credit stationary periods as focus opportunities. Physiological strain reported by user but not detectable in heart rate data (within calm range 60-85 bpm), indicating unmeasured fatigue/discomfort dimensions.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable indicator. 47.35 dB average and 3 busy/1 quiet events correctly identified moderate acoustic environment. Model appropriately weighted as non-severe distractor. Maintain current weighting; audio performed as expected for moderate distraction context.",
+      "vitals": "Heart rate (74.78 bpm) accurately indicated calm physiological state, but failed to detect user-reported physiological strain (fatigue/discomfort). Current vitals cannot distinguish between calm focus and passive fatigue. Reduce confidence when inferring strain from heart rate alone; acknowledge blind spot for non-stress physiological discomfort.",
+      "motion": "3 stationary events correctly captured but under-weighted by model. Model prioritized GPS over motion context, missing that stationary periods enabled focus windows. Next cycle: increase weight of stationary motion events as positive concentration signals, especially when contradicting GPS travel. Motion sensor provided critical nuance GPS lacked.",
+      "gps": "GPS displacement (1627m) and travel (1887m) accurately measured but over-interpreted. Model assumed travel = zero concentration; user demonstrated 6.0 focus despite travel. GPS indicates environmental instability but cannot measure concentration impact magnitude. Next cycle: treat drastic GPS change as moderate penalty (not catastrophic) when motion shows stationary periods. GPS should flag instability risk, not dictate final score alone."
+    },
+    "judgment_policy_next_run": [
+      "When GPS shows drastic travel BUT motion shows multiple stationary events, infer intermittent study windows and cap GPS penalty at moderate level (score floor ~5-6, not 3).",
+      "Increase weighting of stationary motion events as positive concentration signals; treat as evidence of focus opportunity even amid location changes."
+    ]
+  },
+  "db_row_id": 53
+}

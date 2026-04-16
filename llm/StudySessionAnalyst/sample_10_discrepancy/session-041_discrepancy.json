@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:54:03.466584Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-041",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted severe concentration disruption (score 2.0) based on noisy environment, high mobility, and elevated vitals. User reported moderate focus (5.0) and acknowledged the same distraction factors. The 3-point gap suggests model over-penalized mobility and noise relative to user's subjective experience."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "All three user-selected distraction factors are directly observable with HIGH confidence sensors, and sensor data strongly supports their presence (61.82 dB busy audio, 1397m travel, 4 walking events, elevated HR). However, user rated focus at 5.0 (mid-scale) while model assigned 2.0 (near-minimum). The discrepancy likely stems from: (1) Model treating mobility and noise as near-absolute concentration blockers, while user may have adapted or maintained partial focus during transit/active study; (2) User's internal experience of effort or task engagement not captured by external sensors; (3) Possible difference in concentration definition—user may rate based on task completion or subjective effort, model rates based on ideal environmental conditions. The sensor evidence is valid, but the severity weighting appears miscalibrated.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio sensor correctly identified noisy 'busy' environment (61.82 dB, 5 busy labels, 2 Speech events). Reliable for detecting environmental noise factor. However, threshold of 60 dB may be too strict—some users maintain focus in moderately noisy settings. Next cycle: retain audio as strong negative signal but reduce penalty weight when user confirms noise as distraction yet reports mid-range focus.",
+      "vitals": "Heart rate (89.49 bpm) elevated above calm range (60-85 bpm) and steps/distance indicate movement. Vitals correctly flagged activity but may conflate physical movement with cognitive distraction. Elevated HR during walking is expected and does not necessarily indicate stress or poor focus. Next cycle: contextualize vitals with motion—discount HR penalty when motion is 'walking' vs 'stationary restlessness'.",
+      "motion": "Motion data (4 walking, 1 stationary) accurately captured high mobility. Directly supports 'Movement/Restlessness' and 'Location Change' factors. However, walking during study (e.g., reviewing notes while commuting) may not eliminate all concentration. Next cycle: treat sustained walking as moderate (not severe) penalty unless combined with other high-distraction signals and low user score.",
+      "gps": "GPS showed drastic location change (1397m travel, 282m displacement). Correctly identified 'Location Change/Transition' factor. High confidence and alignment with user report. However, travel does not preclude all focus (e.g., studying on train, walking between library sections). Next cycle: GPS remains strong signal for instability, but apply graded penalty—reserve score ≤2 for cases with GPS instability AND user score ≤3."
+    },
+    "judgment_policy_next_run": [
+      "When all distraction factors are DIRECT observability with HIGH confidence and user confirms them, but user score is ≥5, reduce cumulative penalty by 30-40% to reflect user adaptation or task engagement not captured by sensors.",
+      "Contextualize vitals (HR, steps) with motion type: elevated HR during 'walking' is expected; apply smaller penalty than elevated HR during 'stationary' periods."
+    ]
+  },
+  "db_row_id": 81
+}

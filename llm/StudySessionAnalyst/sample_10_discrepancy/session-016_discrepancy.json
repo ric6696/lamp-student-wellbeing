@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:35:08.963956Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-016",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Home",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned minimal concentration (1.0) interpreting session as transit/non-study activity. User reported low-moderate concentration (4.0) acknowledging distractions but recognizing study effort. Major discrepancy stems from model over-weighting mobility signals and under-recognizing that study can occur in suboptimal conditions."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly detected all three distraction factors but incorrectly concluded zero study activity occurred (score 1.0). User confirms these distractions existed but still achieved low-moderate concentration (4.0), indicating study happened despite adverse conditions. Model failed to distinguish between 'distracted study' and 'no study'. The 96-minute duration and session label suggest intentional study effort that model dismissed entirely based on mobility/noise thresholds. Model applied binary logic (mobile + noisy = not studying) rather than graduated impairment assessment.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified high distraction environment (63.73 dB, 6 busy events, 5 Speech labels). Sensor data reliable and well-interpreted. However, noisy environment does not preclude study attempt—should reduce weight as absolute veto signal. Next: treat audio as distraction severity indicator, not study/non-study classifier.",
+      "vitals": "Elevated heart rate (90.36 bpm) and high steps (25.9/sample) accurately detected. Model correctly flagged as non-ideal for concentration. Caution: elevated vitals may reflect stress from difficult study material or environmental challenge, not just physical transit. Next: use vitals to grade distraction level, not to binary-classify session validity.",
+      "motion": "4 walking vs 1 stationary event correctly identified high mobility. Model over-interpreted this as proof of non-study activity. Uncertainty: motion events may capture brief transitions (room changes, pacing) within legitimate study session. Next: require sustained walking patterns or shorter session duration before concluding transit; weight motion less heavily in long sessions (96 min).",
+      "gps": "1077m displacement and drastic location change accurately measured. Model treated this as definitive non-study signal. Blind spot: user may have studied across multiple locations (library → café → home) or during commute (bus/train study). Next: combine GPS with session duration and other context; do not use location change alone to nullify concentration score. Consider multi-location study patterns."
+    },
+    "judgment_policy_next_run": [
+      "Implement graduated scoring: mobility + noise should lower score proportionally (e.g., 3-5 range), not collapse to 1.0 unless session is very short (<20 min) or all sensors show extreme disruption.",
+      "Reduce GPS veto power: location change in 96-minute session may indicate multi-site study. Require corroboration from session duration and motion pattern consistency before concluding transit."
+    ]
+  },
+  "db_row_id": 56
+}

@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:31:56.730863Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-012",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model predicted near-zero concentration (1.0) interpreting the session as transit/social activity. User reported low-moderate concentration (4.0) acknowledging distractions but indicating some study occurred. Major discrepancy suggests model over-penalized mobility indicators or missed context where study happened despite movement."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "User confirmed all three distraction factors the model detected, validating sensor observations. However, user's score of 4.0 indicates they maintained partial focus despite these distractions, whereas model assigned 1.0 treating the session as non-study activity. Model likely applied binary logic (movement + noise = no study) rather than recognizing study-with-distractions scenarios. User may have studied while walking, in group settings, or during transitions—contexts where concentration is impaired but not absent.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified noisy environment (63.2 dB, 8 busy events, 5 Speech). Reliable indicator of distraction presence but should not alone disqualify study activity. Weight: confirm distraction exists, but allow score range 3-6 if other factors suggest partial engagement.",
+      "vitals": "Elevated heart rate (91.8 bpm) and high steps (31.5 avg) accurately detected physical activity. However, elevated vitals during study sessions may reflect active study methods (walking while reviewing, standing desks, study groups) rather than non-study. Weight: moderate penalty for restlessness but do not force score below 3 without corroborating session-label mismatch.",
+      "motion": "6 walking events with 0 stationary periods correctly identified continuous movement. Critical error: model treated walking as incompatible with study. Adjust: walking can co-occur with study (audio learning, group walks, pacing). Weight: penalize for restlessness but retain floor score of 3-4 unless session label contradicts study intent.",
+      "gps": "Drastic location change (2556m travel, 1808m displacement) is strongest indicator of non-stationary session. Model's heaviest penalty came from GPS. Calibration needed: high travel during 115-min session may include study at multiple locations (library-to-café, classroom transitions). Weight: major penalty for >1km travel, but if session labeled 'study_session', assume user intent and cap penalty to yield minimum score 3."
+    },
+    "judgment_policy_next_run": [
+      "Introduce score floor of 3.0 for sessions labeled 'study_session' even when mobility/noise high, unless session label is demonstrably incorrect.",
+      "Treat GPS travel and walking motion as restlessness penalties (reduce score by 2-3 points) rather than binary study/non-study classifiers."
+    ]
+  },
+  "db_row_id": 52
+}

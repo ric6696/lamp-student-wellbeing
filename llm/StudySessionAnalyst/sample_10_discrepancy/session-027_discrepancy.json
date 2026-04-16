@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:43:35.132796Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-027",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration worse than model by 1 point. Model emphasized environmental distractions (transit noise, location changes) as primary degradation factors. User attributed poor focus primarily to internal cognitive drift (unmeasured), with location change and task challenge as secondary factors. The discrepancy stems from model over-weighting observable environmental signals while missing the dominant internal cognitive state."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model assigned score 4.0 based on strong environmental distraction signals: extensive GPS travel (3865m), busy ambient audio (47dB, 5/6 busy labels), and transit context. However, user's primary factor was internal cognitive drift (unmeasured by sensors), with task challenge also unmeasured. Model correctly detected location change but over-attributed concentration loss to observable environmental factors while the dominant cause was internal cognitive state. The calm vitals (72.87 bpm, minimal steps) that model interpreted as focus readiness may actually reflect disengagement or passive mental drift rather than active concentration.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified busy ambient environment (47dB, 5 busy labels) consistent with transit context. However, audio distraction was over-weighted as primary concentration degrader when user reported internal factors as dominant. Next: treat audio as context indicator rather than sole causal driver; downweight when vitals show calm disengagement patterns.",
+      "vitals": "Interpreted calm heart rate (72.87 bpm) and low movement as positive focus indicators, but this pattern may also signal passive disengagement or low-effort mental drift. Next: when vitals show calm stability during challenging contexts (transit, location changes), consider alternative hypothesis of disengagement rather than assuming active focus.",
+      "motion": "Correctly identified stationary posture (5 stationary events, 0 active). Contradiction with GPS was properly flagged as transit study. Next: stationary motion during high GPS travel should trigger uncertainty flag for cognitive engagement quality, not just environmental assessment.",
+      "gps": "Accurately detected drastic location change (3865m travel, 139m displacement) and correctly inferred transit context. Model appropriately weighted this as concentration degrader. Next: maintain current weighting for location instability but pair with cognitive engagement uncertainty when other factors (task challenge, internal drift) may dominate."
+    },
+    "judgment_policy_next_run": [
+      "When user reports UNMEASURED factors (internal drift, task challenge) as primary, reduce confidence in environmental sensor-based score by 1-2 points and flag high uncertainty.",
+      "Calm vitals + stationary motion during environmental disruption (transit, noise) may indicate disengagement rather than successful focus; treat as ambiguous signal requiring cognitive state inference."
+    ]
+  },
+  "db_row_id": 67
+}

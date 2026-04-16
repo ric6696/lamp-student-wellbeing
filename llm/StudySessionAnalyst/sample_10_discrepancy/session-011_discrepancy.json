@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-04-15T23:31:16.320786Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-011",
+  "concentration_score": 5.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Writing / Report Work",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 5.0,
+      "user_score": 6.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "LLM response was not valid JSON."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "LLM output parsing failed.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "",
+      "vitals": "",
+      "motion": "",
+      "gps": ""
+    },
+    "judgment_policy_next_run": []
+  },
+  "db_row_id": 51
+}

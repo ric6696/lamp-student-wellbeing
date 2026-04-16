@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-16T00:08:42.567863Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-060",
+  "concentration_score": 4.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User reported worse concentration (5.0) than model predicted (4.0). User attributes poor focus primarily to internal cognitive drift and task challenge—both UNMEASURED factors—while model emphasized observable location instability and moderately distracting audio. The 1-point gap suggests model underweighted unmeasured cognitive factors and overweighted environmental disruption."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model heavily penalized the 4.3km GPS travel and moderately busy audio (47.25 dB, 5 'busy' labels), scoring 4.0 based on observable environmental instability. User reported 5.0, citing primarily internal cognitive drift (UNMEASURED) and task challenge (UNMEASURED) as dominant factors, with location change as secondary. The gap arises because model lacks visibility into cognitive state and task difficulty, while user experienced these as more impactful than the environmental disruption model detected. Calm vitals (74.77 bpm) and mostly stationary motion (5/6 events) may have masked internal struggle that sensors cannot capture.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Moderately reliable. 47.25 dB with 5 'busy'/5 'Ambient' labels correctly identified non-optimal acoustic environment. However, user did not select noise as primary factor, suggesting audio impact was real but secondary to unmeasured cognitive issues. Continue using audio as environmental context indicator but avoid over-penalizing moderate levels (45-50 dB) when other sensors show calm state.",
+      "vitals": "Misleading in this session. Heart rate 74.77 bpm suggested calm focus, but user reported significant cognitive drift and task frustration—states vitals cannot distinguish from engaged concentration. Vitals indicate physiological readiness but not cognitive engagement. Reduce confidence when vitals are calm but other unmeasured factors (task difficulty, motivation) may be present. Use vitals to rule out stress/fatigue, not to confirm focus quality.",
+      "motion": "Partially reliable. 5 stationary vs 1 walking event correctly indicated seated behavior, but did not reveal internal restlessness or cognitive disengagement. Motion confirms physical stability but cannot measure mental wandering. Treat stationary motion as necessary but insufficient for high concentration scores, especially in sessions with user-reported cognitive drift.",
+      "gps": "Highly reliable for detecting location instability. 1501m displacement and 4340m travel correctly identified major environmental disruption. User confirmed 'Location Change / Transition' as a factor, validating GPS signal. However, GPS impact may be context-dependent: commute study may be normalized for some users. Continue strong weighting for drastic location changes but consider user adaptation patterns in future calibration."
+    },
+    "judgment_policy_next_run": [
+      "When GPS and audio indicate environmental disruption but vitals/motion show calm stability, cap model confidence and flag potential unmeasured cognitive factors (drift, task challenge) that sensors cannot detect.",
+      "Reduce vitals weight as positive concentration signal; use primarily to detect physiological strain (elevated HR, high steps). Calm vitals do not guarantee focus quality."
+    ]
+  },
+  "db_row_id": 100
+}

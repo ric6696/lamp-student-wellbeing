@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-15T23:41:31.261652Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-024",
+  "concentration_score": 6.0,
+  "user_score": 7.0,
+  "selected_factors": [
+    "Internal Cognitive Drift (mind wandering, low motivation)",
+    "Location Change / Transition",
+    "Task Challenge (difficulty, frustration)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 7.0,
+      "gap": 1.0,
+      "agreement": "USER_HIGHER",
+      "summary": "User rated concentration 1 point higher than model. Model penalized heavily for GPS displacement (1168m) and location instability, while user acknowledged location change but reported better subjective focus. User attributed distraction primarily to internal cognitive drift (unmeasured) rather than environmental factors, suggesting model over-weighted observable mobility signals."
+    },
+    "selected_factors": [
+      "Internal Cognitive Drift (mind wandering, low motivation)",
+      "Location Change / Transition",
+      "Task Challenge (difficulty, frustration)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Internal Cognitive Drift (mind wandering, low motivation)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task Challenge (difficulty, frustration)",
+        "mapped_observability": "UNMEASURED",
+        "mapped_primary_sensors": [],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "UNMEASURED"
+      }
+    ],
+    "why_difference": "Model heavily penalized GPS displacement and motion variability, interpreting mobility as fragmenting focus. User confirmed location change occurred but rated concentration higher, citing internal cognitive drift and task challenge as primary distractors—both unmeasured by sensors. The excellent audio (38.36 dB, all quiet) and optimal vitals (63.29 bpm, minimal steps) supported user's higher score. Model likely over-indexed on GPS instability relative to user's subjective ability to maintain focus during transit or location transitions. Two of three user-reported factors are sensor-invisible, creating a measurement blind spot.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Highly reliable. Consistently quiet environment (38.36 dB, 5 'Silence' events) strongly supported concentration. Model correctly weighted this positively. No recalibration needed for audio assessment.",
+      "vitals": "Highly reliable. Heart rate (63.29 bpm) in optimal range, minimal steps (6.14 avg) confirmed seated study behavior. Model correctly interpreted as favorable. Vitals alone cannot detect cognitive drift or task frustration—acknowledge this limitation explicitly.",
+      "motion": "Moderately reliable but context-dependent. Even split (2 stationary, 2 walking) indicated transitions, but low step count suggests vehicular movement rather than disruptive walking. Model should distinguish between active walking (disruptive) and passive transit (potentially neutral). Reduce penalty weight when steps remain low despite motion state changes.",
+      "gps": "Reliable for detecting location change but uncertain impact on concentration. Drastic displacement (1168m) and travel (2309m) were correctly identified, but model over-penalized without context. GPS instability during quiet, low-step conditions may indicate controlled transit study (bus/train) rather than chaotic movement. Reduce GPS penalty coefficient when audio and vitals remain favorable, and add uncertainty flag for mobile study scenarios."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty weight by 30-40% when audio remains quiet (<45 dB) and vitals stable (HR 60-85 bpm, steps <10 avg), indicating controlled mobile study environment rather than chaotic movement.",
+      "Introduce explicit uncertainty flag when GPS shows drastic change but other sensors are favorable: 'Location instability detected, but environmental and physiological conditions support focus. Concentration impact uncertain—mobile study context possible.'"
+    ]
+  },
+  "db_row_id": 64
+}

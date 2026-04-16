@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:45:49.179475Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-030",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Group Meeting",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned very low concentration (2.0) interpreting continuous walking and location change as incompatible with study. User reported moderate concentration (5.0) acknowledging movement/location factors but indicating some focus was maintained despite mobility. Model over-penalized mobility context without accounting for possible mobile study scenarios."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model correctly detected continuous walking (4 events, 1.1km travel, 0 stationary periods) and elevated heart rate (93.6 bpm), but incorrectly concluded zero concentration was possible. User confirms movement/location factors were present but reports achieving moderate focus (5/10) despite mobility. Model applied binary logic (mobile = no study) rather than graduated penalty. Elevated heart rate may reflect walking effort rather than stress/strain as model implied. Audio environment (58.4 dB, busy labels) was borderline but not severely disruptive. Model lacked calibration for mobile study contexts (e.g., walking while listening to lectures, reviewing flashcards during commute).",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified moderately busy environment (58.4 dB, 3 busy labels, 1 Speech). Audio was approaching distraction threshold but not severely disruptive. Appropriate weighting as secondary distraction factor. Next: maintain current sensitivity but avoid over-penalizing borderline dB levels (55-60 range).",
+      "vitals": "Accurately captured elevated heart rate (93.6 bpm) and moderate step activity (34.1 avg steps). Model over-interpreted elevated HR as incompatible with concentration without considering walking-induced elevation vs. stress. Next: distinguish between activity-related HR elevation (walking context) and stress-related elevation (stationary context). Apply graduated penalty rather than binary exclusion.",
+      "motion": "Correctly detected 4 walking events with 0 stationary periods, confirming continuous mobility. Model appropriately flagged this as primary distraction factor aligned with user report. However, model treated walking as absolute concentration barrier. Next: apply scaled penalty for walking contexts (e.g., -3 to -5 points) rather than forcing score to floor. Consider walking intensity and duration gradients.",
+      "gps": "Accurately measured drastic location change (1138m displacement, 1175m travel). Correctly identified as major context instability. Model appropriately weighted this as concentration barrier. Next: maintain high confidence in GPS displacement signals but allow for mobile study scenarios where location change is intentional and managed (e.g., planned study walk). Consider displacement rate and pattern (continuous travel vs. discrete relocations)."
+    },
+    "judgment_policy_next_run": [
+      "Implement graduated mobility penalty: walking contexts should reduce score by 3-5 points rather than forcing floor score. Continuous walking over 1km warrants -4 to -5 penalty, but not automatic score of 2.",
+      "Distinguish heart rate elevation causes: when walking motion is present, attribute HR elevation (85-100 bpm) primarily to physical activity rather than stress. Reserve stress interpretation for elevated HR in stationary contexts."
+    ]
+  },
+  "db_row_id": 70
+}

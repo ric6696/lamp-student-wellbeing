@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:34:23.217997Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-015",
+  "concentration_score": 3.0,
+  "user_score": 6.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Outdoor",
+    "mental_readiness": "Neutral"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3.0,
+      "user_score": 6.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned score of 3/10 citing severe location instability and fragmented study pattern. User reported 6/10, acknowledging movement/restlessness and location changes but perceiving moderate rather than poor concentration. The 3-point gap suggests model over-penalized GPS travel or user adapted to mobile study context."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model heavily weighted GPS displacement (2955.8m travel, 560.8m displacement) as catastrophic to concentration, assigning score of 3. User acknowledged location changes and movement as distractors but rated concentration at 6, suggesting either: (1) travel occurred between focused stationary periods that user valued positively, (2) user maintained cognitive engagement during transitions, or (3) model conflated physical mobility with cognitive disruption. Motion data shows 5 stationary events supporting intermittent focus periods. Heart rate (76 bpm) in optimal range contradicts severe impairment narrative. User also cited physiological strain, which vitals do not directly support (HR normal, minimal steps), indicating possible unmeasured fatigue or discomfort. Model may have under-recognized that stationary periods represented genuine focus windows despite overall session mobility.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio sensor showed moderate reliability: 47.7 dB and 6 'busy' labels indicate acceptable but non-ideal conditions. Model correctly identified minor distraction potential but appropriately did not make this primary penalty driver. Weighting was proportional. Continue current audio interpretation but note user did not select noise as factor, suggesting tolerance or adaptation.",
+      "vitals": "Heart rate (76 bpm) was correctly interpreted as supporting focus capacity. However, model did not reconcile this positive signal with the harsh overall score. Low step count (3.4 avg) and minimal distance (3.5m) were appropriately noted as non-disruptive. User cited physiological strain, but vitals show no stress markers (elevated HR, excessive movement). Possible blind spot: vitals cannot capture subjective fatigue, discomfort, or mental strain. Next cycle: maintain current vitals interpretation but flag when user reports strain despite normal vitals—indicates unmeasured factors.",
+      "motion": "Motion showed 5 stationary events, which model acknowledged but underweighted relative to GPS. This created internal contradiction: stationary readings suggest focus windows, yet model concluded 'fragmented study attempts.' User's selection of movement/restlessness as primary factor suggests motion sensor captured real restlessness, but 5 stationary events also indicate periods of stillness. Next cycle: increase weight on stationary event count as positive signal, especially when GPS shows travel—stationary periods may represent intentional focus sessions between transitions.",
+      "gps": "GPS was over-weighted as catastrophic signal. 2955.8m travel and 560.8m displacement drove model to score 3, but user's score of 6 suggests this mobility was not cognitively devastating. Possible scenarios: (1) user studied during stationary periods at multiple locations (library, café, home), (2) travel was brief relative to 100-min session, (3) user maintained focus during low-cognitive-load transit. Model treated all travel as concentration loss, but user may have compartmentalized. Next cycle: reduce GPS penalty when motion shows multiple stationary periods; interpret as multi-location session rather than continuous disruption. Consider travel distance relative to session duration and stationary event count. GPS alone should not dominate score when other sensors (vitals, stationary motion) suggest focus capacity."
+    },
+    "judgment_policy_next_run": [
+      "Reduce GPS displacement penalty when motion sensor shows multiple stationary events (≥3). Interpret as intentional multi-location study rather than chaotic fragmentation.",
+      "Increase weighting of stationary motion events as positive concentration signal, especially in sessions with high GPS travel. Each stationary period may represent a focused work block."
+    ]
+  },
+  "db_row_id": 55
+}

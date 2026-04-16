@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:48:01.073783Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-033",
+  "concentration_score": 1.0,
+  "user_score": 4.0,
+  "selected_factors": [
+    "Environmental Noise / Speech",
+    "Movement / Restlessness",
+    "Location Change / Transition"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Lecture",
+    "environment_context": "Outdoor",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 1.0,
+      "user_score": 4.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model assigned minimal concentration (1.0) interpreting session as transit/social activity. User reported low-moderate concentration (4.0) acknowledging distractions but indicating some study occurred. Large 3-point gap suggests model over-penalized or missed study activity amid movement."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Movement / Restlessness",
+      "Location Change / Transition"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model correctly detected all three distraction factors but interpreted their combination as complete absence of study (score 1.0). User confirms these distractions existed but still achieved low-moderate focus (4.0), suggesting study occurred despite suboptimal conditions. Model likely applied binary logic (movement + noise + travel = no study) rather than recognizing distracted study is possible. User may have studied during transit (e.g., reading on train, reviewing notes while walking) or in brief stationary periods not captured by motion sampling. Model lacked nuance to distinguish zero study from impaired study.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Correctly identified distracting environment (64.35 dB, 6 busy events, 4 Speech). Reliable signal for noise distraction. However, presence of speech/noise does not preclude all study activity—user may have attempted focus despite conditions. Next: maintain detection but reduce weight in final score calculation when other factors suggest partial engagement.",
+      "vitals": "Elevated heart rate (88.88 bpm) and steps (31.55/sample) accurately detected physical activity. However, moderate elevation may reflect walking-while-studying or active learning rather than complete disengagement. Next: distinguish between extreme values (>100 bpm, >50 steps) indicating zero study vs. moderate elevation allowing distracted study.",
+      "motion": "6 walking events with 0 stationary correctly identified movement. Critical gap: motion sampling may miss brief stationary study periods (5-10 min) between walks. Walking does not always mean zero cognitive engagement. Next: require longer observation windows to confirm sustained non-study movement; consider walking as distraction rather than disqualifier.",
+      "gps": "1213m displacement and 1782m travel strongly suggest transit context. Most reliable indicator of location instability. However, travel duration (109 min) could include stationary study segments at endpoints not captured by 3 GPS points. Next: increase GPS sampling density or cross-reference with motion stationary periods to detect study windows within travel sessions."
+    },
+    "judgment_policy_next_run": [
+      "Implement graduated scoring: distinguish between zero study (score 0-2) and distracted study (score 3-5). Require multiple disqualifying signals in sustained combination, not just presence.",
+      "Audio and GPS remain high-confidence distraction detectors but should not alone force score to 1.0. Weight them as -2 to -3 point penalties rather than absolute disqualifiers."
+    ]
+  },
+  "db_row_id": 73
+}

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T22:34:06.377909Z",
+  "timestamp": "2026-04-16T01:13:33.381978Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-001",
   "concentration_score": 2.0,
@@ -10,9 +10,9 @@
     "Location Change / Transition"
   ],
   "pre_session_questions": {
-    "activity_context": "Reading",
-    "environment_context": "Home",
-    "mental_readiness": "High"
+    "activity_context": "Group Meeting",
+    "environment_context": "Cafe",
+    "mental_readiness": "Neutral"
   },
   "result": {
     "overview": {
@@ -20,7 +20,7 @@
       "user_score": 5.0,
       "gap": 3.0,
       "agreement": "USER_HIGHER",
-      "summary": "Model scored session as severely impaired (2/10) due to mobility, noise, and location instability. User rated moderate concentration (5/10) acknowledging same distraction factors. Gap suggests model over-penalized observable disruptions or user maintained partial focus despite environmental challenges."
+      "summary": "Model predicted very poor concentration (2/10) based on mobility, noise, and movement indicators. User reported moderate concentration (5/10) acknowledging the same distractions. The 3-point gap suggests the model over-penalized environmental factors that the user experienced but partially overcame or tolerated."
     },
     "selected_factors": [
       "Environmental Noise / Speech",
@@ -58,17 +58,17 @@
         "alignment_with_session_sensors": "ALIGNED"
       }
     ],
-    "why_difference": "Model and user agree on distraction factors but disagree on severity impact. Model interpreted 838m travel, 3 walking events, 63.9dB busy audio, and elevated HR as incompatible with any meaningful concentration, yielding score=2. User acknowledged identical disruptions but rated 5/10, suggesting partial task engagement or cognitive adaptation despite physical mobility. Model may lack nuance for mobile study contexts (e.g., audio learning while commuting, reviewing notes while walking). User's self-assessment implies concentration exists on a spectrum even under suboptimal conditions, whereas model applied binary 'stationary study' assumptions.",
+    "why_difference": "All three user-reported factors are directly observable with HIGH confidence sensors, and sensor data strongly confirms their presence (63.9 dB busy audio, 838m travel, 3 walking events, 36 steps/sample). The discrepancy arises not from sensor misalignment but from interpretation: the model treated these conditions as incompatible with any meaningful concentration (score=2), while the user acknowledged these distractions yet reported moderate focus (score=5). This suggests the user maintained partial task engagement despite adverse conditions, or the model's threshold for mobility-based sessions is too strict. Possible explanations: (1) user studied during commute using audio learning or review tasks that tolerate movement, (2) user's subjective scale differs (5 = 'got some work done despite challenges'), or (3) model lacks context for mobile study modalities.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Correctly detected noisy environment (63.9dB, 4 busy events, 3 Speech labels). Reliable indicator of distraction presence but may not fully capture user's ability to filter or adapt to ambient noise. Next: maintain detection threshold but reduce penalty weight if user reports partial focus under similar audio profiles.",
-      "vitals": "HR 86.9bpm and 36.25 steps/sample accurately reflect active state. However, elevated HR and movement do not preclude all concentration (e.g., active recall, pacing while memorizing). Next: treat as context modifier rather than absolute disqualifier; correlate with task type metadata if available.",
-      "motion": "3 walking vs 1 stationary event strongly supports mobility. Accurate detection but model assumed walking = zero focus. Next: allow for 'mobile study' scenarios; reduce score penalty if audio/vitals suggest controlled activity rather than chaotic movement.",
-      "gps": "838m travel and 331m displacement correctly flagged drastic location change. High confidence in instability detection. Next: confirm whether travel was purposeful transition (commute with study audio) vs erratic wandering; consider temporal clustering of GPS points to distinguish study-during-transit from pure mobility."
+      "audio": "Audio sensor correctly identified distracting environment (63.9 dB, 4 busy events, 3 Speech labels). Reliable signal. However, presence of noise does not deterministically prevent all concentration—some users adapt or use strategies (e.g., focused listening tasks). Next cycle: weight audio as strong negative indicator but not absolute floor; allow for user adaptation patterns if repeated mobile-study sessions show consistent user scores above 4.",
+      "vitals": "Heart rate (86.9 bpm) and steps (36.25/sample) accurately captured active state. Reliable for detecting movement vs. sedentary study. However, elevated HR and steps during commute do not preclude cognitive engagement (e.g., podcast learning, flashcard review). Next cycle: interpret vitals as context indicator (mobile vs. seated) rather than direct concentration proxy; reduce penalty weight when combined with user history of mobile study.",
+      "motion": "Motion events (3 walking, 1 stationary) and step data are consistent and reliable. Correctly identified non-sedentary session. Blind spot: walking does not always mean zero focus—some study activities are compatible with light mobility. Next cycle: distinguish between 'walking while studying' (possible with audio/review tasks) vs. 'walking as primary activity' using task context if available; reduce confidence in low-score prediction when motion is steady rather than erratic.",
+      "gps": "GPS displacement (331m) and travel (838m) reliably detected location instability. Strong signal for non-stationary session. However, commute-based study (transit learning) is a valid use case the model may under-recognize. Next cycle: flag drastic location change as high-confidence distraction indicator, but incorporate user feedback loop—if user consistently reports scores ≥4 during high-travel sessions, create 'mobile study' profile with adjusted thresholds rather than universal penalty."
     },
     "judgment_policy_next_run": [
-      "Reduce absolute score penalty for mobility when audio/vitals suggest controlled, purposeful activity rather than chaotic disruption.",
-      "Introduce 'mobile study' context detection: if motion is walking but audio shows educational content or low variability, cap penalty rather than floor score at 2."
+      "Maintain high confidence in sensor detection of environmental factors (audio, motion, GPS all performed accurately), but decouple detection from deterministic score mapping.",
+      "Introduce context-aware scoring: if user repeatedly self-reports moderate focus (4-6) during mobile sessions, create a 'mobile study mode' profile where movement and location change penalties are reduced by 30-40%."
     ]
   },
-  "db_row_id": 30
+  "db_row_id": 101
 }

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-15T22:35:29.790964Z",
+  "timestamp": "2026-04-15T23:25:16.052189Z",
   "model": "claude-sonnet-4-5",
   "session_id": "session-003",
   "concentration_score": 1.0,
@@ -10,9 +10,9 @@
     "Location Change / Transition"
   ],
   "pre_session_questions": {
-    "activity_context": "Lecture",
+    "activity_context": "Group Meeting",
     "environment_context": "Library",
-    "mental_readiness": "Very High"
+    "mental_readiness": "Very Low"
   },
   "result": {
     "overview": {
@@ -20,7 +20,7 @@
       "user_score": 4.0,
       "gap": 3.0,
       "agreement": "USER_HIGHER",
-      "summary": "Model predicted near-zero concentration (1.0) interpreting the session as active transit, while user reported low-moderate concentration (4.0) acknowledging distractions but claiming some focus. This is a significant 3-point discrepancy where the model may have over-penalized mobility or the user may have conflated effort with effective concentration."
+      "summary": "Model assigned minimal concentration (1.0) interpreting session as active transit with no study behavior. User reported low-moderate concentration (4.0) acknowledging distractions but indicating some focus effort occurred. Large 3-point gap suggests model over-weighted mobility signals and failed to detect any study activity."
     },
     "selected_factors": [
       "Environmental Noise / Speech",
@@ -58,17 +58,17 @@
         "alignment_with_session_sensors": "ALIGNED"
       }
     ],
-    "why_difference": "User acknowledges all three distraction factors detected by sensors but still rates concentration at 4.0, suggesting partial focus despite adverse conditions. Model interpreted continuous walking (4 events, 0 stationary), 1.3km travel, 61.35 dB busy audio, and elevated heart rate (90 bpm) as incompatible with any study activity, yielding score of 1.0. The discrepancy likely stems from: (1) model treating mobility as binary disqualifier for concentration, (2) user possibly engaging in audio-based learning (podcast, audiobook) or review while commuting, (3) model lacking context that some study modalities tolerate movement, or (4) user overestimating focus due to time investment rather than outcome quality.",
+    "why_difference": "Model correctly detected all three distraction factors user reported but incorrectly concluded zero study activity occurred. User confirms distractions were present yet still achieved score 4/10 concentration, suggesting study happened despite adverse conditions. Model lacked nuance to distinguish 'distracted study session' from 'no study session.' Possible scenarios: walking study (audiobook/podcast review), study during commute, or brief stationary study periods between movements not captured by sparse GPS sampling (only 3 points over 66 min). Model applied binary logic (movement = no concentration) rather than graduated impairment scale.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Audio correctly identified distracting environment (61.35 dB, all 'busy' labels, Speech+Ambient mix). Reliable signal for noise distraction. However, audio alone cannot distinguish between 'unable to focus' vs 'focused on audio content while moving'. Next cycle: maintain high weight for noise detection but do not assume audio learning is impossible in noisy transit.",
-      "vitals": "Elevated heart rate (90 bpm) and continuous step activity (28.14 avg steps/sample, 23.11m/sample) accurately detected physical movement. However, moderate activity does not preclude all cognitive engagement (e.g., walking meetings, audio learning). Next cycle: use vitals to flag physical activity but apply graduated penalty rather than binary disqualification—reserve score floor of 1-2 only when heart rate exceeds exertion threshold (>100 bpm) or steps indicate running.",
-      "motion": "Motion sensor showed 100% walking (4/4 events) with zero stationary periods, strongly supporting active transit interpretation. This is the most definitive signal against seated study. Next cycle: maintain high confidence in motion context; stationary periods are critical for scores above 5. However, allow scores of 3-5 when walking is present but other factors (audio content type, session label) suggest mobile learning.",
-      "gps": "GPS detected drastic location change (364m displacement, 1379m travel) far exceeding stability threshold (200m). This strongly indicates transit rather than fixed study location. Next cycle: GPS instability should cap score at 4-5 maximum, but do not force score to 1 unless combined with other severe factors. Consider that intentional 'walk-and-learn' sessions may involve planned routes."
+      "audio": "Correctly identified distracting environment (61.35 dB, 'busy' labels, speech present). Reliable indicator of environmental challenge but should not alone disqualify concentration—user may adapt with headphones or tolerance. Weight: confirm distraction presence but allow partial concentration scores when other factors permit.",
+      "vitals": "Elevated HR (90 bpm) and steps (28/sample) accurately detected activity. However, cannot distinguish 'walking while studying' from 'pure transit.' Moderate activity levels may coexist with audio-based learning. Weight: indicator of physical state but insufficient alone to rule out cognitive engagement. Require corroboration from task context or longer stationary gaps.",
+      "motion": "All 4 events labeled 'walking' with zero stationary periods strongly suggests mobility. However, 4 events over 66 minutes (one per ~16 min) indicates sparse sampling—may miss stationary intervals between samples. Weight: high confidence for detecting movement but low confidence for proving continuous movement. Do not extrapolate sparse samples to entire session without qualification.",
+      "gps": "Only 3 points over 66 min (one per 22 min) with 1.38 km total travel and 365m displacement indicates significant location change. However, extremely sparse sampling creates uncertainty about movement continuity—user could have been stationary for portions between points. Weight: confirms location instability but cannot rule out stationary study periods. Flag as 'likely mobile session' rather than 'definitely no study.'"
     },
     "judgment_policy_next_run": [
-      "Introduce graduated mobility penalty: 0 stationary + high travel = cap score at 4-5, not automatic 1-2, unless heart rate exceeds 100 bpm or session duration under 20 minutes suggests pure transit.",
-      "Cross-reference session label: if labeled 'study_session' but shows full mobility, flag potential mislabel or audio-based learning; do not assume zero concentration without additional disqualifying evidence."
+      "Implement graduated concentration scale for mobile/noisy sessions: do not default to score 1 when movement detected—allow scores 2-4 for 'impaired but present' concentration if session duration and context suggest intentional study attempt.",
+      "Treat sparse sensor sampling (3 GPS points, 4 motion events over 66 min) as uncertainty flag, not confirmation of continuous state. Explicitly model confidence intervals and avoid extrapolating point samples to entire session."
     ]
   },
-  "db_row_id": 32
+  "db_row_id": 43
 }

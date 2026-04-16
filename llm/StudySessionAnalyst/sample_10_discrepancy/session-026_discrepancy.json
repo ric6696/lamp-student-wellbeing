@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-04-15T23:42:53.409696Z",
+  "model": "claude-sonnet-4-5",
+  "session_id": "session-026",
+  "concentration_score": 2.0,
+  "user_score": 5.0,
+  "selected_factors": [
+    "Movement / Restlessness",
+    "Location Change / Transition",
+    "Physiological Strain (stress, fatigue, discomfort)"
+  ],
+  "pre_session_questions": {
+    "activity_context": "Study",
+    "environment_context": "Classroom",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 2.0,
+      "user_score": 5.0,
+      "gap": 3.0,
+      "agreement": "USER_HIGHER",
+      "summary": "Model scored session as 2/10 (travel/commute, not study), while user reported 5/10 (moderate focus with movement/location distractions). Model interpreted GPS displacement (1862m) and travel (2983m) as disqualifying for concentration; user acknowledged location change but still perceived moderate focus during transit."
+    },
+    "selected_factors": [
+      "Movement / Restlessness",
+      "Location Change / Transition",
+      "Physiological Strain (stress, fatigue, discomfort)"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Movement / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Change / Transition",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
+      }
+    ],
+    "why_difference": "Model heavily penalized GPS displacement as incompatible with study, treating travel as binary disqualifier. User reported moderate focus despite transit, suggesting study-during-commute behavior (e.g., reading, reviewing materials). Motion sensors showed 4 stationary events and low steps (6.57 avg), supporting seated stability during travel. Model failed to distinguish between disruptive travel and passive transit with cognitive engagement. User's primary factor 'Movement/Restlessness' conflicts with motion data showing stationary contexts, indicating possible internal restlessness not captured by sensors or misattribution of location change effects.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Reliable for ambient context. 49.1 dB busy/ambient labels correctly identified moderate background noise consistent with transit. No speech detected. Audio alone does not distinguish study-during-travel from pure commute; requires integration with task engagement signals (unavailable).",
+      "vitals": "Heart rate 74.1 bpm in optimal range suggests calm physiological state, not strain. User reported physiological strain but vitals show no elevated HR or stress markers. Low confidence for inferring strain from current vitals; may reflect subjective fatigue/discomfort unmeasured by HR alone. Steps (6.57) correctly indicated minimal movement.",
+      "motion": "4 stationary events correctly captured seated behavior during transit. However, user cited 'Movement/Restlessness' as primary factor despite stationary motion contexts—possible internal restlessness, micro-movements below sensor threshold, or user misattribution. Motion sensors may miss fine-grained restlessness; treat stationary labels as physical position, not subjective restlessness.",
+      "gps": "Accurately detected drastic location change (1862m displacement, 2983m travel). Model over-weighted GPS as absolute concentration disqualifier. GPS indicates environmental instability but cannot measure cognitive engagement during travel. Next cycle: treat GPS displacement as context modifier (reduce max score ceiling) rather than binary study/non-study classifier. User's score 5/10 suggests travel reduces but doesn't eliminate focus potential."
+    },
+    "judgment_policy_next_run": [
+      "GPS: Treat drastic location change as concentration penalty (cap score at 6/10) rather than automatic failure. Distinguish passive transit (stationary motion + travel) from active walking (high steps + travel).",
+      "Motion: Stationary contexts indicate physical stillness but not absence of restlessness. Do not conflate sensor 'stationary' with user-perceived calmness. Weight motion as physical position indicator only."
+    ]
+  },
+  "db_row_id": 66
+}
