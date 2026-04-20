@@ -1,54 +1,43 @@
 {
-  "timestamp": "2026-04-16T05:55:53.325043+00:00",
+  "timestamp": "2026-04-20T15:17:54.784177+00:00",
   "model": "claude-sonnet-4-5",
   "pre_session_questions": {
-    "activity_context": "Study",
-    "environment_context": "Outdoor",
+    "activity_context": "Lecture",
+    "environment_context": "Library",
     "mental_readiness": "Very Low"
   },
   "result": {
     "overview": {
-      "model_score": 3.0,
-      "user_score": 4.0,
-      "gap": 1.0,
+      "model_score": 1.0,
+      "user_score": 7.0,
+      "gap": 6.0,
       "agreement": "USER_HIGHER",
-      "summary": "User rated concentration 1 point higher than model. Both identified Environmental Noise/Speech and Movement/Restlessness as distractors, but user perceived these as less impairing to focus. Model applied hard motion rule (non-stationary = unconcentrated) and noise threshold (>60 dBA = distraction), which may have been overly strict for this 32-second session."
+      "summary": "Large discrepancy: model predicted minimal concentration (1.0) based on Very Low mental readiness, 11-second duration, and ~70 dBA noise; user reported good focus (7.0) citing physiological strain as primary factor. Model lacked vitals data needed to assess the user's stated distraction factor."
     },
     "selected_factors": [
-      "Environmental Noise / Speech",
-      "Movement / Restlessness"
+      "Physiological Strain (stress, fatigue, discomfort)"
     ],
     "factor_sensor_mappings": [
       {
-        "factor": "Environmental Noise / Speech",
-        "mapped_observability": "DIRECT",
+        "factor": "Physiological Strain (stress, fatigue, discomfort)",
+        "mapped_observability": "INDIRECT",
         "mapped_primary_sensors": [
-          "audio"
-        ],
-        "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "PARTIAL"
-      },
-      {
-        "factor": "Movement / Restlessness",
-        "mapped_observability": "DIRECT",
-        "mapped_primary_sensors": [
-          "motion",
           "vitals"
         ],
-        "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "UNMEASURED"
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "UNSUPPORTED"
       }
     ],
-    "why_difference": "Model penalized heavily for non-stationary motion periods and 71.2 dBA average noise, applying generic thresholds without personal baseline. User acknowledged same distractors but rated focus as moderate (4/10), suggesting tolerance or adaptation to environmental conditions. The 32-second session duration is too brief to establish true concentration state, introducing measurement uncertainty. Model's binary motion rule (non-stationary = unconcentrated) may not capture nuanced restlessness that still permits partial focus. No vitals data prevented physiological arousal cross-validation.",
+    "why_difference": "Model over-weighted mental readiness baseline (1.0) and session duration (11 sec) while lacking vitals data to detect physiological strain. User reported moderate-high focus despite strain, suggesting they maintained concentration through discomfort. Audio noise (~70 dBA) was flagged by model but not selected by user as primary distraction. Critical blind spot: no heart rate or physiological data to validate user's stated factor or detect stress-related focus patterns.",
     "prediction_agent_sensor_judgment": {
-      "audio": "Audio sensor correctly detected elevated noise (71.2 dBA) and speech event (77% confidence at 05:04:58). However, generic 60 dBA threshold may be too strict without personal baseline. Next run: weight audio distraction proportionally rather than as binary threshold; consider speech detection confidence and duration, not just presence. Uncertainty: cannot distinguish background conversation user tolerates vs. direct interruption.",
-      "vitals": "No heart rate data available. This is a critical blind spot—unable to validate whether noise/motion caused physiological arousal or stress. Next run: if vitals remain unavailable, reduce confidence in concentration score and flag as incomplete sensor coverage. When available, use HR variability to distinguish active engagement from distraction.",
-      "motion": "Motion sensor detected multiple non-stationary periods (05:04:29-05:04:33, 05:04:39, 05:04:48-05:04:49), triggering hard rule penalty. User confirmed restlessness but still reported moderate focus. Next run: soften binary motion rule—count frequency/duration of non-stationary events rather than presence alone. Brief postural adjustments may not equal loss of concentration. Uncertainty: no step/accelerometer granularity to distinguish fidgeting from task-switching movement.",
-      "gps": "GPS showed location stability (all points within ~2m), correctly indicating no context switching. This was the only positive signal but was overridden by audio/motion penalties. Next run: maintain GPS as stabilizing factor but do not let it compensate for direct distraction signals. Accuracy range (8-33m) limits micro-movement detection; treat as coarse location anchor only."
+      "audio": "Reliable measurement (~70 dBA sustained) correctly identified elevated noise, but model may have over-penalized this factor. User did not cite noise as primary distraction. Next: reduce audio penalty weight when user context suggests adaptation or tolerance to ambient sound, especially in familiar environments (library).",
+      "vitals": "Complete absence of heart rate data created critical blind spot for user's stated factor (physiological strain). Model cannot assess stress, fatigue, or arousal without vitals. Next: when vitals missing and user cites physiological factors, flag prediction confidence as LOW and avoid strong claims about concentration state.",
+      "motion": "Motion data showed transition from non-stationary to stationary, interpreted as settling behavior. This was reasonable but insufficient to assess restlessness or physiological discomfort. Next: motion alone cannot distinguish between calm focus and tense stillness; require vitals correlation for physiological strain assessment.",
+      "gps": "GPS stability correctly identified stationary location. Appropriate use as supporting evidence for physical context, but should not be weighted heavily in concentration inference without corroborating vitals or longer duration. Next: maintain current GPS interpretation for location stability."
     },
     "judgment_policy_next_run": [
-      "Replace binary motion threshold with graduated scale: count non-stationary event frequency and duration; brief movements (<5 sec clusters) should incur smaller penalties than sustained restlessness.",
-      "Adjust audio distraction weighting: 60-75 dBA range should reduce score moderately, not trigger hard penalty. Reserve severe penalties for >75 dBA sustained or multiple speech events."
+      "When vitals data is missing and user reports physiological strain, cap model confidence at LOW and avoid strong negative predictions based solely on mental readiness baseline.",
+      "Reduce penalty weight for audio noise (60-75 dBA range) in library contexts when duration <30 seconds; user may be in transition or adapted to ambient sound."
     ]
   }
 }

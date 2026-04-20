@@ -851,21 +851,45 @@ def _call_llm_snowflake(prompt: str) -> tuple[int, str, str]:
     if missing:
         raise RuntimeError(f"Missing Snowflake settings for Cortex call: {', '.join(missing)}")
 
-    escaped_prompt = prompt.replace("'", "''")
-    model = settings.llm_model
-    temperature = settings.llm_temperature
-    top_p = settings.llm_top_p
-    options = json.dumps({"temperature": temperature, "top_p": top_p})
+    model = (settings.llm_model or "").strip()
+    model_aliases = {
+        "claude-sonnet-4-5": "claude-4-sonnet",
+        "claude-sonnet-4-6": "claude-4-sonnet",
+        "claude-3-5-sonnet": "claude-3-5-sonnet",
+    }
+    if model in model_aliases:
+        resolved = model_aliases[model]
+        if resolved != model:
+            logger.info("snowflake_cortex model_alias=%s->%s", model, resolved)
+        model = resolved
+    if not model:
+        raise RuntimeError("LLM_MODEL is required for Snowflake Cortex")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", model):
+        raise RuntimeError(f"Invalid LLM_MODEL for Snowflake Cortex: {model}")
+    def _sql_literal(value: str) -> str:
+        # Prefer $$ quoting to avoid escaping; fall back to single quotes if needed.
+        if "$$" in value:
+            return "'" + value.replace("'", "''") + "'"
+        return f"$${value}$$"
+
+    prompt_literal = _sql_literal(prompt)
+    model_literal = "'" + model.replace("'", "''") + "'"
+    query_preview = (
+        "SELECT SNOWFLAKE.CORTEX.COMPLETE("
+        f"{model_literal}, "
+        "<PROMPT>"
+        ") AS response"
+    )
     query = (
         "SELECT SNOWFLAKE.CORTEX.COMPLETE("
-        f"'{model}', "
-        f"'{escaped_prompt}', "
-        f"parse_json('{options}')"
+        f"{model_literal}, "
+        f"{prompt_literal}"
         ") AS response"
     )
 
     session = Session.builder.configs(required).create()
     try:
+        logger.info("snowflake_cortex query=%s", query_preview)
         rows = session.sql(query).collect()
     finally:
         session.close()

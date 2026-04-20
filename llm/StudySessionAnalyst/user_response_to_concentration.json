@@ -1,13 +1,13 @@
 {
+  "session_key": "study-session-d7920207-3046-49ea-9855-a35bfb75339c",
   "user_response": [
     {
       "question": "How focused were you during this study session?",
-      "answer": 4
+      "answer": 5
     },
     {
       "question": "What most affected your concentration during this session?",
       "answer": [
-        "Environmental Noise / Speech",
         "Movement / Restlessness"
       ]
     }
