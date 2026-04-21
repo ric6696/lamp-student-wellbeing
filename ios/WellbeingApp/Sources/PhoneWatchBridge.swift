@@ -10,26 +10,35 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
     @Published private(set) var isWatchAppInstalled: Bool = false
     @Published private(set) var isReachable: Bool = false
     @Published private(set) var activationStateRaw: Int = WCSessionActivationState.notActivated.rawValue
+    @Published private(set) var isStudySessionActive: Bool = false
+    @Published private(set) var hasConfirmedWatchConnectionInSession: Bool = false
     @Published var enableWatchDataCollection: Bool = true
 
     private var isStarted = false
     private let iso = ISO8601DateFormatter()
 
+    private var isEffectivelyConnected: Bool {
+        if isReachable {
+            return true
+        }
+        return isStudySessionActive && hasConfirmedWatchConnectionInSession
+    }
+
     var connectivityText: String {
         if !isPaired { return "Watch not paired" }
         if !isWatchAppInstalled { return "Watch app not installed" }
-        if isReachable { return "Watch connected" }
+        if isEffectivelyConnected { return "Watch connected" }
         return "Waiting for connection"
     }
 
     var connectivityColorName: String {
         if !isPaired || !isWatchAppInstalled { return "red" }
-        return isReachable ? "green" : "orange"
+        return isEffectivelyConnected ? "green" : "orange"
     }
 
     var currentConnectionStep: Int {
         if !isPaired || !isWatchAppInstalled { return 0 }
-        if !isReachable { return 1 }
+        if !isEffectivelyConnected { return 1 }
         return 3
     }
 
@@ -58,6 +67,17 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
 
     func requestStopWorkout() async -> Bool {
         await sendCommandAwaitingAck("stop_workout", sessionKey: nil)
+    }
+
+    func setStudySessionActive(_ isActive: Bool) {
+        Task { @MainActor in
+            isStudySessionActive = isActive
+            if !isActive {
+                hasConfirmedWatchConnectionInSession = false
+            } else if isReachable {
+                hasConfirmedWatchConnectionInSession = true
+            }
+        }
     }
 
     // MARK: - WCSessionDelegate
@@ -102,6 +122,12 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
 
     private func handleIncoming(_ message: [String: Any]) {
         guard let type = message["type"] as? String else { return }
+
+        Task { @MainActor in
+            if isStudySessionActive {
+                hasConfirmedWatchConnectionInSession = true
+            }
+        }
 
         switch type {
         case "vitals":
@@ -227,6 +253,9 @@ final class PhoneWatchBridge: NSObject, ObservableObject, WCSessionDelegate {
             isWatchAppInstalled = session.isWatchAppInstalled
             isReachable = session.isReachable
             activationStateRaw = session.activationState.rawValue
+            if isStudySessionActive && session.isReachable {
+                hasConfirmedWatchConnectionInSession = true
+            }
         }
     }
 

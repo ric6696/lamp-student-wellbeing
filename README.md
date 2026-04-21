@@ -125,6 +125,83 @@ SNOWFLAKE_SCHEMA=...
 SNOWFLAKE_WAREHOUSE=...
 ```
 
+## Switch Between Local And Cloud DB
+
+Use DB profile files so you can switch environments without manually editing `.env` each time.
+
+### One-time setup (for each teammate)
+
+1. Create the active env file:
+
+```bash
+cp .env.example .env
+```
+
+2. Create profile files:
+
+```bash
+cp .env.example .env.localdb
+cp .env.example .env.clouddb
+```
+
+3. Edit `.env.localdb` for local Docker DB:
+  - `POSTGRES_HOST=localhost`
+  - `POSTGRES_PORT=5433`
+  - `POSTGRES_DB=sensing_db`
+  - `POSTGRES_USER=postgres`
+  - `POSTGRES_PASSWORD=dev_password` (or your local password)
+
+4. Edit `.env.clouddb` for cloud DB:
+  - `POSTGRES_HOST=<cloud db host>`
+  - `POSTGRES_PORT=<cloud db port>`
+  - `POSTGRES_DB=<cloud db name>`
+  - `POSTGRES_USER=<cloud db user>`
+  - `POSTGRES_PASSWORD=<cloud db password>`
+
+5. Keep shared app settings consistent in both profiles unless intentionally different:
+  - `INGEST_API_KEY`
+  - `LLM_PROVIDER`
+  - `LLM_MODEL`
+  - Snowflake keys when `LLM_PROVIDER=snowflake`
+
+### Daily switching commands
+
+Switch to local DB:
+
+```bash
+scripts/use_db_profile.sh local
+```
+
+Switch to cloud DB:
+
+```bash
+scripts/use_db_profile.sh cloud
+```
+
+Optional (skip automatic backup of current `.env`):
+
+```bash
+scripts/use_db_profile.sh local --no-backup
+scripts/use_db_profile.sh cloud --no-backup
+```
+
+The switch script copies the chosen profile into `.env` and, by default, writes a backup file like `.env.backup.YYYYMMDD_HHMMSS`.
+
+### After switching profile
+
+Restart the backend so new environment values are loaded:
+
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Quick verification:
+
+```bash
+grep -E '^(POSTGRES_HOST|POSTGRES_PORT|POSTGRES_DB|POSTGRES_USER)=' .env
+curl http://localhost:8000/health
+```
+
 Dummy E2E test:
 
 ```bash

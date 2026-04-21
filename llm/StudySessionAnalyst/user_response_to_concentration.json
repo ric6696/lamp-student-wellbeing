@@ -1,5 +1,4 @@
 {
-  "session_key": "study-session-d7920207-3046-49ea-9855-a35bfb75339c",
   "user_response": [
     {
       "question": "How focused were you during this study session?",
@@ -8,8 +7,9 @@
     {
       "question": "What most affected your concentration during this session?",
       "answer": [
-        "Movement / Restlessness"
+        "No Major Distraction"
       ]
     }
-  ]
+  ],
+  "session_key": "study-session-d183220e-e925-44b9-8382-14159c4fabe7"
 }

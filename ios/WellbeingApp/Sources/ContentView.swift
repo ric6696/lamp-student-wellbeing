@@ -99,6 +99,24 @@ struct ContentView: View {
             }
 
             NavigationView {
+                SessionDataView(
+                    isSessionActive: scheduler.isSessionActive,
+                    currentSessionStartTime: scheduler.currentSessionStartTime,
+                    previousSessionStartTime: scheduler.previousSessionStartTime,
+                    previousSessionEndTime: scheduler.previousSessionEndTime,
+                    prevActivityContext: prevActivityContext,
+                    prevEnvironmentContext: prevEnvironmentContext,
+                    prevMentalContext: prevMentalContext,
+                    prevConcentration: prevConcentration,
+                    prevDistractions: prevDistractions,
+                    items: scheduler.isSessionActive ? scheduler.runningSessionItems : scheduler.previousSessionItems
+                )
+            }
+            .tabItem {
+                Label("Data", systemImage: "waveform.path.ecg")
+            }
+
+            NavigationView {
                 List {
                     Section(header: Text("Recent Session")) {
                         if let latest = sessionHistoryItems.first {
@@ -1600,9 +1618,6 @@ private struct PredictionReportView: View {
 
 private struct SessionDataView: View {
     let isSessionActive: Bool
-    let watchEnabled: Bool
-    let watchReachable: Bool
-    let watchConnectivityText: String
     let currentSessionStartTime: Date?
     let previousSessionStartTime: Date?
     let previousSessionEndTime: Date?
@@ -1612,7 +1627,6 @@ private struct SessionDataView: View {
     let prevConcentration: Int?
     let prevDistractions: [String]?
     let items: [BatchItem]
-    let onViewLastReport: (String?) -> Void
 
     private var sessionDurationMinutes: Double {
         if let start = previousSessionStartTime, let end = previousSessionEndTime {
@@ -1636,23 +1650,6 @@ private struct SessionDataView: View {
 
     var body: some View {
         List {
-            Section(header: Text("Sensor Sources")) {
-                SensorSourceCard(
-                    title: "iPhone",
-                    subtitle: isSessionActive ? "Streaming data" : "Idle until the next session",
-                    iconName: "iphone.gen3",
-                    isActive: isSessionActive
-                )
-                if watchEnabled {
-                    SensorSourceCard(
-                        title: "Apple Watch",
-                        subtitle: watchConnectivityText,
-                        iconName: "applewatch",
-                        isActive: isSessionActive && watchReachable
-                    )
-                }
-            }
-
             Section(header: Text("Previous Session")) {
                 if let start = previousSessionStartTime {
                     let startStr = ContentView.hktFormatter.string(from: start)
@@ -1693,18 +1690,6 @@ private struct SessionDataView: View {
                     Text(String(format: "%.2f/min", freq))
                         .foregroundColor(.secondary)
                 }
-            }
-
-            Section(header: Text("Prediction Report")) {
-                let sessionKey = latestCompletedSessionKey(from: items)
-                Button(action: {
-                    onViewLastReport(sessionKey)
-                }) {
-                    Label("View Last Prediction Report", systemImage: "doc.text.magnifyingglass")
-                }
-                Text(sessionKey == nil ? "Session key not found. The app will try the latest available report." : "Opens the report linked to your most recent completed study session.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
 
             ForEach(SensorDisplayType.SourceCategory.allCases, id: \.self) { source in
@@ -1754,20 +1739,6 @@ private struct SessionDataView: View {
         }
     }
 
-    private func latestCompletedSessionKey(from items: [BatchItem]) -> String? {
-        for item in items.reversed() {
-            guard item.type == .event,
-                  item.label == "session_marker",
-                  (item.val_text ?? "").uppercased() == "END",
-                  let metadata = item.metadata,
-                  let sessionKey = metadata["session_key"]?.stringValue,
-                  !sessionKey.isEmpty else {
-                continue
-            }
-            return sessionKey.lowercased()
-        }
-        return nil
-    }
 }
 
 private struct SensorStatRow: View {
@@ -1794,36 +1765,6 @@ private struct SensorStatRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-private struct SensorSourceCard: View {
-    let title: String
-    let subtitle: String
-    let iconName: String
-    let isActive: Bool
-
-    var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: iconName)
-                .font(.system(size: 28))
-                .foregroundColor(.white)
-                .padding(12)
-                .background(isActive ? Color.blue : Color.gray)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            Spacer()
-            Circle()
-                .fill(isActive ? Color.green : Color.gray)
-                .frame(width: 12, height: 12)
         }
         .padding(.vertical, 4)
     }

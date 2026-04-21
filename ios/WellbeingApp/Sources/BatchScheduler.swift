@@ -130,6 +130,7 @@ final class BatchScheduler: ObservableObject {
         let startTime = Date()
         let sessionKey = StudySessionContext.startNewSession()
         isSessionActive = true
+        watchBridge.setStudySessionActive(true)
         currentSessionStartTime = startTime
         currentSessionEndTime = nil
         runningSessionItems = []
@@ -213,6 +214,7 @@ final class BatchScheduler: ObservableObject {
         LocationManager.shared.endSession(at: endTime)
 
         isSessionActive = false
+        watchBridge.setStudySessionActive(false)
         stop()
         currentSessionEndTime = endTime
         previousSessionStartTime = currentSessionStartTime

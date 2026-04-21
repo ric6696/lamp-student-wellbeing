@@ -1,4 +1,7 @@
 .env
+.env.localdb
+.env.clouddb
+.env.backup.*
 __pycache__/
 *.pyc
 logs/
