@@ -17,6 +17,7 @@ def init_pool() -> None:
             password=settings.postgres_password,
             host=settings.postgres_host,
             port=settings.postgres_port,
+            options="-c timezone=Asia/Hong_Kong",
         )
 
 def close_pool() -> None:

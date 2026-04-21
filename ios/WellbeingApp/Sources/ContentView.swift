@@ -3,6 +3,14 @@ import SwiftUI
 struct ContentView: View {
     static let hktFormatter: DateFormatter = {
         let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        f.timeZone = TimeZone(identifier: "Asia/Hong_Kong") ?? TimeZone(secondsFromGMT: 8 * 3600)
+        return f
+    }()
+
+    static let hktTimeOnlyFormatter: DateFormatter = {
+        let f = DateFormatter()
         f.dateStyle = .none
         f.timeStyle = .short
         f.timeZone = TimeZone(identifier: "Asia/Hong_Kong") ?? TimeZone(secondsFromGMT: 8 * 3600)
@@ -97,7 +105,7 @@ struct ContentView: View {
                             let durationMin = latest.durationMinutes
 
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("\(ContentView.hktFormatter.string(from: latest.started_at)) - \(ContentView.hktFormatter.string(from: latest.ended_at))")
+                                Text(formatSessionRange(start: latest.started_at, end: latest.ended_at))
                                     .font(.subheadline.weight(.semibold))
                                 Text(String(format: "Duration %.1f min", durationMin))
                                     .font(.caption)
@@ -156,7 +164,7 @@ struct ContentView: View {
                             ForEach(sessionHistoryItems) { session in
                                 VStack(alignment: .leading, spacing: 8) {
                                     HStack {
-                                        Text("\(ContentView.hktFormatter.string(from: session.started_at)) - \(ContentView.hktFormatter.string(from: session.ended_at))")
+                                        Text(formatSessionRange(start: session.started_at, end: session.ended_at))
                                             .font(.subheadline.weight(.semibold))
                                         Spacer()
                                         if let score = session.score {
@@ -680,6 +688,12 @@ private struct UserResponseToConcentrationFile: Codable {
     let session_key: String?
 }
 
+private struct SessionReviewResponse: Codable {
+    let status: String?
+    let path: String?
+    let session_id: Int?
+}
+
 private struct UserResponseQuestionAnswer: Codable {
     let question: String
     let answer: UserResponseValue
@@ -748,6 +762,15 @@ private struct LatestUserSessionHistorySnapshot: Codable {
 }
 
 private extension ContentView {
+    func formatSessionRange(start: Date, end: Date) -> String {
+        let calendar = Calendar.current
+        if calendar.isDate(start, inSameDayAs: end) {
+            return "\(ContentView.hktFormatter.string(from: start)) - \(ContentView.hktTimeOnlyFormatter.string(from: end))"
+        }
+
+        return "\(ContentView.hktFormatter.string(from: start)) - \(ContentView.hktFormatter.string(from: end))"
+    }
+
     func beginStudySessionFromPreSession(skipContext: Bool) {
         if skipContext {
             activityContext = ""
@@ -778,6 +801,16 @@ private extension ContentView {
         }
     }
 
+    func recentSevenDaySessions(from items: [SessionHistoryItem]) -> [SessionHistoryItem] {
+        let calendar = Calendar.current
+        let fallbackCutoff = Date().addingTimeInterval(-7 * 24 * 60 * 60)
+        let cutoff = calendar.date(byAdding: .day, value: -7, to: Date()) ?? fallbackCutoff
+
+        return items
+            .filter { max($0.ended_at, $0.started_at) >= cutoff }
+            .sorted { $0.ended_at > $1.ended_at }
+    }
+
     func fetchSessionHistory(force: Bool) async {
         if isLoadingSessionHistory { return }
         if hasLoadedSessionHistory && !force { return }
@@ -805,8 +838,9 @@ private extension ContentView {
 
                 if (200..<300).contains(http.statusCode) {
                     let payload = try JSONCoding.decoder.decode(UserSessionsListResponse.self, from: data)
+                    let recentItems = recentSevenDaySessions(from: payload.items)
                     await MainActor.run {
-                        sessionHistoryItems = payload.items
+                        sessionHistoryItems = recentItems
                         isLoadingSessionHistory = false
                         hasLoadedSessionHistory = true
                         sessionHistoryError = nil
@@ -825,8 +859,9 @@ private extension ContentView {
         }
 
         if let latestFallback = await fetchLatestSessionHistoryFallback() {
+            let recentFallbackItems = recentSevenDaySessions(from: [latestFallback])
             await MainActor.run {
-                sessionHistoryItems = [latestFallback]
+                sessionHistoryItems = recentFallbackItems
                 isLoadingSessionHistory = false
                 hasLoadedSessionHistory = true
                 sessionHistoryError = nil
@@ -893,8 +928,12 @@ private extension ContentView {
         preparePredictionReportPresentation()
 
         Task {
-            let saved = await saveUserResponseToConcentration(rating: rating, distractions: distractions, sessionKey: sessionKey)
-            guard saved else {
+            let sessionId = await saveUserResponseToConcentration(
+                rating: rating,
+                distractions: distractions,
+                sessionKey: sessionKey
+            )
+            guard sessionId != nil || sessionKey != nil else {
                 await MainActor.run {
                     isLoadingPredictionReport = false
                     predictionReportError = "Could not submit session review. Please try again."
@@ -902,7 +941,7 @@ private extension ContentView {
                 return
             }
 
-            await loadLatestPredictionReport(sessionId: nil, sessionKey: sessionKey)
+            await loadLatestPredictionReport(sessionId: sessionId, sessionKey: sessionKey)
         }
     }
 
@@ -928,7 +967,7 @@ private extension ContentView {
         }
     }
 
-    func saveUserResponseToConcentration(rating: Int, distractions: [String], sessionKey: String?) async -> Bool {
+    func saveUserResponseToConcentration(rating: Int, distractions: [String], sessionKey: String?) async -> Int? {
         let payload = UserResponseToConcentrationFile(
             user_response: [
                 UserResponseQuestionAnswer(
@@ -946,13 +985,13 @@ private extension ContentView {
         return await submitUserResponseToBackend(payload)
     }
 
-    func submitUserResponseToBackend(_ payload: UserResponseToConcentrationFile) async -> Bool {
+    func submitUserResponseToBackend(_ payload: UserResponseToConcentrationFile) async -> Int? {
         let encodedBody: Data
         do {
             encodedBody = try JSONCoding.encoder.encode(payload)
         } catch {
             print("Failed to encode session review JSON: \(error)")
-            return false
+            return nil
         }
 
         for url in resolveSessionReviewURLs() {
@@ -963,14 +1002,18 @@ private extension ContentView {
             request.httpBody = encodedBody
 
             do {
-                let (_, response) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await URLSession.shared.data(for: request)
                 if let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) {
+                    if let parsed = try? JSONCoding.decoder.decode(SessionReviewResponse.self, from: data) {
+                        print("Saved session review JSON to backend path: \(url.absoluteString)")
+                        return parsed.session_id
+                    }
                     print("Saved session review JSON to backend path: \(url.absoluteString)")
-                    return true
+                    return nil
                 } else if let http = response as? HTTPURLResponse {
                     print("Failed to save session review JSON at \(url.absoluteString). HTTP status=\(http.statusCode)")
                     if http.statusCode == 401 {
-                        return false
+                        return nil
                     }
                 }
             } catch {
@@ -978,14 +1021,20 @@ private extension ContentView {
             }
         }
 
-        return false
+        return nil
     }
 
     func loadLatestPredictionReport(sessionId: Int?, sessionKey: String?) async {
-        let candidateURLs = resolveConcentrationReportURLs(sessionId: sessionId, sessionKey: sessionKey)
+        let candidateURLs: [URL]
+        if let sessionId {
+            // When we have a session id, hit the direct endpoint only to avoid slow fallbacks.
+            candidateURLs = resolveSessionConcentrationByIdURLs(sessionId: sessionId)
+        } else {
+            candidateURLs = resolveConcentrationReportURLs(sessionId: sessionId, sessionKey: sessionKey)
+        }
 
-        let attempts = 30
-        let delayNanoseconds: UInt64 = 2_000_000_000
+        let attempts = 40
+        let delayNanoseconds: UInt64 = 1_000_000_000
 
         for attempt in 1...attempts {
             var unauthorized = false
@@ -993,6 +1042,7 @@ private extension ContentView {
             for url in candidateURLs {
                 var request = URLRequest(url: url)
                 request.httpMethod = "GET"
+                request.timeoutInterval = 5
                 request.addValue("dev_key", forHTTPHeaderField: "X-API-Key")
 
                 do {
