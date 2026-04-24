@@ -747,6 +747,7 @@ Return ONLY valid JSON with this exact structure:
 
 Final rules:
 - score must be 1-10 integer.
+- If duration_min < 3, score must be <= 3.
 - reason must be 2-3 sentences.
 - Ensure the reason references audio, vitals, GPS, and motion evidence.
 - No text outside JSON.

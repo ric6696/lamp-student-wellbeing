@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-04-21T04:25:35.146193+00:00",
+  "timestamp": "2026-04-21T03:58:27.244283+00:00",
   "model": "claude-sonnet-4-5",
   "pre_session_questions": {
-    "activity_context": "Group Meeting",
-    "environment_context": "Home",
-    "mental_readiness": "High"
+    "activity_context": "Lecture",
+    "environment_context": "Classroom",
+    "mental_readiness": "Low"
   },
   "result": {
     "overview": {
@@ -12,34 +12,28 @@
       "user_score": 5.0,
       "gap": 2.0,
       "agreement": "MODEL_HIGHER",
-      "summary": "Model overestimated concentration by 2 points. User reported moderate focus with no major distractions, while model interpreted stable sensors as indicating good concentration. The 13-second session duration creates high uncertainty for both assessments."
+      "summary": "Model overestimated concentration by 2 points. Model relied heavily on motion/GPS stability indicators while underweighting audio distraction impact. User reported Environmental Noise/Speech as primary distraction factor, which model acknowledged but did not sufficiently penalize in final scoring."
     },
-    "selected_factors": [
-      "No Major Distraction"
-    ],
+    "selected_factors": ["Environmental Noise / Speech"],
     "factor_sensor_mappings": [
       {
-        "factor": "No Major Distraction",
+        "factor": "Environmental Noise / Speech",
         "mapped_observability": "DIRECT",
-        "mapped_primary_sensors": [
-          "audio",
-          "motion",
-          "vitals"
-        ],
+        "mapped_primary_sensors": ["audio"],
         "confidence_cap": "HIGH",
-        "alignment_with_session_sensors": "ALIGNED"
+        "alignment_with_session_sensors": "PARTIAL"
       }
     ],
-    "why_difference": "Model conflated absence of negative signals with presence of strong concentration. User confirmed no major distractions but rated focus as moderate (5/10), suggesting that stable sensors indicate baseline engagement rather than high concentration. The 66.4 dBA audio level, while appropriate for group meetings, may have been more cognitively demanding than model assessed. Brief 13-second duration prevents observation of sustained attention patterns. Model applied a 7/10 threshold for 'good concentration' when sensor stability alone may only warrant mid-range scoring.",
+    "why_difference": "Model prioritized behavioral stability signals (stationary motion, GPS stability) over audio distraction evidence. Audio levels of 63-69 dBA were characterized as 'moderate' and 'not excessively distracting,' but user experienced this as concentration-impairing noise. Model defaulted to historical Lecture context average (7.0) without adequately downweighting for reported audio distraction. The 10-second session duration created insufficient audio event data, leading model to underestimate noise impact severity.",
     "prediction_agent_sensor_judgment": {
-      "audio": "66.4 dBA correctly identified as moderate noise consistent with group discussion context. However, model should not assume moderate audio automatically supports high concentration in collaborative settings—it may represent cognitive load. Next: distinguish between 'contextually appropriate noise' and 'concentration-supporting environment.' Weight audio neutrally for group meetings unless clear disruption patterns emerge.",
-      "vitals": "Stable low heart rate (69-72 bpm) correctly identified as calm state. Model over-interpreted this as strong engagement indicator. Relaxed physiology may indicate passive participation rather than active focus. Next: treat stable vitals as neutral baseline rather than positive concentration signal unless paired with other active engagement markers. Cap vitals contribution to score at moderate levels for short sessions.",
-      "motion": "Transition to stationary positioning correctly detected and appropriately weighted for seated meeting context. Zero steps and stable GPS confirm physical settling. This sensor performed reliably. Next: maintain current weighting but recognize that stationary state is necessary but not sufficient for high concentration scores.",
-      "gps": "Minimal drift within accuracy bounds, appropriately used as secondary confirmation of stationary context. Performed as expected with no adjustment needed. Next: continue using GPS as contextual validator rather than primary concentration indicator."
+      "audio": "UNDERWEIGHTED. Model correctly identified moderate audio levels (63-69 dBA) but failed to treat this as concentration-impairing. Next cycle: apply stricter thresholds for classroom audio distraction (consider 60+ dBA as potential distractor in lecture contexts). Lack of specific audio event detection in brief window may have masked speech/noise patterns. Increase sensitivity to sustained moderate-level audio as distraction signal.",
+      "vitals": "UNAVAILABLE. No heart rate data prevented cross-validation of stress/arousal that might correlate with audio distraction. Missing data reduced model's ability to detect physiological response to environmental noise. Next cycle: when vitals absent, increase caution in concentration estimates and avoid over-reliance on motion alone.",
+      "motion": "OVERWEIGHTED. Stationary status was treated as strong positive indicator of focus, but physical stillness does not guarantee cognitive engagement when environmental distractions present. Next cycle: motion stability should be necessary but not sufficient for high scores; require corroboration from other sensors or discount when audio shows distraction potential.",
+      "gps": "OVERWEIGHTED. GPS stability confirmed location consistency but does not measure attention quality. Model conflated 'staying in place' with 'concentrating effectively.' Next cycle: use GPS primarily for context validation (lecture hall presence) rather than direct concentration inference. Do not allow GPS stability to override direct distraction signals from audio."
     },
     "judgment_policy_next_run": [
-      "Apply conservative scoring for ultra-short sessions (<30 seconds): cap maximum score at 6.0 regardless of sensor stability due to insufficient observation window for sustained attention patterns.",
-      "Redefine 'No Major Distraction' interpretation: absence of disruption should map to mid-range scores (4-6) rather than 'good' range (7+). Reserve 7+ for sessions with positive engagement indicators beyond stable baselines."
+      "Recalibrate audio thresholds: treat sustained 60-69 dBA in lecture contexts as moderate distraction risk, not neutral background. Apply score penalty of 1-2 points when audio levels sustained in this range without offsetting positive signals.",
+      "Implement hierarchical sensor weighting: when user-reported factor has DIRECT observability (e.g., Environmental Noise via audio), prioritize that primary sensor over secondary behavioral indicators (motion/GPS). Motion stability cannot override direct distraction evidence."
     ]
   }
 }

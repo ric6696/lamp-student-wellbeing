@@ -1,15 +1,13 @@
 {
   "user_response": [
     {
-      "question": "How focused were you during this study session?",
-      "answer": 5
+      "answer": 5,
+      "question": "How focused were you during this study session?"
     },
     {
-      "question": "What most affected your concentration during this session?",
-      "answer": [
-        "No Major Distraction"
-      ]
+      "answer": ["Environmental Noise / Speech"],
+      "question": "What most affected your concentration during this session?"
     }
   ],
-  "session_key": "study-session-d183220e-e925-44b9-8382-14159c4fabe7"
+  "session_key": "study-session-ebad2c88-4840-4a7d-a8bc-87c3a0c33098"
 }
