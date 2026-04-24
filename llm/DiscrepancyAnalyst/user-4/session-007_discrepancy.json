@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.532798+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Cafe",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 5,
+      "gap": 1,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 6 vs user score 5 (gap 1). Primary drivers: Environmental Noise / Speech, Motion / Restlessness, Mental Readiness. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Motion / Restlessness",
+      "Mental Readiness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

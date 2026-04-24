@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 78.6 and 105.6 dBA with sporadic patterns. Human voice detected with 0.86 confidence, likely nearby conversation. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "No heart rate data collected during this 212s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Location services recorded 4.8m initial error that converges to 2.3m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 81.6 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity. Moderate session length adequate; potential to extend to 318s for skill building."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (81.6dB), minimal motion, and brief session length."
+}

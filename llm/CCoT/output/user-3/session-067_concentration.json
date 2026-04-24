@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 49.5-64.5 dBA. Vocalization detected mid-session (confidence: 0.54), not significantly affecting ambient baseline. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 55 bpm observed, reflecting measured attention. Minimal fluctuation detected.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.1m) that improves to 3.4m as session progresses. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (54.5 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 8,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (54.5dB), user-state stability (active), physiological data (available), and sustainable duration (491s)."
+}

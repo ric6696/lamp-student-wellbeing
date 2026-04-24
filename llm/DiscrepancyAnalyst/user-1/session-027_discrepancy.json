@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-04-24T12:32:36.477985+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Library",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3,
+      "user_score": 8,
+      "gap": -5,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 3 vs user score 8 (gap -5). Primary drivers: Session Duration, Environmental Noise / Speech, Mental Readiness. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Session Duration",
+      "Environmental Noise / Speech",
+      "Mental Readiness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

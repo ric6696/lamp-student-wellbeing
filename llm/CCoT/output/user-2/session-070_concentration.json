@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 72.0 dBA, gradually settling to 56.0-63.0 dBA midway through session. Human voice detected with 0.87 confidence, likely nearby conversation. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 409s session.",
+    "gps_motion": "GPS positioning shows initial variance of 2.8m, refining to 3.2m accuracy over session duration. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 63.0 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (63.0dB), minimal motion, and adequate session length."
+}

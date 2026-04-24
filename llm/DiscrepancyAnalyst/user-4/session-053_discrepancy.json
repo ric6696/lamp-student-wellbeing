@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.546309+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 4,
+      "user_score": 9,
+      "gap": -5,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 4 vs user score 9 (gap -5). Primary drivers: Motion / Restlessness. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Motion / Restlessness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 73.0-96.0 dBA. Speech event detected at 178s mark with confidence 0.79. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "No heart rate data collected during this 574s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.2m) that improves to 2.1m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Challenging environmental factors identified: 81.0 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels. Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 4,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (81.0dB), user-state stability (active), physiological data (absent), and sustainable duration (574s)."
+}

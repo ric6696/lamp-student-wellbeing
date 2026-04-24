@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 35.1 dBA with periodic spikes up to 65.1 dBA throughout the 593s recording. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Resting heart rate around 57 bpm observed, reflecting calm demeanor. Consistent throughout.",
+    "gps_motion": "GPS signal strength inconsistent at start (2.7m error margin), achieving 2.7m lock after stabilization. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 47.1 dB acoustic environment and mobile user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (47.1dB), frequent motion, and adequate session length."
+}

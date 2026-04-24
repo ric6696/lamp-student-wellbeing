@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.477748+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 7,
+      "user_score": 3,
+      "gap": 4,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 7 vs user score 3 (gap 4). Primary drivers: Mental Readiness, Session Duration, Location Stability. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Session Duration",
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

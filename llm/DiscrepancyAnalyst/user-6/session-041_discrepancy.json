@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.600198+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Home",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 4,
+      "gap": 2,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 6 vs user score 4 (gap 2). Primary drivers: Motion / Restlessness, Environmental Noise / Speech. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Motion / Restlessness",
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

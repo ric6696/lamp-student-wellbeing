@@ -1,84 +1,84 @@
 {
-  "generated_at": "2026-04-16T00:21:09.731579+00:00",
+  "generated_at": "2026-04-16T05:14:30.456497+00:00",
   "user_id": "minsuk",
-  "sample_size": 60,
-  "data_fed_count": 60,
-  "profile_update_count": 62,
-  "sessions_analyzed": "Analysis 41-100",
+  "sample_size": 10,
+  "data_fed_count": 10,
+  "profile_update_count": 66,
+  "sessions_analyzed": "Analysis 94-103",
   "profile_confidence": 1.0,
   "calibration": {
     "alignment_summary": "Across the history, the user more often rates focus higher than the model.",
-    "why": "Based on 60 scored sessions, average (user_score - model_score) = 2.2, with 58 positive, 2 negative, and 0 zero-gap directions.",
-    "discrepancy_strength": "Average absolute model-user gap across scored history: 2.267.",
+    "why": "Based on 10 scored sessions, average (user_score - model_score) = 2.3, with 10 positive, 0 negative, and 0 zero-gap directions.",
+    "discrepancy_strength": "Average absolute model-user gap across scored history: 2.3.",
     "ccot_adjustment_recommendation": "For next-session interpretation, avoid overly strict downgrades and check whether strong negative signals are consistently supported by other sensors."
   },
   "sensor_interpretation": {
     "vitals": {
       "importance": "MEDIUM",
       "confidence": "MEDIUM",
-      "summary": "Heart rate and step count reliably detect physiological calm vs. activity, but cannot distinguish engaged focus from passive disengagement or detect subjective strain (fatigue, discomfort). Calm vitals (60-85 bpm, low steps) indicate physical readiness but not cognitive engagement quality.",
+      "summary": "Vitals reliably detect physical activity and physiological readiness but cannot distinguish cognitive engagement from disengagement. Calm vitals do not guarantee focus quality; elevated HR during movement may reflect activity rather than stress.",
       "evidence": {
-        "sessions_seen": 60,
-        "supported_count": 18,
-        "contradicted_count": 28,
-        "unclear_count": 14,
-        "avg_gap_when_flagged": 2.1
+        "sessions_seen": 10,
+        "supported_count": 3,
+        "contradicted_count": 4,
+        "unclear_count": 3,
+        "avg_gap_when_flagged": 2.6
       },
       "interpretation": {
-        "what_it_means": "Vitals provide a necessary but insufficient signal. Calm HR confirms absence of physiological stress/movement but does not prove concentration. Elevated HR during walking is normal and should not be conflated with cognitive distraction. Users frequently report physiological strain that vitals do not capture.",
-        "risk": "Over-reliance on calm vitals as positive concentration signal leads to overestimation when internal cognitive drift or task difficulty dominate. Model repeatedly missed that calm physiology can coexist with mind wandering.",
-        "next_use": "Use vitals primarily to rule out physiological disruption (stress, excessive movement), not to confirm focus quality. When vitals are calm but GPS/audio show instability, flag potential unmeasured cognitive factors. Reduce vitals weight as standalone positive indicator; increase weight only when corroborated by task engagement proxies."
+        "what_it_means": "Vitals provide baseline physiological context (seated vs. active state) but are misleading as direct concentration proxies. Calm HR (60-85 bpm) indicates absence of physiological strain, not presence of focus. Elevated HR (85-95 bpm) during walking is normal activity response, not necessarily distraction.",
+        "risk": "Over-reliance on calm vitals to confirm high concentration ignores unmeasured cognitive drift, task difficulty, and motivation. Model has repeatedly missed internal cognitive factors when vitals appeared stable.",
+        "next_use": "Use vitals to rule out physiological strain (stress, fatigue) rather than to confirm focus quality. When vitals are calm but user reports poor concentration, flag potential unmeasured cognitive factors. Reduce penalty weight for elevated HR (85-95 bpm) when motion shows steady walking rather than erratic movement."
       }
     },
     "gps": {
       "importance": "HIGH",
       "confidence": "MEDIUM",
-      "summary": "GPS reliably detects location instability and travel, but model systematically over-penalizes displacement without distinguishing passive transit study, planned multi-location sessions, or brief transitions between focus periods. Large travel distances do not categorically eliminate concentration.",
+      "summary": "GPS accurately detects location instability and travel distance but model systematically over-penalizes mobility, treating movement as incompatible with study. User repeatedly maintains moderate focus (4-5/10) during mobile sessions that model scores 1-2/10.",
       "evidence": {
-        "sessions_seen": 60,
-        "supported_count": 12,
-        "contradicted_count": 42,
-        "unclear_count": 6,
-        "avg_gap_when_flagged": 2.8
+        "sessions_seen": 10,
+        "supported_count": 2,
+        "contradicted_count": 7,
+        "unclear_count": 1,
+        "avg_gap_when_flagged": 2.7
       },
       "interpretation": {
-        "what_it_means": "GPS accurately measures location change but impact on concentration is highly context-dependent. Users maintain moderate focus (5-7 range) during transit when other conditions are favorable (quiet audio, calm vitals, stationary motion). Model applied binary 'travel = no study' logic that users consistently contradicted.",
-        "risk": "GPS displacement was the single most over-weighted sensor, frequently driving scores to 1-3 range when users reported 4-6. Model failed to recognize mobile study, commute learning, and multi-location sessions as valid concentration contexts. Sparse GPS sampling (3-4 points per session) was extrapolated to continuous disruption without acknowledging uncertainty.",
-        "next_use": "Implement graduated GPS penalty: <500m = minor, 500-1500m = moderate (cap score at 6-7), >1500m = major (cap at 5-6) only when other sensors also show disruption. When GPS shows travel but motion is stationary and vitals calm, infer passive transit and allow scores 5-7. Cross-reference GPS with motion stationary periods to detect focus windows between transitions. Reduce GPS weight by 40-50% and treat as context modifier, not score determinant."
+        "what_it_means": "GPS displacement and travel metrics are technically accurate but model applies binary logic (movement = no study) that user behavior contradicts. Users engage in mobile study patterns (commute learning, multi-location sessions) that sensors detect as transit but user experiences as productive, albeit degraded, focus.",
+        "risk": "Critical systematic bias: model assigns scores of 1-2 for mobile sessions where users report 4-5, creating consistent 3-point underestimation. GPS dominates scoring when present, overriding contradictory signals from audio/motion/vitals.",
+        "next_use": "Reduce GPS penalty weight from dominant (40-50%) to moderate (20-30%). Distinguish between sustained linear travel (commute study possible) and erratic movement (errands). Require motion sensor corroboration before concluding zero concentration. For sessions >60 min with multiple stationary periods, treat location changes as transitions between study blocks rather than continuous disruption. Apply 0.6x penalty multiplier for consistent movement patterns instead of floor scores."
       }
     },
     "motion": {
-      "importance": "MEDIUM",
-      "confidence": "MEDIUM",
-      "summary": "Motion sensors accurately detect stationary vs. walking contexts but cannot measure cognitive engagement during stationary periods or distinguish intentional mobile study from disruptive restlessness. Stationary status is necessary but insufficient for inferring focus.",
+      "importance": "HIGH",
+      "confidence": "HIGH",
+      "summary": "Motion sensor reliably detects stationary vs. walking states and provides strong positive signal for seated study. However, model under-weights stationary periods when GPS shows travel, and over-interprets brief non-stationary events as restlessness.",
       "evidence": {
-        "sessions_seen": 60,
-        "supported_count": 22,
-        "contradicted_count": 24,
-        "unclear_count": 14,
-        "avg_gap_when_flagged": 1.9
+        "sessions_seen": 10,
+        "supported_count": 6,
+        "contradicted_count": 2,
+        "unclear_count": 2,
+        "avg_gap_when_flagged": 2.4
       },
       "interpretation": {
-        "what_it_means": "Motion correctly identifies physical position (seated vs. moving) but provides limited insight into concentration quality. Stationary periods can include mind wandering, and walking can coexist with audio learning or review tasks. Model over-penalized walking without considering duration, intensity, or study modality compatibility.",
-        "risk": "Model conflated physical stillness with mental focus and walking with zero concentration. Users reported restlessness despite stationary motion labels, and maintained moderate focus during walking. Sparse motion sampling (4-6 events per session) may miss brief transitions or micro-movements.",
-        "next_use": "Use motion to confirm physical context, not cognitive state. When motion shows stationary dominance (≥70%) but GPS shows travel, infer seated transit and reduce GPS penalty. Distinguish sustained walking (potentially intentional mobile study) from erratic movement (disruption). Weight motion as supporting evidence for environmental stability but do not treat stationary status as proof of concentration. Increase weight for detecting restlessness only when combined with elevated vitals in stationary contexts."
+        "what_it_means": "Stationary motion readings (70%+ of session) strongly indicate physical stability conducive to focus. Brief walking events (<30% of session) may represent minor adjustments rather than sustained restlessness. Motion cannot measure internal cognitive engagement—physical stillness does not guarantee mental focus.",
+        "risk": "Model sometimes allows GPS travel signals to override motion's stationary evidence, missing that user may be seated in vehicle or stable location despite displacement. Brief non-stationary events in short sessions (<5 min) are over-penalized as distraction.",
+        "next_use": "Increase motion sensor weight when it conflicts with GPS—motion better captures micro-context (seated in transit, stable in café). For sessions <5 min, require >50% non-stationary readings before applying restlessness penalty. Weight stationary duration more than event count. Maintain current positive weighting for sustained stationary patterns (no recalibration needed). Recognize limitation: stationary motion confirms physical stability but cannot detect cognitive drift or task disengagement."
       }
     },
     "audio": {
       "importance": "HIGH",
       "confidence": "HIGH",
-      "summary": "Audio sensor reliably detects environmental noise levels and speech presence with strong alignment to user-reported distraction. Quiet environments (<45 dB, silence labels) consistently support concentration; busy/speech environments (>60 dB) consistently distract. Most reliable sensor overall.",
+      "summary": "Audio sensor accurately detects environmental noise levels and speech events. However, model applies overly rigid thresholds (60 dBA, 70-80 dBA music) without accounting for individual tolerance, context, or adaptation patterns.",
       "evidence": {
-        "sessions_seen": 60,
-        "supported_count": 48,
-        "contradicted_count": 6,
-        "unclear_count": 6,
-        "avg_gap_when_flagged": 0.8
+        "sessions_seen": 10,
+        "supported_count": 4,
+        "contradicted_count": 4,
+        "unclear_count": 2,
+        "avg_gap_when_flagged": 2.3
       },
       "interpretation": {
-        "what_it_means": "Audio provides the strongest direct environmental signal for concentration quality. Users rarely disputed audio assessments. Thresholds (45 dB quiet, 60 dB busy) are well-calibrated. Speech presence is a particularly strong distraction indicator. Audio quality often moderated the impact of other factors (GPS travel, motion).",
-        "risk": "Minimal over-weighting risk. Occasional cases where users tolerated moderate noise (55-65 dB) better than model assumed, particularly in mobile study contexts. Audio alone cannot distinguish between disruptive noise and intentional audio learning content.",
-        "next_use": "Maintain high weight for audio as primary environmental indicator. Continue using <45 dB and quiet/silence labels as strong positive signals, >60 dB and speech labels as strong negative signals. In 55-65 dB range, apply moderate penalty and allow other sensors to modulate final impact. When audio is favorable but GPS shows instability, use audio quality to support higher concentration floor (5-6 range). Audio is the most trustworthy sensor for next-session predictions."
+        "what_it_means": "Audio reliably identifies acoustic environment quality (quiet <45 dB, moderate 45-65 dB, busy >65 dB) and speech presence. Detection accuracy is high. However, presence of noise does not deterministically prevent concentration—users show adaptation and tolerance, especially to background music (70-80 dBA) and moderate ambient noise (55-65 dBA).",
+        "risk": "Model treats 60+ dBA and music as severe distraction (score penalties to 2-4 range) when users report maintaining moderate focus (5-7 range). Universal thresholds ignore individual differences in noise tolerance and context (e.g., café study norms, commute audio learning).",
+        "next_use": "Maintain audio detection accuracy but reduce penalty severity. Treat 70-80 dBA music as moderate (not severe) distraction when motion shows stability. For 55-65 dBA ambient noise in sessions <5 min, require sustained exposure >2 min before strong penalties. Weight speech events more heavily than raw dB levels. Introduce personalized tolerance bands—if user repeatedly reports scores ≥5 during 60-70 dBA sessions, reduce audio penalty multiplier by 30-40%. Avoid binary 'busy environment = no concentration' logic; apply graduated penalties based on intensity and duration."
       }
     }
   }

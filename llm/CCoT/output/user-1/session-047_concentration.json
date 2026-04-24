@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 89.2 dBA, gradually settling to 60.2-64.2 dBA midway through session. Vocalization detected mid-session (confidence: 0.55), not significantly affecting ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 80 bpm observed, reflecting relaxed yet focused. Rate remained stable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.5m) that improves to 1.9m as session progresses. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 64.2 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Current 50-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (64.2dB), minimal motion, and brief session length."
+}

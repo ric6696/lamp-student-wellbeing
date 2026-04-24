@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-04-24T12:32:36.513325+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 4,
+      "gap": 6,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 10 vs user score 4 (gap 6). Primary drivers: Session Duration, Environmental Noise / Speech, Task-Environment Mismatch. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Session Duration",
+      "Environmental Noise / Speech",
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

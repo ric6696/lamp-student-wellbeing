@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 84.2 dBA, gradually settling to 58.2-68.2 dBA midway through session. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 269s session.",
+    "gps_motion": "Location services recorded 3.1m initial error that converges to 1.4m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (68.2 dB), settled posture, and unmeasured physiology."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Current 269s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (68.2dB), minimal motion, and brief session length."
+}

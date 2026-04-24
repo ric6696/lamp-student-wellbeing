@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-24T12:32:36.490356+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Classroom",
+    "mental_readiness": "Medium"
+  },
+  "result": {
+    "overview": {
+      "model_score": 7,
+      "user_score": 6,
+      "gap": 1,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 7 vs user score 6 (gap 1). Primary drivers: Location Stability, Task-Environment Mismatch. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Location Stability",
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

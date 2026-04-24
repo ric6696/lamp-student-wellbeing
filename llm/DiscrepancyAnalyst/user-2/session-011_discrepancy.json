@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-04-24T12:32:36.492925+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Home",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 9,
+      "user_score": 6,
+      "gap": 3,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 9 vs user score 6 (gap 3). Primary drivers: Environmental Noise / Speech, Session Duration. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

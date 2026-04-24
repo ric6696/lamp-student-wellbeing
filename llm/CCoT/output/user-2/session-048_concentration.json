@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 82.5 dBA to sustained 72.5 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Vitals monitoring recorded 90 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 1.2m by session midpoint. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 72.5 dB, stable user state. Session duration (80s) limits comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Gradually increase session length from current 80s to develop deeper concentration habits."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (72.5dB), user-state stability (settled), physiological data (available), and sustainable duration (80s)."
+}

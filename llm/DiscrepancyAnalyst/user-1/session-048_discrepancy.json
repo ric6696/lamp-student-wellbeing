@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-04-24T12:32:36.482435+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Lecture Review",
+    "environment_context": "Home",
+    "mental_readiness": "Medium"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3,
+      "user_score": 9,
+      "gap": -6,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 3 vs user score 9 (gap -6). Primary drivers: Mental Readiness, Motion / Restlessness, Location Stability. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Motion / Restlessness",
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

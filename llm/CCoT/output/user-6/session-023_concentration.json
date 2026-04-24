@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 109.4 dBA, gradually settling to 77.4-84.4 dBA midway through session. Speech event detected at 55s mark with confidence 0.72. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Cardiovascular data shows average heart rate of 74 bpm (elevated but acceptable for engaged concentration). Consistent rate suggests steady engagement.",
+    "gps_motion": "GPS positioning shows initial variance of 5.3m, refining to 1.4m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (84.4 dB), stable positioning, and strong focus indicators. Duration (60s) borderline for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels. Gradually increase session length from current 60s to develop deeper concentration habits."
+  },
+  "score": 10,
+  "reason": "Score weighted toward audio environment (84.4dB\u2014loud), stable positioning, and session duration (60s). Overall favorable conditions."
+}

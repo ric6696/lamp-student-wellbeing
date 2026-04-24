@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-24T12:32:36.480463+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Lecture Review",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 7,
+      "user_score": 6,
+      "gap": 1,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 7 vs user score 6 (gap 1). Primary drivers: Motion / Restlessness, Mental Readiness. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Motion / Restlessness",
+      "Mental Readiness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

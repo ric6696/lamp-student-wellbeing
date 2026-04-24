@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.557900+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Home",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 7,
+      "gap": -1,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 6 vs user score 7 (gap -1). Primary drivers: Task-Environment Mismatch. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

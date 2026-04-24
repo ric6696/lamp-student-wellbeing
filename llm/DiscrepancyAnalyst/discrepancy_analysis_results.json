@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-23T15:19:08.503926+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6.0,
+      "user_score": 5.0,
+      "gap": 1.0,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model overestimated concentration by 1 point. Both identified environmental noise as primary distraction factor. Model weighted stationary positioning positively despite user experiencing greater noise impact than sensors captured."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model gave partial credit for stationary motion after settling, interpreting it as concentration attempt. However, user experienced 62-63 dBA ambient noise and speech event (confidence 0.72) as more disruptive than model weighted. Model anchored to historical cafe average (6.0) and reading average (7.0), potentially underweighting subjective noise tolerance. Very brief 33-second session limited model's ability to assess sustained distraction impact.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio correctly detected moderate noise (62-63 dBA) and speech event (0.72 confidence). However, model underweighted distraction severity. Next time: treat sustained 60+ dBA in cafe + speech detection as stronger negative signal, especially for reading tasks. Consider lowering score when both ambient noise and speech co-occur, even if dB levels appear 'moderate'.",
+      "vitals": "No heart rate data available. Missing physiological stress indicators that could have validated noise-induced distraction. Next time: when vitals absent during noise exposure, increase uncertainty and avoid compensating with motion data alone. Flag missing vitals as blind spot for Environmental Noise impact assessment.",
+      "motion": "Motion correctly identified settling behavior (non-stationary to stationary transition). Model over-credited this as positive concentration signal. Next time: stationary positioning is necessary but not sufficient for focus—do not let it offset concurrent audio distractions. Weight motion as context stabilizer, not concentration proxy.",
+      "gps": "GPS accuracy stabilization (4.9m to 2m) supported motion settling narrative. Appropriate use as secondary context signal. Next time: maintain current weighting—GPS useful for location stability confirmation but should not influence score when primary distraction is environmental (audio-driven)."
+    },
+    "judgment_policy_next_run": [
+      "When Environmental Noise/Speech is user-reported primary factor and audio shows 60+ dBA + speech detection, increase audio weight and reduce compensatory credit from stationary motion.",
+      "Treat missing vitals data during noise exposure as uncertainty flag—cap confidence and avoid score inflation from motion alone."
+    ]
+  }
+}

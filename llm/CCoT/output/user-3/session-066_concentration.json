@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 104.3 dBA to sustained 81.3 dBA. One or more speech segments identified (avg confidence 0.44), suggesting social environment. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Resting heart rate around 75 bpm observed, reflecting measured attention. Consistent throughout.",
+    "gps_motion": "GPS positioning shows initial variance of 3.5m, refining to 1.1m accuracy over session duration. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (81.3 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels."
+  },
+  "score": 9,
+  "reason": "Concentration score reflects good audio conditions (81.3dB), minimal motion, and adequate session length."
+}

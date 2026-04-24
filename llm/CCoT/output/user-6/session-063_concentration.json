@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 53.6 and 68.6 dBA with sporadic patterns. Vocalization detected mid-session (confidence: 0.49), not significantly affecting ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 80 bpm observed, reflecting engaged but controlled pace. Rate remained stable.",
+    "gps_motion": "GPS positioning shows initial variance of 3.8m, refining to 1.8m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Challenging environmental factors identified: 61.6 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 5,
+  "reason": "Score weighted toward audio environment (61.6dB\u2014moderate), variable positioning, and session duration (440s). Overall mixed conditions."
+}

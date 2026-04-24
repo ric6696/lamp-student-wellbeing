@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.590307+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Library",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 3,
+      "gap": 3,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 6 vs user score 3 (gap 3). Primary drivers: Task-Environment Mismatch. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

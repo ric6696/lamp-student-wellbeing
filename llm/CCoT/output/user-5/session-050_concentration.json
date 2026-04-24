@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 65.9 and 94.9 dBA with consistent patterns. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "GPS positioning shows initial variance of 4.2m, refining to 1.0m accuracy over session duration. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 74.9 dB provides challenging conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 7,
+  "reason": "Score weighted toward audio environment (74.9dB\u2014moderate), variable positioning, and session duration (569s). Overall favorable conditions."
+}

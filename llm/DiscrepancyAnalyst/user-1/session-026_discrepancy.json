@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.477873+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 6,
+      "gap": 4,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 10 vs user score 6 (gap 4). Primary drivers: Location Stability. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 85.0 dBA, gradually settling to 58.0-61.0 dBA midway through session. Human voice detected with 0.95 confidence, likely nearby conversation. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Cardiovascular monitoring absent for this 543-second recording. Unable to correlate physical state with concentration.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (2.7m) that improves to 1.4m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (61.0 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 4,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (61.0dB), user-state stability (settled), physiological data (absent), and sustainable duration (543s)."
+}

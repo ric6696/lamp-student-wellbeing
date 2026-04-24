@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 25.6 and 42.6 dBA with sporadic patterns. Human voice detected with 0.6 confidence, likely adjacent discussion. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "GPS positioning shows initial variance of 3.8m, refining to 1.8m accuracy over session duration. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (33.6 dB), frequent body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Moderate session length adequate; potential to extend to 238s for skill building. Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (33.6dB), frequent motion, and brief session length."
+}

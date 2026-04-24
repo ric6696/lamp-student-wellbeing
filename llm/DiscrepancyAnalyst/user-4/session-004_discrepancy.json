@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.531882+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Home",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3,
+      "user_score": 6,
+      "gap": -3,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 3 vs user score 6 (gap -3). Primary drivers: Task-Environment Mismatch, Mental Readiness, Session Duration. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch",
+      "Mental Readiness",
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

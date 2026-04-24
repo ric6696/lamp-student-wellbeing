@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 50.3 dBA, gradually settling to 32.3-38.3 dBA midway through session. Speech event detected at 416s mark with confidence 0.59. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate averaged 60 bpm throughout session (baseline typical for calm, focused state). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 3.2m initial error that converges to 1.3m by session midpoint. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (38.3 dB), variable positioning, and strong focus indicators. Duration (423s) sufficient for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (38.3dB), frequent motion, and adequate session length."
+}

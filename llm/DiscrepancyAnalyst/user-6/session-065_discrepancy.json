@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-24T12:32:36.604656+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Library",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 10,
+      "gap": -4,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 6 vs user score 10 (gap -4). Primary drivers: Motion / Restlessness, Location Stability. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Motion / Restlessness",
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

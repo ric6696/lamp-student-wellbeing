@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.496055+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Lecture Review",
+    "environment_context": "Library",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 9,
+      "user_score": 3,
+      "gap": 6,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 9 vs user score 3 (gap 6). Primary drivers: Location Stability. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Use uncertainty-aware scoring for short sessions with incomplete multimodal coverage."
+    ]
+  }
+}

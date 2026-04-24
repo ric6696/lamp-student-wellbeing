@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 50.8 dBA, gradually settling to 25.799999999999997-33.8 dBA midway through session. Speech event detected at 80s mark with confidence 0.55. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 55 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Location services recorded 4.9m initial error that converges to 1.1m by session midpoint. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (33.8 dB), restless user state."
+  },
+  "phase_3": {
+    "recommendations": "Current 103-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (33.8dB), frequent motion, and brief session length."
+}

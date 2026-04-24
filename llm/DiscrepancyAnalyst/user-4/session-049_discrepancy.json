@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.545611+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 10,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 10 vs user score 10 (gap 0). Primary drivers: Environmental Noise / Speech, Motion / Restlessness. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Motion / Restlessness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

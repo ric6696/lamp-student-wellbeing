@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 31.700000000000003 and 62.7 dBA with sporadic patterns. Speech event detected at 12s mark with confidence 0.54. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 85 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.3m) that improves to 1.1m as session progresses. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 43.7 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 55s to build sustained focus momentum."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (43.7dB), minimal motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 80.0-98.0 dBA. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Resting heart rate around 87 bpm observed, reflecting measured attention. Consistent throughout.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.8m error margin), achieving 1.9m lock after stabilization. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 84.0 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (84.0dB), minimal motion, and adequate session length."
+}

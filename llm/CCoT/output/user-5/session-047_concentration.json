@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 57.0 dBA to sustained 41.0 dBA. One or more speech segments identified (avg confidence 0.88), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "No heart rate data collected during this 276s session. Physiological stress assessment unavailable.",
+    "gps_motion": "GPS signal strength inconsistent at start (3.1m error margin), achieving 1.9m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 41.0 dB, stable user state. Session duration (276s) limits comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Current 276s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (41.0dB\u2014quiet), stable positioning, and session duration (276s). Overall mixed conditions."
+}

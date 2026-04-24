@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.543882+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Dorm",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 9,
+      "user_score": 9,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 9 vs user score 9 (gap 0). Primary drivers: Task-Environment Mismatch, Environmental Noise / Speech. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch",
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

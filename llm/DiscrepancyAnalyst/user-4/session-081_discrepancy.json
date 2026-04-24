@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.551871+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Lecture Review",
+    "environment_context": "Home",
+    "mental_readiness": "Very Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 3,
+      "gap": 7,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 10 vs user score 3 (gap 7). Primary drivers: Environmental Noise / Speech, Motion / Restlessness, Task-Environment Mismatch. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Motion / Restlessness",
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Use uncertainty-aware scoring for short sessions with incomplete multimodal coverage."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 68.7 dBA, gradually settling to 35.7-46.7 dBA midway through session. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate averaged 75 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 2.8m, refining to 1.1m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 46.7 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 36s to develop deeper concentration habits. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (46.7dB), frequent motion, and brief session length."
+}

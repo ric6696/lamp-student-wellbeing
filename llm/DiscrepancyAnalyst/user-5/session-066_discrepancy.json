@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-24T12:32:36.588393+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Classroom",
+    "mental_readiness": "Medium"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 4,
+      "gap": 4,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 8 vs user score 4 (gap 4). Primary drivers: Environmental Noise / Speech. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

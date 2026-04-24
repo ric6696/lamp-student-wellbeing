@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 67.9 and 80.9 dBA with consistent patterns. Vocalization detected mid-session (confidence: 0.8), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 73 bpm observed, reflecting engaged but controlled pace. Rate remained stable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.5m) that improves to 2.4m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (75.9 dB), variable positioning, and strong focus indicators. Duration (62s) borderline for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Seek quieter environment immediately\u2014current >75dB threshold severely impacts focus. Extend session length beyond 62s to build sustained focus momentum."
+  },
+  "score": 8,
+  "reason": "Score weighted toward audio environment (75.9dB\u2014loud), variable positioning, and session duration (62s). Overall favorable conditions."
+}

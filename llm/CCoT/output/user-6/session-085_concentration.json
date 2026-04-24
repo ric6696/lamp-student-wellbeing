@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 67.0-79.0 dBA. One or more speech segments identified (avg confidence 0.56), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Vitals monitoring recorded 66 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.1m) that improves to 1.1m as session progresses. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (72.0 dB), frequent body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Extend session length beyond 53s to build sustained focus momentum."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (72.0dB), frequent motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 58.099999999999994-95.1 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 73 bpm observed, reflecting relaxed yet focused. Rate remained stable.",
+    "gps_motion": "Location services recorded 3.3m initial error that converges to 3.1m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 70.1 dB, stable user state. Session duration (104s) limits comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Current 104-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (70.1dB\u2014moderate), stable positioning, and session duration (104s). Overall mixed conditions."
+}

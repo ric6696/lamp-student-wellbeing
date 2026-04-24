@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 55.3-90.3 dBA. Vocalization detected mid-session (confidence: 0.58), contributing to ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 78 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.2m) that improves to 2.4m as session progresses. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (67.3 dB), frequent body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Current 99-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (67.3dB), frequent motion, and brief session length."
+}

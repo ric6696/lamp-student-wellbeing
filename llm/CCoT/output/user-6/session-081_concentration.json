@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 35.6-60.6 dBA. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 63 bpm (baseline typical for calm, focused state). Consistent rate suggests maintained focus.",
+    "gps_motion": "Location services recorded 3.2m initial error that converges to 3.2m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Challenging environmental factors identified: 39.6 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 95s to develop deeper concentration habits."
+  },
+  "score": 4,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (39.6dB), user-state stability (settled), physiological data (available), and sustainable duration (95s)."
+}

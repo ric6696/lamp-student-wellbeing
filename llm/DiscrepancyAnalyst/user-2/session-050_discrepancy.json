@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.503637+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Classroom",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 7,
+      "gap": 3,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 10 vs user score 7 (gap 3). Primary drivers: Task-Environment Mismatch, Session Duration, Location Stability. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch",
+      "Session Duration",
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

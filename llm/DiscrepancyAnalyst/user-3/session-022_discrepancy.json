@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-24T12:32:36.515567+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Dorm",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 6,
+      "gap": 2,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 8 vs user score 6 (gap 2). Primary drivers: Session Duration. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Use uncertainty-aware scoring for short sessions with incomplete multimodal coverage."
+    ]
+  }
+}

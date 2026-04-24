@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 48.0 dBA with periodic spikes up to 68.0 dBA throughout the 223s recording. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "No heart rate data collected during this 223s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Location services recorded 3.3m initial error that converges to 2.9m by session midpoint. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Challenging environmental factors identified: 60.0 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Current 223s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (60.0dB), minimal motion, and brief session length."
+}

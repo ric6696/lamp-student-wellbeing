@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-04-24T12:32:36.474942+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 9,
+      "user_score": 6,
+      "gap": 3,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 9 vs user score 6 (gap 3). Primary drivers: Mental Readiness, Location Stability, Motion / Restlessness. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Location Stability",
+      "Motion / Restlessness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "PARTIAL"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

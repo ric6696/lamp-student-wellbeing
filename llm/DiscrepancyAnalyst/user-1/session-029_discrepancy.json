@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.478449+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Home",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 6,
+      "user_score": 8,
+      "gap": -2,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 6 vs user score 8 (gap -2). Primary drivers: Mental Readiness, Session Duration. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "GPS changes should trigger context shift checks, but not directly drive concentration score changes."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-24T12:32:36.534372+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Cafe",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 3,
+      "user_score": 7,
+      "gap": -4,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 3 vs user score 7 (gap -4). Primary drivers: Session Duration. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Separate 'attempted focus' from 'effective focus' in final score synthesis."
+    ]
+  }
+}

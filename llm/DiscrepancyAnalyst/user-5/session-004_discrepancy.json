@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-24T12:32:36.558164+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Dorm",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 10,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 10 vs user score 10 (gap 0). Primary drivers: Motion / Restlessness, Task-Environment Mismatch, Session Duration. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Motion / Restlessness",
+      "Task-Environment Mismatch",
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

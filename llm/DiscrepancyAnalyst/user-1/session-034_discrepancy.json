@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.479231+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Dorm",
+    "mental_readiness": "Very High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 8,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 8 vs user score 8 (gap 0). Primary drivers: Mental Readiness, Session Duration. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

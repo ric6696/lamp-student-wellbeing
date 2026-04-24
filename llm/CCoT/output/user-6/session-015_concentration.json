@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 62.7 dBA with periodic spikes up to 81.7 dBA throughout the 515s recording. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "No heart rate data collected during this 515s session. Physiological stress assessment unavailable.",
+    "gps_motion": "GPS positioning shows initial variance of 4.6m, refining to 3.0m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 72.7 dB, dynamic user state. Session duration (515s) allows comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (72.7dB), frequent motion, and adequate session length."
+}

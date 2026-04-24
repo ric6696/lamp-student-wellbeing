@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 63.400000000000006-97.4 dBA. One or more speech segments identified (avg confidence 0.64), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 84 bpm observed, reflecting measured attention. Rate remained stable.",
+    "gps_motion": "Location services recorded 3.6m initial error that converges to 2.3m by session midpoint. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (75.4 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Seek quieter environment immediately\u2014current >75dB threshold severely impacts focus. Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 8,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (75.4dB), user-state stability (active), physiological data (available), and sustainable duration (300s)."
+}

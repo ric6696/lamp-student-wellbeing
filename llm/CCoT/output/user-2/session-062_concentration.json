@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 60.099999999999994-86.1 dBA. One or more speech segments identified (avg confidence 0.79), suggesting social environment. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 89 bpm observed, reflecting measured attention. Minimal fluctuation detected.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.2m) that improves to 3.4m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (67.1 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus. Current 216s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (67.1dB), minimal motion, and brief session length."
+}

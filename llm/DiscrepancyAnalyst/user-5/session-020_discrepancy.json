@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-24T12:32:36.562868+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Cafe",
+    "mental_readiness": "Medium"
+  },
+  "result": {
+    "overview": {
+      "model_score": 5,
+      "user_score": 6,
+      "gap": -1,
+      "agreement": "USER_HIGHER",
+      "summary": "Model score 5 vs user score 6 (gap -1). Primary drivers: Environmental Noise / Speech, Mental Readiness. Agreement classification: USER_HIGHER."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech",
+      "Mental Readiness"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

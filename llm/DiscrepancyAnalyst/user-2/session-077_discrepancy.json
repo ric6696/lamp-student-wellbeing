@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.508254+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Dorm",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 8,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 8 vs user score 8 (gap 0). Primary drivers: Location Stability. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Compensatory weighting from motion stability likely offset negative environmental signals more than appropriate.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Increase audio penalty when speech and moderate-to-high ambient noise co-occur.",
+      "Preserve GPS as secondary evidence and prevent direct score inflation from location stability."
+    ]
+  }
+}

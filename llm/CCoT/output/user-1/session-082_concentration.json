@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 48.6 dBA, gradually settling to 28.6-37.6 dBA midway through session. One or more speech segments identified (avg confidence 0.6), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 76 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.3m) that improves to 1.4m as session progresses. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (37.6 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Current 54-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 5,
+  "reason": "Concentration score reflects poor audio conditions (37.6dB), minimal motion, and brief session length."
+}

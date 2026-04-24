@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-24T12:32:36.600502+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Reading",
+    "environment_context": "Home",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 10,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 10 vs user score 10 (gap 0). Primary drivers: Environmental Noise / Speech. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Apply stronger session-specific context weighting over historical baseline anchoring.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

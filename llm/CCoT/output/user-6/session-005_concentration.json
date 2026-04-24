@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 51.5 dBA to sustained 44.5 dBA. One or more speech segments identified (avg confidence 0.57), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 63 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "GPS signal strength inconsistent at start (5.0m error margin), achieving 2.3m lock after stabilization. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (44.5 dB), restless user state."
+  },
+  "phase_3": {
+    "recommendations": "Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 5,
+  "reason": "Score weighted toward audio environment (44.5dB\u2014quiet), variable positioning, and session duration (375s). Overall mixed conditions."
+}

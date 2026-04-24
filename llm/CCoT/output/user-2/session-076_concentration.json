@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 58.8 and 75.8 dBA with intermittent patterns. One or more speech segments identified (avg confidence 0.68), suggesting social environment. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Cardiovascular data shows average heart rate of 73 bpm (elevated but acceptable for engaged concentration). Consistent rate suggests stable mental state.",
+    "gps_motion": "GPS positioning shows initial variance of 3.3m, refining to 1.0m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (66.8 dB), unsettled user state."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (66.8dB), minimal motion, and adequate session length."
+}

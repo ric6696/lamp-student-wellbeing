@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 52.5-69.5 dBA. Human voice detected with 0.68 confidence, likely nearby conversation. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 85 bpm observed, reflecting calm demeanor. Minimal fluctuation detected.",
+    "gps_motion": "GPS signal strength inconsistent at start (5.1m error margin), achieving 3.1m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (63.5 dB), unsettled user state."
+  },
+  "phase_3": {
+    "recommendations": "Current 44-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 5,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (63.5dB), user-state stability (settled), physiological data (available), and sustainable duration (44s)."
+}

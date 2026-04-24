@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 87.8 dBA to sustained 76.8 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 83 bpm throughout session (moderately elevated, consistent with active cognitive engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.2m error margin), achieving 2.0m lock after stabilization. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Challenging environmental factors identified: 76.8 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (76.8dB), minimal motion, and adequate session length."
+}

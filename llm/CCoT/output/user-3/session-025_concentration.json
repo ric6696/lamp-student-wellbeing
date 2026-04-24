@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 66.1-93.1 dBA. Vocalization detected mid-session (confidence: 0.5), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.4m) that improves to 3.1m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 71.1 dB acoustic environment and mobile user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Moderate session length adequate; potential to extend to 220s for skill building."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (71.1dB\u2014moderate), variable positioning, and session duration (147s). Overall mixed conditions."
+}

@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-04-24T12:32:36.590442+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Writing",
+    "environment_context": "Home",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 8,
+      "gap": 0,
+      "agreement": "ALIGNED",
+      "summary": "Model score 8 vs user score 8 (gap 0). Primary drivers: Location Stability. Agreement classification: ALIGNED."
+    },
+    "selected_factors": [
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "LOW",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio captured environmental pattern; next run should penalize repeated speech bursts more aggressively for reading tasks.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

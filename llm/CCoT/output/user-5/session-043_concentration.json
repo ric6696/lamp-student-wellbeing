@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 54.9 dBA, gradually settling to 30.9-40.9 dBA midway through session. Speech event detected at 37s mark with confidence 0.64. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 81 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests steady engagement.",
+    "gps_motion": "GPS positioning shows initial variance of 4.2m, refining to 3.1m accuracy over session duration. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (40.9 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Current 91-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 10,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (40.9dB), user-state stability (settled), physiological data (available), and sustainable duration (91s)."
+}

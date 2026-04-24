@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 77.3 and 89.3 dBA with consistent patterns. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Heart rate averaged 59 bpm throughout session (unusually low resting rate, possibly indicating relaxation or fatigue). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.1m error margin), achieving 2.9m lock after stabilization. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 81.3 dB, stable user state. Session duration (545s) allows comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (81.3dB), user-state stability (settled), physiological data (available), and sustainable duration (545s)."
+}

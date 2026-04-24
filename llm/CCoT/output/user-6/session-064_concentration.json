@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 48.2 dBA with periodic spikes up to 65.2 dBA throughout the 81s recording. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 57 bpm observed, reflecting calm demeanor. Rate remained stable.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.5m error margin), achieving 2.2m lock after stabilization. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (50.2 dB), variable positioning, and strong focus indicators. Duration (81s) borderline for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Current 81-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 8,
+  "reason": "Score weighted toward audio environment (50.2dB\u2014quiet), variable positioning, and session duration (81s). Overall favorable conditions."
+}

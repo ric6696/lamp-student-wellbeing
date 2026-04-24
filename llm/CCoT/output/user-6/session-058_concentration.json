@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 41.1 dBA with periodic spikes up to 72.1 dBA throughout the 568s recording. Human voice detected with 0.48 confidence, likely adjacent discussion. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Resting heart rate around 72 bpm observed, reflecting measured attention. Consistent throughout.",
+    "gps_motion": "GPS positioning shows initial variance of 4.7m, refining to 2.7m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (49.1 dB), stable positioning, and strong focus indicators. Duration (568s) sufficient for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (49.1dB), minimal motion, and adequate session length."
+}

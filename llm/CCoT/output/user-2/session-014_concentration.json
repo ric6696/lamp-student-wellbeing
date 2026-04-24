@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 72.3-100.3 dBA. Speech event detected at 59s mark with confidence 0.93. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Resting heart rate around 93 bpm observed, reflecting calm demeanor. Minimal fluctuation detected.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.9m error margin), achieving 1.7m lock after stabilization. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 81.3 dB provides challenging conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings. Current 202s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (81.3dB\u2014loud), variable positioning, and session duration (202s). Overall mixed conditions."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 73.6 and 91.6 dBA with intermittent patterns. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 82 bpm throughout session (moderately elevated, consistent with active cognitive engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 4.1m, refining to 1.6m accuracy over session duration. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 77.6 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (77.6dB), user-state stability (settled), physiological data (available), and sustainable duration (390s)."
+}

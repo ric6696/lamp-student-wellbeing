@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 80.0 dBA to sustained 72.0 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 55 bpm (unusually low resting rate, possibly indicating relaxation or fatigue). Consistent rate suggests regulated stress levels.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 2.2m by session midpoint. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 72.0 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (72.0dB), minimal motion, and adequate session length."
+}

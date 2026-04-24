@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 56.1-75.1 dBA. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Vitals monitoring recorded 95 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (2.6m) that improves to 3.0m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (63.1 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Current 270s sessions reasonable; consider testing longer 30-min blocks. Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (63.1dB), frequent motion, and brief session length."
+}

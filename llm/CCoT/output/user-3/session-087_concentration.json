@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 58.900000000000006-77.9 dBA. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 68 bpm throughout session (baseline typical for calm, focused state). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "GPS signal strength inconsistent at start (3.6m error margin), achieving 2.9m lock after stabilization. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 65.9 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (65.9dB), frequent motion, and adequate session length."
+}

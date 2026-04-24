@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 66.1-81.1 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 90 bpm throughout session (consistently elevated, suggesting heightened stress or engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.5m error margin), achieving 3.4m lock after stabilization. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (74.1 dB), frequent body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Current 70-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (74.1dB), frequent motion, and brief session length."
+}

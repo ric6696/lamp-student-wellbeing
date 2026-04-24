@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-24T12:32:36.505172+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Home",
+    "mental_readiness": "High"
+  },
+  "result": {
+    "overview": {
+      "model_score": 10,
+      "user_score": 4,
+      "gap": 6,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 10 vs user score 4 (gap 6). Primary drivers: Motion / Restlessness, Location Stability. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Motion / Restlessness",
+      "Location Stability"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Location Stability",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "gps",
+          "motion"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals alignment was acceptable, but confidence should be capped when biometric coverage is sparse.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

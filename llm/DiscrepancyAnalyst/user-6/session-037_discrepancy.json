@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-04-24T12:32:36.599414+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Problem Solving",
+    "environment_context": "Classroom",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 8,
+      "user_score": 3,
+      "gap": 5,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 8 vs user score 3 (gap 5). Primary drivers: Task-Environment Mismatch, Session Duration, Environmental Noise / Speech. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Task-Environment Mismatch",
+      "Session Duration",
+      "Environmental Noise / Speech"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "DIRECT",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Environmental Noise / Speech",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "audio"
+        ],
+        "confidence_cap": "HIGH",
+        "alignment_with_session_sensors": "WEAK"
+      }
+    ],
+    "why_difference": "Policy anchored on historical averages, which may not reflect session-specific context and subjective readiness.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio signal quality was adequate. Improve policy by up-weighting persistent >60 dBA exposure in cognitively demanding sessions.",
+      "vitals": "Physiological indicators should be used as supporting evidence, not a dominant signal, when environmental noise is primary.",
+      "motion": "Motion context should stabilize interpretation, not override adverse audio conditions.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

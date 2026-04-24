@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-04-24T12:32:36.548774+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Lecture Review",
+    "environment_context": "Library",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 9,
+      "user_score": 3,
+      "gap": 6,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 9 vs user score 3 (gap 6). Primary drivers: Mental Readiness, Motion / Restlessness, Task-Environment Mismatch. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Mental Readiness",
+      "Motion / Restlessness",
+      "Task-Environment Mismatch"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Mental Readiness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "vitals",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "WEAK"
+      },
+      {
+        "factor": "Motion / Restlessness",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "motion",
+          "vitals"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      },
+      {
+        "factor": "Task-Environment Mismatch",
+        "mapped_observability": "PARTIAL",
+        "mapped_primary_sensors": [
+          "audio",
+          "pre_session_questions"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "ALIGNED"
+      }
+    ],
+    "why_difference": "Short observation window likely caused the model to smooth over transient distractions that the user perceived strongly.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Motion settling was detected correctly; avoid over-crediting stillness when other distraction signals are strong.",
+      "gps": "Use GPS consistency to support motion interpretation while preserving audio-first weighting for environmental factors."
+    },
+    "judgment_policy_next_run": [
+      "Reduce compensatory credit from stationary motion when primary factors are adverse.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

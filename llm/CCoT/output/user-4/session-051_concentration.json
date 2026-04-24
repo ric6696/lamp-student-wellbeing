@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 67.3 dBA with periodic spikes up to 91.3 dBA throughout the 243s recording. One or more speech segments identified (avg confidence 0.87), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 78 bpm observed, reflecting measured attention. Rate remained stable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (2.9m) that improves to 1.8m as session progresses. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (75.3 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity. Current 243s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (75.3dB), minimal motion, and brief session length."
+}

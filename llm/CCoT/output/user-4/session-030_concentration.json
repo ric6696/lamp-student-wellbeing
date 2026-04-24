@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 50.0 dBA with periodic spikes up to 81.0 dBA throughout the 484s recording. Speech event detected at 160s mark with confidence 0.79. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Cardiovascular monitoring absent for this 484-second recording. Unable to correlate physical state with concentration.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.3m) that improves to 2.2m as session progresses. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 56.0 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (56.0dB), minimal motion, and adequate session length."
+}

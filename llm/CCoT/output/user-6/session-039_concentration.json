@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 77.0 and 85.0 dBA with consistent patterns. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "No heart rate data collected during this 546s session. Physiological stress assessment unavailable.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.7m error margin), achieving 1.1m lock after stabilization. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Challenging environmental factors identified: 80.0 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (80.0dB), frequent motion, and adequate session length."
+}

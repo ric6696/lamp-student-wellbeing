@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 67.0 dBA with periodic spikes up to 92.0 dBA throughout the 554s recording. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 95 bpm (consistently elevated, suggesting heightened stress or engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "GPS signal strength inconsistent at start (3.1m error margin), achieving 1.7m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 78.0 dB, stable user state. Session duration (554s) allows comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (78.0dB), minimal motion, and adequate session length."
+}

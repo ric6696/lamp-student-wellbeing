@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 43.3-71.3 dBA. Speech event detected at 8s mark with confidence 0.66. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Heart rate averaged 77 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 3.7m initial error that converges to 2.3m by session midpoint. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 51.3 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Current 85-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (51.3dB), minimal motion, and brief session length."
+}

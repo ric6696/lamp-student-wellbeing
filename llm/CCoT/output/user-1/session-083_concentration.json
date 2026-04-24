@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 18.7 dBA with periodic spikes up to 52.7 dBA throughout the 102s recording. Vocalization detected mid-session (confidence: 0.61), not significantly affecting ambient baseline. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 62 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.3m) that improves to 1.1m as session progresses. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 30.7 dB acoustic environment and mobile user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 102s to build sustained focus momentum. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (30.7dB), frequent motion, and brief session length."
+}

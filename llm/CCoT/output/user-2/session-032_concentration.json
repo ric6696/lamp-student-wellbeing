@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 74.2 dBA, gradually settling to 55.2-66.2 dBA midway through session. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 81 bpm throughout session (moderately elevated, consistent with active cognitive engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 5.3m, refining to 2.0m accuracy over session duration. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (66.2 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (66.2dB), frequent motion, and adequate session length."
+}

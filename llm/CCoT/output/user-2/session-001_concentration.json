@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 67.2 and 100.2 dBA with sporadic patterns. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular monitoring absent for this 557-second recording. Unable to correlate physical state with concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 5.3m, refining to 2.1m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 79.2 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (79.2dB), minimal motion, and adequate session length."
+}

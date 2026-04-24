@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 57.5 dBA with periodic spikes up to 86.5 dBA throughout the 304s recording. Vocalization detected mid-session (confidence: 0.7), not significantly affecting ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 304s session.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 3.4m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (62.5 dB), settled posture, and unmeasured physiology."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (62.5dB), minimal motion, and adequate session length."
+}

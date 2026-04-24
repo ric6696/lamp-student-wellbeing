@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 68.5 dBA, gradually settling to 42.5-50.5 dBA midway through session. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Location services recorded 3.3m initial error that converges to 1.3m by session midpoint. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (50.5 dB), dynamic posture, and unmeasured physiology."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 8,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (50.5dB), user-state stability (active), physiological data (absent), and sustainable duration (395s)."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 79.7 dBA with periodic spikes up to 101.7 dBA throughout the 565s recording. Vocalization detected mid-session (confidence: 0.84), contributing to ambient baseline. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Cardiovascular data shows average heart rate of 70 bpm (elevated but acceptable for engaged concentration). Consistent rate suggests steady engagement.",
+    "gps_motion": "GPS signal strength inconsistent at start (3.5m error margin), achieving 1.8m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (83.7 dB), unsettled user state."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (83.7dB), minimal motion, and adequate session length."
+}

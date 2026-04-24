@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 59.2 and 67.2 dBA with sporadic patterns. One or more speech segments identified (avg confidence 0.66), suggesting quiet setting with occasional voices. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 82 bpm observed, reflecting measured attention. Minimal fluctuation detected.",
+    "gps_motion": "GPS signal strength inconsistent at start (2.8m error margin), achieving 2.9m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 61.2 dB provides acceptable conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 45s to build sustained focus momentum."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (61.2dB), user-state stability (settled), physiological data (available), and sustainable duration (45s)."
+}

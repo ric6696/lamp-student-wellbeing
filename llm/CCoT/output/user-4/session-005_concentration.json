@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 89.7 dBA, gradually settling to 57.7-67.7 dBA midway through session. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Cardiovascular data shows average heart rate of 65 bpm (baseline typical for calm, focused state). Consistent rate suggests stable mental state.",
+    "gps_motion": "GPS signal strength inconsistent at start (5.1m error margin), achieving 2.2m lock after stabilization. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (67.7 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (67.7dB), minimal motion, and adequate session length."
+}

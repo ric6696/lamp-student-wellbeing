@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 60.2-73.2 dBA. One or more speech segments identified (avg confidence 0.76), suggesting social environment. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 57 bpm throughout session (unusually low resting rate, possibly indicating relaxation or fatigue). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 5.5m, refining to 3.1m accuracy over session duration. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Challenging environmental factors identified: 67.2 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels."
+  },
+  "score": 5,
+  "reason": "Score weighted toward audio environment (67.2dB\u2014moderate), stable positioning, and session duration (360s). Overall mixed conditions."
+}

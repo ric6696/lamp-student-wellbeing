@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 49.3 and 77.3 dBA with sporadic patterns. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 80 bpm observed, reflecting measured attention. Consistent throughout.",
+    "gps_motion": "GPS signal strength inconsistent at start (3.5m error margin), achieving 1.5m lock after stabilization. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 59.3 dB acoustic environment and mobile user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 54s to build sustained focus momentum. Establish dedicated seating to minimize postural shifts and maintain focus."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (59.3dB), frequent motion, and brief session length."
+}

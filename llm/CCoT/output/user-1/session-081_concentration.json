@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 58.0 dBA, gradually settling to 44.0-53.0 dBA midway through session. Human voice detected with 0.41 confidence, likely adjacent discussion. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Cardiovascular data shows average heart rate of 83 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests stable mental state.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 2.9m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (53.0 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Current 111-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 5,
+  "reason": "Score weighted toward audio environment (53.0dB\u2014quiet), stable positioning, and session duration (111s). Overall mixed conditions."
+}

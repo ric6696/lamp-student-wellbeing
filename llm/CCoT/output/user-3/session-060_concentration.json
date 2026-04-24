@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 68.4 dBA, gradually settling to 44.4-47.4 dBA midway through session. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 56 bpm (unusually low resting rate, possibly indicating relaxation or fatigue). Consistent rate suggests stable mental state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.4m) that improves to 2.3m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (47.4 dB), restless user state."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (47.4dB), frequent motion, and adequate session length."
+}

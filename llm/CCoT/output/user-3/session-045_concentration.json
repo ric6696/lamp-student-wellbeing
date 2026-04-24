@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 23.799999999999997 and 53.8 dBA with intermittent patterns. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Resting heart rate around 60 bpm observed, reflecting measured attention. Consistent throughout.",
+    "gps_motion": "Location services recorded 4.0m initial error that converges to 1.4m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 32.8 dB provides acceptable conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Current 50-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (32.8dB), minimal motion, and brief session length."
+}

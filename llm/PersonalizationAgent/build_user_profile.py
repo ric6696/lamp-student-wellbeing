@@ -24,7 +24,7 @@ except ImportError:  # pragma: no cover
 
 SENSOR_KEYS = ("vitals", "gps", "motion", "audio")
 DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "user_profile_summary.json"
-DEFAULT_DISCREPANCY_READ_LIMIT = int(os.getenv("PERSONALIZATION_DISCREPANCY_READ_LIMIT", "60"))
+DEFAULT_DISCREPANCY_READ_LIMIT = int(os.getenv("PERSONALIZATION_DISCREPANCY_READ_LIMIT", "10"))
 
 
 def _normalize_read_limit(limit):

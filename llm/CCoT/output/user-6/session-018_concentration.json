@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 57.3-76.3 dBA. One or more speech segments identified (avg confidence 0.67), suggesting quiet setting with occasional voices. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Cardiovascular data shows average heart rate of 95 bpm (consistently elevated, suggesting heightened stress or engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "Location services recorded 5.4m initial error that converges to 1.1m by session midpoint. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (63.3 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 9,
+  "reason": "Score weighted toward audio environment (63.3dB\u2014moderate), variable positioning, and session duration (574s). Overall favorable conditions."
+}

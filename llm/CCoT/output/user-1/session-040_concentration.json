@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 74.1 dBA to sustained 57.1 dBA. Speech event detected at 535s mark with confidence 0.61. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 86 bpm observed, reflecting relaxed yet focused. Rate remained stable.",
+    "gps_motion": "Location services recorded 3.4m initial error that converges to 3.1m by session midpoint. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (57.1 dB), frequent body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (57.1dB), frequent motion, and adequate session length."
+}

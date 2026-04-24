@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 62.8 dBA with periodic spikes up to 97.8 dBA throughout the 331s recording. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 93 bpm (consistently elevated, suggesting heightened stress or engagement). Consistent rate suggests steady engagement.",
+    "gps_motion": "Location services recorded 5.1m initial error that converges to 2.6m by session midpoint. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 72.8 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (72.8dB), user-state stability (settled), physiological data (available), and sustainable duration (331s)."
+}

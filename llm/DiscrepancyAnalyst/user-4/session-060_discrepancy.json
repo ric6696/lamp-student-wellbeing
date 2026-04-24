@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-04-24T12:32:36.547579+00:00",
+  "model": "claude-sonnet-4-5",
+  "pre_session_questions": {
+    "activity_context": "Studying",
+    "environment_context": "Dorm",
+    "mental_readiness": "Low"
+  },
+  "result": {
+    "overview": {
+      "model_score": 5,
+      "user_score": 4,
+      "gap": 1,
+      "agreement": "MODEL_HIGHER",
+      "summary": "Model score 5 vs user score 4 (gap 1). Primary drivers: Session Duration. Agreement classification: MODEL_HIGHER."
+    },
+    "selected_factors": [
+      "Session Duration"
+    ],
+    "factor_sensor_mappings": [
+      {
+        "factor": "Session Duration",
+        "mapped_observability": "INDIRECT",
+        "mapped_primary_sensors": [
+          "session_meta"
+        ],
+        "confidence_cap": "MEDIUM",
+        "alignment_with_session_sensors": "PARTIAL"
+      }
+    ],
+    "why_difference": "Model relied more heavily on objective sensor stability, while user-reported distraction tolerance was lower than inferred.",
+    "prediction_agent_sensor_judgment": {
+      "audio": "Audio trend captured noise profile correctly, but distraction weighting should increase when speech overlaps sustained ambient noise.",
+      "vitals": "Vitals were partially informative; next run should treat missing HR windows as uncertainty rather than neutral evidence.",
+      "motion": "Frequent posture changes should reduce focus confidence unless corroborated by improved audio and vitals.",
+      "gps": "GPS is useful for confirming location stability; keep it as secondary context signal."
+    },
+    "judgment_policy_next_run": [
+      "Cap confidence when biometrics are missing or sparse during high-noise intervals.",
+      "Add readiness-context interaction terms for activity and environment mismatch."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 66.6 dBA with periodic spikes up to 84.6 dBA throughout the 339s recording. Human voice detected with 0.84 confidence, likely nearby conversation. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 77 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 5.2m initial error that converges to 1.4m by session midpoint. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 75.6 dB provides challenging conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (75.6dB), frequent motion, and adequate session length."
+}

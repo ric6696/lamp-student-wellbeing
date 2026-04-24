@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 54.8 and 77.8 dBA with sporadic patterns. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 86 bpm throughout session (consistently elevated, suggesting heightened stress or engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 3.2m, refining to 1.8m accuracy over session duration. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (60.8 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Current 168s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (60.8dB), minimal motion, and brief session length."
+}

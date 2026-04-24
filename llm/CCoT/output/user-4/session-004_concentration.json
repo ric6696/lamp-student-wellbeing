@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 93.2 dBA to sustained 77.2 dBA. One or more speech segments identified (avg confidence 0.79), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 86 bpm (consistently elevated, suggesting heightened stress or engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "GPS positioning shows initial variance of 3.9m, refining to 1.6m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (77.2 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (77.2dB), minimal motion, and adequate session length."
+}

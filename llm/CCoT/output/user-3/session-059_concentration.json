@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 50.2 and 62.2 dBA with consistent patterns. Vocalization detected mid-session (confidence: 0.9), not significantly affecting ambient baseline. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Heart rate averaged 71 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 5.2m initial error that converges to 1.8m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 53.2 dB provides acceptable conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Current 293s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (53.2dB\u2014quiet), stable positioning, and session duration (293s). Overall mixed conditions."
+}

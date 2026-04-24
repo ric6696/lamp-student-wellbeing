@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 73.4 dBA, gradually settling to 50.4-55.4 dBA midway through session. Speech event detected at 577s mark with confidence 0.47. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Cardiovascular data shows average heart rate of 60 bpm (baseline typical for calm, focused state). Consistent rate suggests stable mental state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.3m) that improves to 1.0m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 55.4 dB provides acceptable conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (55.4dB), minimal motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 78.4 dBA, gradually settling to 70.4-72.4 dBA midway through session. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Vitals monitoring recorded 95 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Location services recorded 3.7m initial error that converges to 2.4m by session midpoint. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (72.4 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels."
+  },
+  "score": 9,
+  "reason": "Score weighted toward audio environment (72.4dB\u2014moderate), stable positioning, and session duration (497s). Overall favorable conditions."
+}

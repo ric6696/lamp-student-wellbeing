@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows stabilization from 64.0 dBA to sustained 59.0 dBA. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 88 bpm observed, reflecting relaxed yet focused. Minimal fluctuation detected.",
+    "gps_motion": "Location services recorded 3.0m initial error that converges to 1.9m by session midpoint. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Challenging environmental factors identified: 59.0 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 4,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (59.0dB), user-state stability (active), physiological data (available), and sustainable duration (426s)."
+}

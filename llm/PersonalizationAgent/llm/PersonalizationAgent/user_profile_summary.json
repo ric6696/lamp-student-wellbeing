@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-04-21T03:58:27.367640+00:00",
+  "generated_at": "2026-04-23T15:19:08.820989+00:00",
   "user_id": "minsuk",
-  "sample_size": 6,
-  "data_fed_count": 6,
-  "profile_update_count": 6,
-  "sessions_analyzed": "Analysis 1-6",
+  "sample_size": 10,
+  "data_fed_count": 10,
+  "profile_update_count": 71,
+  "sessions_analyzed": "Analysis 99-108",
   "profile_confidence": 1.0,
   "calibration": {
-    "alignment_summary": "Across the history, user and model do not show a strong one-direction bias.",
-    "why": "Based on 6 scored sessions, average (user_score - model_score) = -0.167, with 3 positive, 3 negative, and 0 zero-gap directions.",
-    "discrepancy_strength": "Average absolute model-user gap across scored history: 3.5.",
-    "ccot_adjustment_recommendation": "For next-session interpretation, keep bias correction light and prioritize sensor-specific reliability patterns."
+    "alignment_summary": "Across the history, the user more often rates focus higher than the model.",
+    "why": "Based on 10 scored sessions, average (user_score - model_score) = 1.0, with 6 positive, 4 negative, and 0 zero-gap directions.",
+    "discrepancy_strength": "Average absolute model-user gap across scored history: 2.0.",
+    "ccot_adjustment_recommendation": "For next-session interpretation, avoid overly strict downgrades and check whether strong negative signals are consistently supported by other sensors."
   },
   "sensor_interpretation": {
     "vitals": {

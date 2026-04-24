@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 35.4 and 52.4 dBA with sporadic patterns. One or more speech segments identified (avg confidence 0.57), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 61 bpm (baseline typical for calm, focused state). Consistent rate suggests maintained focus.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.7m) that improves to 1.0m as session progresses. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (42.4 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 90s to build sustained focus momentum."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (42.4dB), minimal motion, and brief session length."
+}

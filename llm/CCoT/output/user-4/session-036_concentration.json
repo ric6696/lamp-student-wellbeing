@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 72.4 and 99.4 dBA with intermittent patterns. Vocalization detected mid-session (confidence: 0.5), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Vitals monitoring recorded 65 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "GPS positioning shows initial variance of 3.2m, refining to 1.9m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (75.4 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Seek quieter environment immediately\u2014current >75dB threshold severely impacts focus. Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 8,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (75.4dB), user-state stability (active), physiological data (available), and sustainable duration (352s)."
+}

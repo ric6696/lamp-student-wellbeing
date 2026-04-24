@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 77.2 dBA, gradually settling to 55.2-64.2 dBA midway through session. Speech event detected at 112s mark with confidence 0.75. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "No heart rate data collected during this 556s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Location services recorded 3.4m initial error that converges to 1.2m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (64.2 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (64.2dB), minimal motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 78.3 dBA to sustained 68.3 dBA. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.2m) that improves to 2.0m as session progresses. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Challenging environmental factors identified: 68.3 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Gradually increase session length from current 119s to develop deeper concentration habits."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (68.3dB), minimal motion, and brief session length."
+}

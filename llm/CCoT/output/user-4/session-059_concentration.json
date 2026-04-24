@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 35.6-51.6 dBA. Speech event detected at 397s mark with confidence 0.43. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate averaged 74 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 5.0m initial error that converges to 2.4m by session midpoint. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (37.6 dB), unstable positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 4,
+  "reason": "Score weighted toward audio environment (37.6dB\u2014quiet), variable positioning, and session duration (501s). Overall challenging conditions."
+}

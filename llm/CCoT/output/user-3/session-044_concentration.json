@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 78.2-95.2 dBA. Speech event detected at 15s mark with confidence 0.45. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Resting heart rate around 78 bpm observed, reflecting measured attention. Rate remained stable.",
+    "gps_motion": "Location services recorded 3.5m initial error that converges to 2.7m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 81.2 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity."
+  },
+  "score": 7,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (81.2dB), user-state stability (settled), physiological data (available), and sustainable duration (422s)."
+}

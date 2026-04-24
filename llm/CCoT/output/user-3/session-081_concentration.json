@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 62.5-84.5 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "No heart rate data collected during this 108s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.4m) that improves to 1.4m as session progresses. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 70.5 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Current 108-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (70.5dB), user-state stability (settled), physiological data (absent), and sustainable duration (108s)."
+}

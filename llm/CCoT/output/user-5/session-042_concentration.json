@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows stabilization from 82.6 dBA to sustained 72.6 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 81 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.5m error margin), achieving 2.0m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 72.6 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (72.6dB), user-state stability (settled), physiological data (available), and sustainable duration (448s)."
+}

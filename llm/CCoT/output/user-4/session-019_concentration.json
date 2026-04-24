@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 34.8-57.8 dBA. Vocalization detected mid-session (confidence: 0.53), not significantly affecting ambient baseline. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "GPS signal strength inconsistent at start (2.8m error margin), achieving 1.4m lock after stabilization. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Challenging environmental factors identified: 37.8 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 5,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (37.8dB), user-state stability (active), physiological data (absent), and sustainable duration (384s)."
+}

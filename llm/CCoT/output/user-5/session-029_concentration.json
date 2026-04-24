@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 67.1 dBA to sustained 53.1 dBA. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Heart rate averaged 85 bpm throughout session (moderately elevated, consistent with active cognitive engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 5.3m, refining to 1.5m accuracy over session duration. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (53.1 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 91s to develop deeper concentration habits."
+  },
+  "score": 9,
+  "reason": "Score weighted toward audio environment (53.1dB\u2014quiet), stable positioning, and session duration (91s). Overall favorable conditions."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 72.1 dBA, gradually settling to 49.1-55.1 dBA midway through session. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "No heart rate data collected during this 114s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.3m) that improves to 3.2m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (55.1 dB), stable positioning, and unmeasured focus indicators. Duration (114s) borderline for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 114s to build sustained focus momentum."
+  },
+  "score": 9,
+  "reason": "Score weighted toward audio environment (55.1dB\u2014quiet), stable positioning, and session duration (114s). Overall favorable conditions."
+}

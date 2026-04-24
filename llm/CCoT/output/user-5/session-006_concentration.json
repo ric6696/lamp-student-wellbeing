@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 82.0 and 105.0 dBA with intermittent patterns. Speech event detected at 121s mark with confidence 0.68. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.9m error margin), achieving 3.4m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 84.0 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity."
+  },
+  "score": 7,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (84.0dB), user-state stability (settled), physiological data (absent), and sustainable duration (530s)."
+}

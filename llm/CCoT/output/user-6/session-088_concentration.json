@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 71.0-98.0 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 61 bpm (baseline typical for calm, focused state). Consistent rate suggests stable mental state.",
+    "gps_motion": "GPS positioning shows initial variance of 3.6m, refining to 3.2m accuracy over session duration. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 77.0 dB provides challenging conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Seek quieter environment immediately\u2014current >75dB threshold severely impacts focus. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 7,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (77.0dB), user-state stability (active), physiological data (available), and sustainable duration (444s)."
+}

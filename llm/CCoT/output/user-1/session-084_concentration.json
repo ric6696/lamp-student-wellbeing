@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 72.3 dBA, gradually settling to 52.3-58.3 dBA midway through session. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Resting heart rate around 85 bpm observed, reflecting calm demeanor. Consistent throughout.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.8m) that improves to 1.4m as session progresses. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (58.3 dB), variable positioning, and strong focus indicators. Duration (118s) borderline for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Extend session length beyond 118s to build sustained focus momentum. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (58.3dB), frequent motion, and brief session length."
+}

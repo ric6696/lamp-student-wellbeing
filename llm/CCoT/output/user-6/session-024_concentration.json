@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 43.3-71.3 dBA. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "No heart rate data collected during this 220s session. Physiological stress assessment unavailable.",
+    "gps_motion": "Location services recorded 2.8m initial error that converges to 1.0m by session midpoint. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic consistency observed.",
+    "holistic_assessment": "Challenging environmental factors identified: 51.3 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Moderate session length adequate; potential to extend to 330s for skill building."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (51.3dB), minimal motion, and brief session length."
+}

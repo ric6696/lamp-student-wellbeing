@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 91.2 dBA, gradually settling to 68.2-73.2 dBA midway through session. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 88 bpm (consistently elevated, suggesting heightened stress or engagement). Consistent rate suggests stable mental state.",
+    "gps_motion": "Location services recorded 5.5m initial error that converges to 1.9m by session midpoint. Movement sensors indicate rapid transition to stillness; no significant repositioning detected."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (73.2 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Current 33-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (73.2dB), minimal motion, and brief session length."
+}

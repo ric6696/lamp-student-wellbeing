@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 50.9 and 83.9 dBA with intermittent patterns. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Cardiovascular data shows average heart rate of 84 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.2m) that improves to 2.1m as session progresses. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 58.9 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (58.9dB), minimal motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows fluctuation from 66.6 dBA to sustained 59.6 dBA. One or more speech segments identified (avg confidence 0.85), suggesting quiet setting with occasional voices. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Cardiovascular monitoring absent for this 336-second recording. Unable to correlate physical state with concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 3.2m, refining to 2.4m accuracy over session duration. Accelerometer detects ongoing adjustments and repositioning throughout the recording."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 59.6 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (59.6dB), frequent motion, and adequate session length."
+}

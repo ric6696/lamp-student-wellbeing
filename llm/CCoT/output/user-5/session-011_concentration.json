@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 88.3 dBA to sustained 77.3 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 82 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests steady engagement.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.6m) that improves to 2.5m as session progresses. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 77.3 dB, stable user state. Session duration (528s) allows comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (77.3dB\u2014loud), stable positioning, and session duration (528s). Overall mixed conditions."
+}

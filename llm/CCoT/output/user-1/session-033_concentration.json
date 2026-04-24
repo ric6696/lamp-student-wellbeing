@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 73.5 and 93.5 dBA with intermittent patterns. Speech event detected at 15s mark with confidence 0.56. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Vitals monitoring recorded 85 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "GPS positioning shows initial variance of 3.4m, refining to 2.7m accuracy over session duration. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 84.5 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings. Extend session length beyond 71s to build sustained focus momentum."
+  },
+  "score": 7,
+  "reason": "Score weighted toward audio environment (84.5dB\u2014loud), stable positioning, and session duration (71s). Overall favorable conditions."
+}

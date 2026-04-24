@@ -1,16 +1,16 @@
 {
   "phase_1": {
-    "audio": "Single audio exposure reading of 60.83 dBA indicates a moderately noisy environment, just above the threshold for good focus (45 dBA) but within acceptable classroom levels.",
-    "vitals": "No heart rate data available during this extremely brief 0.05-minute session, preventing assessment of physiological stress or calm focus indicators.",
-    "gps_motion": "GPS shows minimal location drift (staying within ~3m accuracy), indicating stable positioning. Motion transitions from non-stationary to stationary by session end, suggesting settling into position."
+    "audio": "Audio exposure shows initial spike to 81.5 dBA then stabilizes around 62-63 dBA throughout session. One speech event detected near end (04:10:23) with moderate confidence (0.72). Environment is moderately noisy for focused reading.",
+    "vitals": "No heart rate data available during this 33-second session. Cannot assess physiological stress or arousal levels that would indicate concentration state.",
+    "gps_motion": "GPS shows high initial accuracy variance (2-4.9m) then stabilizes to 2m accuracy, indicating settling into position. Motion transitions from non-stationary (first 3 seconds) to consistently stationary for remainder of session, suggesting user found and maintained a seated position."
   },
   "phase_2": {
-    "correlations": "The transition from non-stationary to stationary motion aligns with GPS stability, indicating the user was settling into their classroom position. Moderate audio levels are consistent with typical classroom environment during lecture setup.",
-    "holistic_assessment": "This micro-session captures a transition moment where the user appears to be settling into lecture position. The stable location, transition to stationary state, and moderate classroom audio levels suggest preparation for focused attention, though the extremely brief duration limits definitive assessment."
+    "correlations": "The transition from non-stationary to stationary motion aligns with GPS stabilization, indicating user was finding their seat/position initially. Audio remains consistently moderate throughout, with speech detection occurring after user was settled, suggesting cafe conversation nearby but not directly engaging.",
+    "holistic_assessment": "Very brief session showing user settling into reading position in cafe environment. Stationary positioning supports focus attempt, but moderate ambient noise (62-63 dBA) and detected speech create suboptimal conditions. Session too short to establish sustained concentration patterns."
   },
   "phase_3": {
-    "recommendations": "Continue settling into your classroom position to maintain the stationary state achieved by session end. Monitor if audio levels remain manageable as the lecture begins. Consider this brief session as a positive setup phase for the upcoming lecture content."
+    "recommendations": "Consider noise-canceling headphones or moving to quieter cafe area to reduce 60+ dBA ambient noise. Allow longer settling time before starting reading sessions to establish comfortable positioning. Try extending reading sessions beyond 30 seconds to build sustained focus momentum."
   },
   "score": 6,
-  "reason": "Score aligns with user's historical Lecture average of 6.0, supported by the transition to stationary motion and stable GPS positioning. The moderate audio environment (60.83 dBA) and settling behavior suggest readiness for lecture engagement, though the extremely brief duration prevents deeper assessment."
+  "reason": "Score aligns with user's historical cafe average (6.0) and reading average (7.0). Stationary motion after initial settling supports concentration attempt, but moderate 62-63 dBA ambient noise and speech detection indicate suboptimal focus conditions. Very brief 33-second duration prevents assessment of sustained concentration, warranting middle-range score."
 }

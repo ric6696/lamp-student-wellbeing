@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 31.200000000000003 dBA with periodic spikes up to 48.2 dBA throughout the 340s recording. One or more speech segments identified (avg confidence 0.61), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate averaged 93 bpm throughout session (consistently elevated, suggesting heightened stress or engagement). Data indicates user was in suboptimal physiological state for concentration.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.9m) that improves to 2.7m as session progresses. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (41.2 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (41.2dB), frequent motion, and adequate session length."
+}

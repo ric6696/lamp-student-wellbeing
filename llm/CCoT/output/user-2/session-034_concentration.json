@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 57.900000000000006 dBA with periodic spikes up to 84.9 dBA throughout the 455s recording. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Location services recorded 4.0m initial error that converges to 3.3m by session midpoint. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 67.9 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (67.9dB\u2014moderate), stable positioning, and session duration (455s). Overall mixed conditions."
+}

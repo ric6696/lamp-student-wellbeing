@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows stabilization from 97.0 dBA to sustained 78.0 dBA. Speech event detected at 62s mark with confidence 0.41. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Cardiovascular data shows average heart rate of 63 bpm (baseline typical for calm, focused state). Consistent rate suggests regulated stress levels.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 3.4m by session midpoint. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Challenging environmental factors identified: 78.0 dB acoustic baseline, frequent motion, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels. Extend session length beyond 82s to build sustained focus momentum."
+  },
+  "score": 4,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (78.0dB), user-state stability (active), physiological data (available), and sustainable duration (82s)."
+}

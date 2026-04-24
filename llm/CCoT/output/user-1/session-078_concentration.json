@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 75.9 dBA with periodic spikes up to 102.9 dBA throughout the 278s recording. Speech event detected at 162s mark with confidence 0.74. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.2m) that improves to 3.0m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 82.9 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity. Moderate session length adequate; potential to extend to 417s for skill building."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (82.9dB), minimal motion, and brief session length."
+}

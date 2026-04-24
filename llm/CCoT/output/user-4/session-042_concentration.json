@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 28.0 and 50.0 dBA with intermittent patterns. Human voice detected with 0.7 confidence, likely adjacent discussion. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 101s session.",
+    "gps_motion": "Location services recorded 5.0m initial error that converges to 1.4m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 30.0 dB provides acceptable conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 101s to develop deeper concentration habits."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (30.0dB), user-state stability (settled), physiological data (absent), and sustainable duration (101s)."
+}

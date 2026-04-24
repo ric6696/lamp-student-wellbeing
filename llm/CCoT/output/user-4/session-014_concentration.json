@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 50.9 dBA, gradually settling to 24.9-35.9 dBA midway through session. Speech event detected at 113s mark with confidence 0.42. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Vitals monitoring recorded 80 bpm as session average. This aligns with ideal focus-state parameters.",
+    "gps_motion": "Location services recorded 5.3m initial error that converges to 2.5m by session midpoint. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (35.9 dB), dynamic posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Moderate session length adequate; potential to extend to 378s for skill building. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (35.9dB), frequent motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 95.1 dBA, gradually settling to 75.1-81.1 dBA midway through session. Very loud environment detected; concentration significantly compromised.",
+    "vitals": "Cardiovascular monitoring absent for this 503-second recording. Unable to correlate physical state with concentration.",
+    "gps_motion": "GPS signal strength inconsistent at start (2.7m error margin), achieving 2.4m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Analysis suggests reasonable concentration potential with 81.1 dB acoustic environment and settled user behavior."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (81.1dB), minimal motion, and adequate session length."
+}

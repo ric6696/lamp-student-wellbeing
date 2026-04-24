@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 45.3 dBA, gradually settling to 29.299999999999997-36.3 dBA midway through session. Human voice detected with 0.68 confidence, likely adjacent discussion. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 80 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "Location services recorded 2.6m initial error that converges to 1.9m by session midpoint. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 36.3 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Current 69-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (36.3dB\u2014quiet), variable positioning, and session duration (69s). Overall mixed conditions."
+}

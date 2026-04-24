@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 56.0-81.0 dBA. Human voice detected with 0.95 confidence, likely nearby conversation. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "No heart rate data collected during this 313s session. Physiological stress assessment unavailable.",
+    "gps_motion": "GPS positioning shows initial variance of 4.5m, refining to 3.0m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (64.0 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Current session conditions favorable for concentration. Maintain established patterns. Existing environment well-suited for focused work. Build on current successful setup."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (64.0dB), minimal motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 67.2 dBA with periodic spikes up to 75.2 dBA throughout the 554s recording. Vocalization detected mid-session (confidence: 0.46), contributing to ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Vitals monitoring recorded 86 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "GPS positioning shows initial variance of 4.2m, refining to 1.1m accuracy over session duration. Movement remains variable with user changing posture multiple times during session."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) diverges from kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Session exemplifies near-optimal conditions: minimal acoustic disturbance (69.2 dB), variable positioning, and strong focus indicators. Duration (554s) sufficient for sustained concentration assessment."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 8,
+  "reason": "Concentration score reflects moderate audio conditions (69.2dB), frequent motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates steady noise signature ranging 62.900000000000006-75.9 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 465s session.",
+    "gps_motion": "GPS positioning shows initial variance of 2.7m, refining to 2.1m accuracy over session duration. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session analysis reveals concentration impediments: noisy setting (70.9 dB), unsettled user state."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus."
+  },
+  "score": 4,
+  "reason": "Concentration score reflects poor audio conditions (70.9dB), minimal motion, and adequate session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 74.8 dBA with periodic spikes up to 103.8 dBA throughout the 247s recording. Human voice detected with 0.56 confidence, likely nearby conversation. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 80 bpm observed, reflecting engaged but controlled pace. Minimal fluctuation detected.",
+    "gps_motion": "GPS signal strength inconsistent at start (4.3m error margin), achieving 3.4m lock after stabilization. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Positional settling (GPS convergence) corresponds to kinetic patterns. Acoustic fluctuation observed.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (79.8 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Use active noise cancellation or white noise to counteract loud surroundings. Current 247s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 5,
+  "reason": "Concentration score reflects poor audio conditions (79.8dB), minimal motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 90.1 dBA to sustained 71.1 dBA. One or more speech segments identified (avg confidence 0.83), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 312s session.",
+    "gps_motion": "Location services recorded 4.3m initial error that converges to 1.4m by session midpoint. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (71.1 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Modest noise control (e.g., ambient music, quiet background) could improve focus."
+  },
+  "score": 9,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (71.1dB), user-state stability (settled), physiological data (absent), and sustainable duration (312s)."
+}

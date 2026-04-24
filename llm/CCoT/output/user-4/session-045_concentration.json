@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 52.3-78.3 dBA. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 487s session.",
+    "gps_motion": "Location services recorded 4.5m initial error that converges to 3.4m by session midpoint. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 60.3 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Practice deliberate stillness; reduce repositioning frequency during study periods."
+  },
+  "score": 7,
+  "reason": "Concentration score reflects moderate audio conditions (60.3dB), frequent motion, and adequate session length."
+}

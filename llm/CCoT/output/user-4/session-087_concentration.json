@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 67.9 and 92.9 dBA with intermittent patterns. Vocalization detected mid-session (confidence: 0.43), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 91 bpm observed, reflecting calm demeanor. Rate remained stable.",
+    "gps_motion": "Location services recorded 5.2m initial error that converges to 1.7m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 79.9 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Invest in noise-canceling technology to mitigate high ambient levels."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (79.9dB\u2014loud), stable positioning, and session duration (483s). Overall mixed conditions."
+}

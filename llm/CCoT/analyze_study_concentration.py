@@ -832,10 +832,14 @@ def analyze_concentration(features, model="claude-sonnet-4-5", session=None):
     """
     prompt = build_ccot_prompt(features)
     escaped_prompt = prompt.replace("'", "''")
+    model = (model or "").strip()
+    if not model:
+        return {"score": None, "reason": "[ERROR] --model must be a non-empty string"}
+    escaped_model = model.replace("'", "''")
 
     query = f"""
     SELECT SNOWFLAKE.CORTEX.COMPLETE(
-        '{model}',
+        '{escaped_model}',
         '{escaped_prompt}'
     ) AS response
     """

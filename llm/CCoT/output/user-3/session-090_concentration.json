@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 62.099999999999994-90.1 dBA. Vocalization detected mid-session (confidence: 0.76), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Resting heart rate around 79 bpm observed, reflecting calm demeanor. Consistent throughout.",
+    "gps_motion": "Location services recorded 4.9m initial error that converges to 1.1m by session midpoint. Motion activity scattered throughout session with user frequently shifting position."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 71.1 dB provides challenging conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Gradually increase session length from current 96s to develop deeper concentration habits."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (71.1dB\u2014moderate), variable positioning, and session duration (96s). Overall mixed conditions."
+}

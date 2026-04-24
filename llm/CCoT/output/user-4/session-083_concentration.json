@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows gradual decline from 55.2 dBA to sustained 48.2 dBA. One or more speech segments identified (avg confidence 0.71), suggesting quiet setting with occasional voices. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "GPS positioning shows initial variance of 3.1m, refining to 3.1m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing precedes motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (48.2 dB), dynamic posture, and unmeasured physiology."
+  },
+  "phase_3": {
+    "recommendations": "Invest in ergonomic furniture to reduce fidgeting and increase stationary time."
+  },
+  "score": 10,
+  "reason": "Concentration score reflects excellent audio conditions (48.2dB), frequent motion, and adequate session length."
+}

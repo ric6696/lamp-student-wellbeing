@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 64.3-88.3 dBA. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 67 bpm throughout session (baseline typical for calm, focused state). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 3.5m initial error that converges to 2.1m by session midpoint. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 71.3 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels."
+  },
+  "score": 6,
+  "reason": "Score weighted toward audio environment (71.3dB\u2014moderate), stable positioning, and session duration (345s). Overall mixed conditions."
+}

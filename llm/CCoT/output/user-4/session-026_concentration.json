@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates unpredictable noise signature ranging 57.099999999999994-79.1 dBA. One or more speech segments identified (avg confidence 0.68), suggesting social environment. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Resting heart rate around 90 bpm observed, reflecting relaxed yet focused. Consistent throughout.",
+    "gps_motion": "Location services recorded 4.1m initial error that converges to 3.0m by session midpoint. Motion data reflects immediate settling into stationary posture, maintained consistently."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session presents suboptimal focus conditions: elevated ambient noise (69.1 dB), transitional positioning. Concentration likely impacted."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Current 113-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 5,
+  "reason": "Concentration score reflects poor audio conditions (69.1dB), minimal motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Acoustic analysis reveals baseline of 57.3 dBA with periodic spikes up to 92.3 dBA throughout the 551s recording. Vocalization detected mid-session (confidence: 0.71), contributing to ambient baseline. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Heart rate averaged 76 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "GPS positioning shows initial variance of 5.1m, refining to 1.4m accuracy over session duration. Kinetic data shows sustained activity with no prolonged stationary periods."
+  },
+  "phase_2": {
+    "correlations": "The shift toward continued motion aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 67.3 dB provides acceptable conditions. User maintained variable positioning."
+  },
+  "phase_3": {
+    "recommendations": "Consider earplugs or noise-reducing headphones for moderate ambient levels. Address underlying restlessness through movement breaks between sessions."
+  },
+  "score": 7,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (67.3dB), user-state stability (active), physiological data (available), and sustainable duration (551s)."
+}

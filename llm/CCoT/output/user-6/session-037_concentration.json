@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows stabilization from 73.7 dBA to sustained 52.7 dBA. Human voice detected with 0.66 confidence, likely adjacent discussion. This quiet setting is favorable for sustained focus and deep work.",
+    "vitals": "Insufficient biometric data (no HR samples) limits assessment of user's physiological condition during 114s session.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (4.5m) that improves to 2.6m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 52.7 dB, stable user state. Session duration (114s) limits comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 114s to develop deeper concentration habits."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (52.7dB), minimal motion, and brief session length."
+}

@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 67.8 and 87.8 dBA with consistent patterns. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 70 bpm throughout session (elevated but acceptable for engaged concentration). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (3.2m) that improves to 2.2m as session progresses. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals moderate compatibility between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Session shows moderate concentration quality with mixed environmental factors. Acoustic baseline of 76.8 dB provides challenging conditions. User maintained consistent positioning."
+  },
+  "phase_3": {
+    "recommendations": "Seek quieter environment immediately\u2014current >75dB threshold severely impacts focus."
+  },
+  "score": 6,
+  "reason": "Concentration score reflects suboptimal audio conditions (76.8dB), minimal motion, and adequate session length."
+}

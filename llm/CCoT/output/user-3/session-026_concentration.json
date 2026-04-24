@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 42.1 and 55.1 dBA with sporadic patterns. Speech event detected at 73s mark with confidence 0.94. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Resting heart rate around 88 bpm observed, reflecting calm demeanor. Minimal fluctuation detected.",
+    "gps_motion": "GPS positioning shows initial variance of 3.5m, refining to 3.1m accuracy over session duration. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates minimal variance.",
+    "holistic_assessment": "Analysis indicates excellent concentration potential: quiet audio environment (49.1 dB), settled posture, and favorable physiology."
+  },
+  "phase_3": {
+    "recommendations": "Current 247s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 10,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (49.1dB), user-state stability (settled), physiological data (available), and sustainable duration (247s)."
+}

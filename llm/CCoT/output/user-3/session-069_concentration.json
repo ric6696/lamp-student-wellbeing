@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio recording captures initial spike of 41.9 dBA, gradually settling to 22.9-33.9 dBA midway through session. Overall environment is exceptionally quiet, highly conducive to concentration.",
+    "vitals": "Cardiovascular data shows average heart rate of 85 bpm (moderately elevated, consistent with active cognitive engagement). Consistent rate suggests maintained focus.",
+    "gps_motion": "GPS positioning shows initial variance of 4.7m, refining to 3.0m accuracy over session duration. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "Correlation analysis reveals strong alignment between positional, kinetic, and acoustic factors.",
+    "holistic_assessment": "Challenging environmental factors identified: 33.9 dB acoustic baseline, postural adjustments, potential physiological stress."
+  },
+  "phase_3": {
+    "recommendations": "Gradually increase session length from current 84s to develop deeper concentration habits."
+  },
+  "score": 5,
+  "reason": "Concentration score reflects poor audio conditions (33.9dB), minimal motion, and brief session length."
+}

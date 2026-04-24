@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Audio environment demonstrates variable noise signature ranging 51.6-71.6 dBA. Human voice detected with 0.9 confidence, likely nearby conversation. Moderate noise levels present; some distraction possible but manageable.",
+    "vitals": "Vitals monitoring recorded 87 bpm as session average. This deviates from ideal focus-state parameters.",
+    "gps_motion": "Location services recorded 4.6m initial error that converges to 2.9m by session midpoint. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context remains stable throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (61.6 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Current 40-second duration too brief for meaningful concentration assessment; aim for 10+ min sessions."
+  },
+  "score": 8,
+  "reason": "Score weighted toward audio environment (61.6dB\u2014moderate), stable positioning, and session duration (40s). Overall favorable conditions."
+}

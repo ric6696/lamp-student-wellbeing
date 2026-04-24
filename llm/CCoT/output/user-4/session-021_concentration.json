@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Ambient noise levels show fluctuation between 68.7 and 98.7 dBA with sporadic patterns. Vocalization detected mid-session (confidence: 0.65), contributing to ambient baseline. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate telemetry not available for this session period. Cannot evaluate stress-induced arousal state.",
+    "gps_motion": "Geolocation data exhibits high initial uncertainty (5.0m) that improves to 2.5m as session progresses. Kinetic data shows user establishing stable position within first seconds; minimal body movement thereafter."
+  },
+  "phase_2": {
+    "correlations": "GPS stabilization timing aligns closely with motion state change. Audio context shows variation throughout captured period.",
+    "holistic_assessment": "Session demonstrates strong focus-supportive conditions with low ambient noise (74.7 dB), minimal body repositioning."
+  },
+  "phase_3": {
+    "recommendations": "Attempt sessions in slightly quieter locations to evaluate impact on concentration. Current 275s sessions reasonable; consider testing longer 30-min blocks."
+  },
+  "score": 10,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (74.7dB), user-state stability (settled), physiological data (absent), and sustainable duration (275s)."
+}

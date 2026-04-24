@@ -1,0 +1,16 @@
+{
+  "phase_1": {
+    "audio": "Sound level monitoring shows stabilization from 82.4 dBA to sustained 75.4 dBA. One or more speech segments identified (avg confidence 0.64), suggesting social environment. Higher ambient noise detected; concentration requires active focus effort.",
+    "vitals": "Heart rate averaged 65 bpm throughout session (baseline typical for calm, focused state). Data indicates user was in optimal physiological state for concentration.",
+    "gps_motion": "Location services recorded 3.3m initial error that converges to 1.8m by session midpoint. Accelerometer readings show user quickly becoming immobile and remaining seated throughout."
+  },
+  "phase_2": {
+    "correlations": "The shift toward sustained stillness aligns with GPS signal stabilization. Audio channel demonstrates notable transitions.",
+    "holistic_assessment": "Moderate focus conditions evident: audio levels at 75.4 dB, stable user state. Session duration (322s) allows comprehensive concentration evaluation."
+  },
+  "phase_3": {
+    "recommendations": "Relocate to acoustically isolated space to improve concentration capacity."
+  },
+  "score": 6,
+  "reason": "Score determined by comprehensive assessment: ambient noise management (75.4dB), user-state stability (settled), physiological data (available), and sustainable duration (322s)."
+}
